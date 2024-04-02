@@ -17,6 +17,7 @@ YY-CHR.NET and Tile Molester v0.20 are good options for editing textures.
 v0.20 of Tile Molester natively supports .col files, but in the end it just boils down to preference.
 
 **sf1tex.col can be used with both _SCAD and Hyper CG-CAD._**
+
 **sf1tex_yychr.pal is for _YY-CHR.NET_ (SCAD specific stuff removed from file).**
 
 All tools mentioned (except SCAD) are in the links section.
