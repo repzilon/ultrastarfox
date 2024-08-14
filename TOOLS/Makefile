@@ -34,13 +34,28 @@ nowindows:
 mrproper: distclean nowindows
 
 bgconv/bin/palconv: palconv_src/palconv.c
-	$(CC) $(CFLAGS_OPTIM) palconv_src/palconv.c -o bgconv/bin/palconv
+	$(CC) $(CFLAGS_OPTIM) -pipe palconv_src/palconv.c -o bgconv/bin/palconv
 
 bgconv/bin/sf_crunch: cru_src/sf_crunch_mod.c
-	$(CC) $(CFLAGS_OPTIM) cru_src/sf_crunch_mod.c -o bgconv/bin/sf_crunch
+	$(CC) $(CFLAGS_OPTIM) -pipe cru_src/sf_crunch_mod.c -o bgconv/bin/sf_crunch
 
 mugconv/foxchr: mugconv/foxchr_source/foxchr.c mugconv/foxchr_source/foxchr.h
-	$(CC) $(CFLAGS_OPTIM) mugconv/foxchr_source/foxchr.c -o mugconv/foxchr
+	$(CC) $(CFLAGS_OPTIM) -pipe mugconv/foxchr_source/foxchr.c -o mugconv/foxchr
+
+SuperFamiconv-$(SUPERFAMICONV_VERSION).tar.gz:
+	curl https://codeload.github.com/Optiroc/SuperFamiconv/tar.gz/refs/tags/v$(SUPERFAMICONV_VERSION) -o SuperFamiconv-$(SUPERFAMICONV_VERSION).tar.gz
+
+SuperFamiconv-$(SUPERFAMICONV_VERSION)/Makefile: SuperFamiconv-$(SUPERFAMICONV_VERSION).tar.gz
+	tar -zxf SuperFamiconv-$(SUPERFAMICONV_VERSION).tar.gz
+
+SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv: SuperFamiconv-$(SUPERFAMICONV_VERSION)/Makefile
+	make -C SuperFamiconv-$(SUPERFAMICONV_VERSION)
+
+bgconv/bin/superfamiconv: SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv
+	install -CS ./SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv ./bgconv/bin
+
+mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv
+	install -CS ./SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv ./mugconv/superfamiconv
 
 SuperFamiconv-$(SUPERFAMICONV_VERSION).tar.gz:
 	curl https://codeload.github.com/Optiroc/SuperFamiconv/tar.gz/refs/tags/v$(SUPERFAMICONV_VERSION) -o SuperFamiconv-$(SUPERFAMICONV_VERSION).tar.gz
