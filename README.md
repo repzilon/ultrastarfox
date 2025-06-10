@@ -56,11 +56,11 @@ After building, a debug symbol map will be created at ``SYMBOLS.TXT``, and a ban
 
 ## Building on macOS
 
-** Tested on an old Intel MacBook Pro Retina 2015, with a newer macOS thanks to OpenCore Legacy Patcher. No idea if it works on Apple Silicon Macs.**
+**Tested on an old Intel MacBook Pro Retina 2015, with a newer macOS thanks to OpenCore Legacy Patcher. No idea if it works on Apple Silicon Macs.**
 
 Requirements: macOS (tested on Sonoma), DOSBox-X, git
 
-Install Homebrew : ``/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"``
+Install Homebrew: ``/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"``
 
 Install DOSBOX-X from Homebrew: ``brew install dosbox-x``
 
