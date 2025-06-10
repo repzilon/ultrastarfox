@@ -73,7 +73,7 @@ Install snapstore: ``sudo apt install snapd``
 
 Install DOSBOX-X from snap: ``sudo snap install dosbox-x``  
 
-Clone repository: ``git clone https://github.com/Sunlitspace542/ultrastarfox``  
+Clone repository: ``git clone https://github.com/repzilon/ultrastarfox``  
 
 To build ROM, run ``make``.  
 
@@ -82,6 +82,18 @@ To build ROM with logging, run ``make log``.
 To clean, run ``make clean``.  
 
 After building, a debug symbol map will be created at ``SYMBOLS.TXT``, and a bank space report at ``BANKS.CSV``.  
+
+## Building on macOS
+
+** Tested on an old Intel MacBook Pro Retina 2015, with a newer macOS thanks to OpenCore Legacy Patcher. No idea if it works on Apple Silicon Macs.**
+
+Requirements: macOS (tested on Sonoma), DOSBox-X, git
+
+Install Homebrew : ``/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"``
+
+Install DOSBOX-X from Homebrew: ``brew install dosbox-x``
+
+Then, from cloning the repository to building, follow the Linux instructions above.
 
 ## Uploading ROM to SNES over USB with SD2SNES/FXPak(Pro)
 
