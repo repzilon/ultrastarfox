@@ -3,7 +3,7 @@ Repzilon's TODO
 
 Immediate fixes
 ---------------
-- [ ] Fix missing ground.col when trying to build UltraStarFox!
+- [x] Fix missing ground.col when trying to build UltraStarFox!
 
 Tool porting
 ------------
