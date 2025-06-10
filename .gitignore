@@ -57,6 +57,9 @@ SF/DATA/COL/ALLCOLS.COL
 TOOLS/SuperFamiconv-*.tar.gz
 TOOLS/SuperFamiconv-*/
 
+# Downloaded usb2snes-cli
+usb2snes-cli/
+
 # Compiled tools
 TOOLS/bgconv/bin/palconv
 TOOLS/bgconv/bin/sf_crunch
@@ -66,3 +69,4 @@ TOOLS/mugconv/superfamiconv/superfamiconv
 TOOLS/cgx2fx
 TOOLS/fx2cgx
 TOOLS/fontconv/foxfont
+usb2snes-cli.bin
