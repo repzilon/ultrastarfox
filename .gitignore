@@ -63,3 +63,6 @@ TOOLS/bgconv/bin/sf_crunch
 TOOLS/bgconv/bin/superfamiconv
 TOOLS/mugconv/foxchr
 TOOLS/mugconv/superfamiconv/superfamiconv
+TOOLS/cgx2fx
+TOOLS/fx2cgx
+TOOLS/fontconv/foxfont

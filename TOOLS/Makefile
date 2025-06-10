@@ -6,7 +6,7 @@ CC := cc
 # Does -march=native also work on Clang?
 CFLAGS_OPTIM := -O2 -pipe
 
-all: bgconv/bin/palconv mugconv/foxchr bgconv/bin/sf_crunch bgconv/bin/superfamiconv mugconv/superfamiconv/superfamiconv
+all: bgconv/bin/palconv mugconv/foxchr bgconv/bin/sf_crunch bgconv/bin/superfamiconv mugconv/superfamiconv/superfamiconv cgx2fx fx2cgx fontconv/foxfont
 
 clean-superfamiconv:
 	$(MAKE) -C SuperFamiconv-$(SFCONV_VER) clean
@@ -17,6 +17,9 @@ clean-tools:
 	rm -f mugconv/foxchr
 	rm -f bgconv/bin/superfamiconv
 	rm -f mugconv/superfamiconv/superfamiconv
+	rm -f cgx2fx
+	rm -f fx2cgx
+	rm -f fontconv/foxfont
 
 clean: clean-tools clean-superfamiconv
 
@@ -33,6 +36,9 @@ nowindows:
 	rm -f bgconv/bin/superfamiconv.exe
 	rm -f mugconv/superfamiconv/superfamiconv.exe
 	rm -f mugconv/foxchr.exe
+	rm -f cgx2fx_win.exe
+	rm -f fx2cgx_win.exe
+	rm -f fontconv/foxfont.exe
 
 mrproper: distclean nowindows
 
@@ -59,6 +65,15 @@ bgconv/bin/superfamiconv: SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamico
 
 mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv
 	install -CS ./SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv ./mugconv/superfamiconv
+
+cgx2fx: cgx2fx_fx2cgx_src/cgx2fx.c
+	$(CC) $(CFLAGS_OPTIM) cgx2fx_fx2cgx_src/cgx2fx.c -o cgx2fx
+
+fx2cgx: cgx2fx_fx2cgx_src/fx2cgx.c
+	$(CC) $(CFLAGS_OPTIM) cgx2fx_fx2cgx_src/fx2cgx.c -o fx2cgx
+
+fontconv/foxfont: fontconv/foxfont_source/foxfont.c fontconv/foxfont_source/foxfont.h
+	$(CC) $(CFLAGS_OPTIM) fontconv/foxfont_source/foxfont.c -o fontconv/foxfont
 
 SuperFamiconv-$(SFCONV_VER).tar.gz:
 	curl https://codeload.github.com/Optiroc/SuperFamiconv/tar.gz/refs/tags/v$(SFCONV_VER) -o SuperFamiconv-$(SFCONV_VER).tar.gz
