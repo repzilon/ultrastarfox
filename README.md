@@ -44,7 +44,7 @@ Install snapstore: ``sudo apt install snapd``
 
 Install DOSBOX-X from snap: ``sudo snap install dosbox-x``  
 
-Clone repository: ``git clone https://github.com/Sunlitspace542/ultrastarfox``  
+Clone repository: ``git clone https://github.com/repzilon/ultrastarfox``  
 
 To build ROM, run ``make``.  
 
@@ -54,8 +54,20 @@ To clean, run ``make clean``.
 
 After building, a debug symbol map will be created at ``SYMBOLS.TXT``, and a bank space report at ``BANKS.CSV``.  
 
+## Building on macOS
+
+** Tested on an old Intel MacBook Pro Retina 2015, with a newer macOS thanks to OpenCore Legacy Patcher. No idea if it works on Apple Silicon Macs.**
+
+Requirements: macOS (tested on Sonoma), DOSBox-X, git
+
+Install Homebrew : ``/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"``
+
+Install DOSBOX-X from Homebrew: ``brew install dosbox-x``
+
+Then, from cloning the repository to building, follow the Linux instructions above.
+
 ## Uploading ROM to SNES over USB with SD2SNES/FXPak(Pro)
-Uses [USB2SNES-cli](https://github.com/Hyphen-ated/usb2snes-cli) fork by Hyphen-ated. A prebuilt windows EXE is provided.  
+Uses [USB2SNES-cli](https://github.com/Hyphen-ated/usb2snes-cli) fork by Hyphen-ated.
 Download [QUSB2SNES](https://github.com/Skarsnik/QUsb2snes/releases).  
 Extract it somewhere and run it. Set it up for an SD2SNES/FXPak Pro.  
 **QUSB2SNES must be running in the background for uploading to function.**  
@@ -64,7 +76,7 @@ You can then run ``send2snes.cmd`` or ``build and send to snes.cmd`` to either u
 ## Contributing
 
 PRs are welcome!  
-All changes to be submitted should be made to the [dev](https://github.com/Sunlitspace542/ultrastarfox/tree/dev) branch.  
+All changes to be submitted upstream should be made to its [dev](https://github.com/Sunlitspace542/ultrastarfox/tree/dev) branch.  
 
 ## Helpful Links/tools
 
