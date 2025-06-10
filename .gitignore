@@ -70,3 +70,7 @@ TOOLS/cgx2fx
 TOOLS/fx2cgx
 TOOLS/fontconv/foxfont
 usb2snes-cli.bin
+TOOLS/argonautmapdec
+TOOLS/fxedit2
+TOOLS/inccol
+TOOLS/romExtender2
