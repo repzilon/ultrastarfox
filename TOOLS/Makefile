@@ -40,7 +40,11 @@ nowindows:
 	rm -f fx2cgx_win.exe
 	rm -f fontconv/foxfont.exe
 
-mrproper: distclean nowindows
+permissions:
+	chmod -x *.* */*.* */*/*.*
+	chmod +x */*.sh
+
+mrproper: distclean nowindows permissions
 
 bgconv/bin/palconv: palconv_src/palconv.c
 	$(CC) $(CFLAGS_OPTIM) palconv_src/palconv.c -o bgconv/bin/palconv
@@ -90,4 +94,4 @@ bgconv/bin/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamicon
 mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv
 	install -CS ./SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv ./mugconv/superfamiconv
 
-.PHONY: all clean distclean nowindows mrproper
+.PHONY: all clean distclean nowindows permissions mrproper
