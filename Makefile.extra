@@ -1,0 +1,25 @@
+tools:
+	$(MAKE) -C TOOLS all
+
+clean-sf:
+	$(MAKE) -f Makefile clean
+
+clean: clean-sf
+	$(MAKE) -C TOOLS clean
+
+distclean: clean-sf
+	$(MAKE) -C TOOLS distclean
+
+nowindows:
+	rm -f dosbox-x.exe
+	$(MAKE) -C TOOLS nowindows
+
+permissions:
+	chmod +x 'optionalstuff/textures/sg.rom 09-23-92/'
+	chmod -x CHANGES *.* */*.* */*/*.* */*/*/*.*
+	chmod +x 'optionalstuff/textures/sg.rom 09-23-92/'
+	chmod +x *.sh */*/*.sh
+
+mrproper: distclean nowindows permissions
+
+.PHONY: tools clean distclean nowindows permissions mrproper
