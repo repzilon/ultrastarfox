@@ -2,7 +2,7 @@
 # UltraStarFox Linux Makefile #
 ###############################
 
-DOSBOX=dosbox-x
+DOSBOX=dosbox-x -fastlaunch
 
 all: 
 	@$(DOSBOX) BUILD.BAT
