@@ -10,10 +10,10 @@ usb2snes-cli/target/debug/usb2snes-cli: ${HOME}/.cargo/bin/cargo usb2snes-cli/Ca
 usb2snes-cli.bin: usb2snes-cli/target/debug/usb2snes-cli
 	install -CS ./usb2snes-cli/target/debug/usb2snes-cli ./usb2snes-cli.bin
 
-SF/SF.SFC:
+SF.SFC:
 	$(MAKE) -f Makefile all
 
-send: SF/SF.SFC usb2snes-cli.bin
+send: SF.SFC usb2snes-cli.bin
 	@echo 'UPLOADING TO SNES, DO NOT CLOSE THIS WINDOW'
 	./usb2snes-cli.bin --upload SF.SFC --path ./SF.SFC
 	./usb2snes-cli.bin --boot ./SF.SFC
