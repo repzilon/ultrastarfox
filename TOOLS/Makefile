@@ -1,4 +1,7 @@
-SUPERFAMICONV_VERSION := 0.10.0
+## Tools Makefile intended to run modern host systems (macOS, Linux)
+
+SFCONV_VER := 0.11.0
+SFCONV_OUT := build/release
 CC := cc
 # Does -march=native also work on Clang?
 CFLAGS_OPTIM := -O2 -pipe
@@ -6,7 +9,7 @@ CFLAGS_OPTIM := -O2 -pipe
 all: bgconv/bin/palconv mugconv/foxchr bgconv/bin/sf_crunch bgconv/bin/superfamiconv mugconv/superfamiconv/superfamiconv
 
 clean-superfamiconv:
-	make -C SuperFamiconv-$(SUPERFAMICONV_VERSION) clean
+	$(MAKE) -C SuperFamiconv-$(SFCONV_VER) clean
 
 clean-tools:
 	rm -f bgconv/bin/palconv
@@ -57,19 +60,19 @@ bgconv/bin/superfamiconv: SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamico
 mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv
 	install -CS ./SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv ./mugconv/superfamiconv
 
-SuperFamiconv-$(SUPERFAMICONV_VERSION).tar.gz:
-	curl https://codeload.github.com/Optiroc/SuperFamiconv/tar.gz/refs/tags/v$(SUPERFAMICONV_VERSION) -o SuperFamiconv-$(SUPERFAMICONV_VERSION).tar.gz
+SuperFamiconv-$(SFCONV_VER).tar.gz:
+	curl https://codeload.github.com/Optiroc/SuperFamiconv/tar.gz/refs/tags/v$(SFCONV_VER) -o SuperFamiconv-$(SFCONV_VER).tar.gz
 
-SuperFamiconv-$(SUPERFAMICONV_VERSION)/Makefile: SuperFamiconv-$(SUPERFAMICONV_VERSION).tar.gz
-	tar -zxf SuperFamiconv-$(SUPERFAMICONV_VERSION).tar.gz
+SuperFamiconv-$(SFCONV_VER)/Makefile: SuperFamiconv-$(SFCONV_VER).tar.gz
+	tar -zxf SuperFamiconv-$(SFCONV_VER).tar.gz
 
-SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv: SuperFamiconv-$(SUPERFAMICONV_VERSION)/Makefile
-	make -C SuperFamiconv-$(SUPERFAMICONV_VERSION)
+SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv: SuperFamiconv-$(SFCONV_VER)/Makefile
+	$(MAKE) -C SuperFamiconv-$(SFCONV_VER)
 
-bgconv/bin/superfamiconv: SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv
-	install -CS ./SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv ./bgconv/bin
+bgconv/bin/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv
+	install -CS ./SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv ./bgconv/bin
 
-mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv
-	install -CS ./SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv ./mugconv/superfamiconv
+mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv
+	install -CS ./SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv ./mugconv/superfamiconv
 
 .PHONY: all clean distclean nowindows mrproper
