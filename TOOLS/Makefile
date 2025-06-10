@@ -8,6 +8,10 @@ CFLAGS_OPTIM := -O2 -pipe
 
 all: bgconv/bin/palconv mugconv/foxchr bgconv/bin/sf_crunch bgconv/bin/superfamiconv mugconv/superfamiconv/superfamiconv cgx2fx fx2cgx fontconv/foxfont
 
+sink: romExtender2 inccol argonautmapdec fxedit2
+
+kitchensink: all sink
+
 clean-superfamiconv:
 	$(MAKE) -C SuperFamiconv-$(SFCONV_VER) clean
 
@@ -21,9 +25,15 @@ clean-tools:
 	rm -f fx2cgx
 	rm -f fontconv/foxfont
 
-clean: clean-tools clean-superfamiconv
+clean-sink:
+	rm -f romExtender2 
+	rm -f inccol 
+	rm -f argonautmapdec 
+	rm -f fxedit2
 
-distclean: clean-tools
+clean: clean-tools clean-sink clean-superfamiconv
+
+distclean: clean-tools clean-sink
 	rm -f SuperFamiconv-*.tar.gz
 	rm -rf SuperFamiconv-*
 
@@ -79,4 +89,16 @@ bgconv/bin/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamicon
 mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv
 	install -CS ./SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv ./mugconv/superfamiconv
 
-.PHONY: all clean distclean nowindows permissions mrproper
+romExtender2: extend_src/romExtenderv2.c
+	$(CC) $(CFLAGS_OPTIM) extend_src/romExtenderv2.c -o romExtender2
+
+inccol: inccol_src/inccol.c
+	$(CC) $(CFLAGS_OPTIM) inccol_src/inccol.c -o inccol
+
+argonautmapdec: mapdec_src/argonautmapdecoder.c
+	$(CC) $(CFLAGS_OPTIM) mapdec_src/argonautmapdecoder.c -o argonautmapdec
+
+fxedit2: old/fxedit_v2.c
+	$(CC) $(CFLAGS_OPTIM) old/fxedit_v2.c -o fxedit2
+
+.PHONY: all sink kitchensink clean distclean nowindows permissions mrproper
