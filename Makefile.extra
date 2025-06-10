@@ -1,3 +1,23 @@
+${HOME}/.cargo/bin/cargo:
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+usb2snes-cli/Cargo.toml:
+	git clone https://github.com/Hyphen-ated/usb2snes-cli.git
+
+usb2snes-cli/target/debug/usb2snes-cli: ${HOME}/.cargo/bin/cargo usb2snes-cli/Cargo.toml
+	cd usb2snes-cli && ${HOME}/.cargo/bin/cargo build && cd ..
+
+usb2snes-cli.bin: usb2snes-cli/target/debug/usb2snes-cli
+	install -CS ./usb2snes-cli/target/debug/usb2snes-cli ./usb2snes-cli.bin
+
+SF/SF.SFC:
+	$(MAKE) -f Makefile all
+
+send: SF/SF.SFC usb2snes-cli.bin
+	@echo 'UPLOADING TO SNES, DO NOT CLOSE THIS WINDOW'
+	./usb2snes-cli.bin --upload SF.SFC --path ./SF.SFC
+	./usb2snes-cli.bin --boot ./SF.SFC
+
 tools:
 	$(MAKE) -C TOOLS all
 
@@ -5,13 +25,18 @@ clean-sf:
 	$(MAKE) -f Makefile clean
 
 clean: clean-sf
+	rm -f usb2snes-cli.bin
 	$(MAKE) -C TOOLS clean
+	cd usb2snes-cli && ${HOME}/.cargo/bin/cargo clean && cd ..
 
 distclean: clean-sf
+	rm -f usb2snes-cli.bin
+	rm -rf usb2snes-cli
 	$(MAKE) -C TOOLS distclean
 
 nowindows:
 	rm -f dosbox-x.exe
+	rm -f usb2snes-cli.exe
 	$(MAKE) -C TOOLS nowindows
 
 permissions:
