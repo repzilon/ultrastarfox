@@ -98,7 +98,7 @@ inccol: inccol_src/inccol.c
 argonautmapdec: mapdec_src/argonautmapdecoder.c
 	$(CC) $(CFLAGS_OPTIM) mapdec_src/argonautmapdecoder.c -o argonautmapdec
 
-fxedit2: old/fxedit_v2.c
-	$(CC) $(CFLAGS_OPTIM) old/fxedit_v2.c -o fxedit2
+fxedit2: unmerge_src/fxedit_v2.c
+	$(CC) $(CFLAGS_OPTIM) unmerge_src/fxedit_v2.c -o fxedit2
 
 .PHONY: all sink kitchensink clean distclean nowindows permissions mrproper
