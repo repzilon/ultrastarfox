@@ -1,7 +1,7 @@
 ; Moji translation table (begins at ASCII $20)
 ; comments go like this:
-; ASCII hex codes
-; ASCII chars
+; Windows-1252 hex codes
+; Windows-1252 chars
 ; game's font - ^ = Big font, * = Japanese
 ; This file is encoded in UTF-8.
 
@@ -107,7 +107,7 @@
 
 ;			 C0  C1  C2  C3  C4  C5  C6  C7
 ;			 À   Á   Â   Ã   Ä   Å   Æ   Ç
-;			 ・* A*  B*  L*  0^  0^  0^  0^
+;			・*  A*  B*  L*  0^  0^  0^  0^
 	MOJI	$88,$89,$8A,$8B,$00,$00,$00,$00
 
 ;			 C8  C9  CA  CB  CC  CD  CE  CF	; Unused
