@@ -17,6 +17,7 @@ Tool porting
 Miscellanous hacks
 ------------------
 - [ ] Add an FPS counter without the full debug information
+- [ ] Improve message character translation documentation
 
 French Canadian Hack
 --------------------
