@@ -13,7 +13,6 @@ debuginfo			equ	0
 debuginfo2			equ	0
 
 ; 3D Stats (FPS, shapes drawn, etc.)
-; Requires that debuginfo be enabled.
 ; [0 = off, 1 = on]
 mario_stats3d		equ	0
 
