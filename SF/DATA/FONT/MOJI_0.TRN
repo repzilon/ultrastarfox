@@ -61,8 +61,8 @@
     MOJI     $37,$38,$39,$3A,$3B,$3C,$3D,$3E
 
 ;             78  79  7A  7B  7C  7D  7E  7F    ; End of standard ASCII, Start of extended ASCII
-;             x   y   z   {   |   }   ~   DEL
-;             x   y   z   0^  0^  0^  0^  * ; Japanese characters begin here, I can't read this stuff so you get a bunch of *'s -sl
+;             x   y   z   {   |   }   ~  DEL
+;             x   y   z   0^  0^  0^  0^  *     ; Japanese characters begin here
     MOJI     $3F,$40,$41,$00,$00,$00,$00,$4F
 
 ;             80  81  82  83  84  85  86  87
