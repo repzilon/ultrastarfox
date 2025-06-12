@@ -19,20 +19,20 @@ stagetxt	txt	14,<STAGE>
 	ENDC
 
 	IFNE	FRENCH
-pausetxt	txt	14,<PAUSED>		;french pause
+pausetxt	txt	14,<EN PAUSE>		;french pause
 scoretxt	txt	14,<SCORE>
-totalscoretxt	txt	14,<SCORE TOTAL>		;french total score
+totalscoretxt	txt	14,<POINTAGE TOTAL>		;french total score
 slashtxt	txt	14,</>
 percenttxt	txt	14,<POURCENTAGE>
-bonustxt	txt	14,<BONUS 1 CREDIT>
-teamtxt	txt	14,<BOUCLIER DE TEAMATE>
+bonustxt	txt	14,<BONI UN CREDIT>
+teamtxt	txt	14,<ETAT DES EQUIPIERS>
 percenttxt2	txt	14,<%>
 perfecttxt	txt	14,<PARFAIT//>
 slippytxt	txt	14,<SLIPPY>
 peppytxt	txt	14,<PEPPY>
 falcotxt	txt	14,<FALCO>
-deadtxt		txt	14,<ES MORT>
-stagetxt	txt	14,<STAGE>
+deadtxt		txt	14,<EST MORT>
+stagetxt	txt	14,<ETAPE>
 	ENDC
 
 	IFNE	JAPANESE
