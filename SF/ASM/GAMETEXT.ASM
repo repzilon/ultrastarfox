@@ -2,20 +2,20 @@
 ; textname	txt colour(1-15), <TEXT>
 
 	IFNE	GERMAN
-pausetxt	txt	14,<PAUSE>		;german pause
+pausetxt	txt	14,<PAUSIERT>		;german pause
 scoretxt	txt	14,<PUNKTE>
 totalscoretxt	txt	14,<GESAMTPUNKTZAHL>		;german total score
 slashtxt	txt	14,</>
-percenttxt	txt	14,<PERCENTAGE>
+percenttxt	txt	14,<PROZENTSATZ>
 bonustxt	txt	14,<BONUS 1 VERSUCH>
-teamtxt	txt	14,<TEAM POWER>
+teamtxt	txt	14,<SCHILD DER TEAMMITGLIEDER>
 percenttxt2	txt	14,<%>
-perfecttxt	txt	14,<PERFECT//>
+perfecttxt	txt	14,<PERFEKT//>
 slippytxt	txt	14,<SLIPPY>
 peppytxt	txt	14,<PEPPY>
 falcotxt	txt	14,<FALCO>
 deadtxt	txt	14,<. . . . . .>
-stagetxt	txt	14,<STAGE>
+stagetxt	txt	14,<ETAPPE>
 	ENDC
 
 	IFNE	FRENCH
@@ -53,20 +53,20 @@ stagetxt	txt	14,<STAGE>
 	ENDC
 	
 	IFNE	SPANISH			
-pausetxt	txt	14,<PAUSED>		;spanish pause
+pausetxt	txt	14,<EN PAUSA>		;spanish pause
 scoretxt	txt	14,<SCORE>		;spanish score
-totalscoretxt	txt	14,<TOTAL SCORE>		;spanish total score
+totalscoretxt	txt	14,<PUNTUACION>		;spanish total score
 slashtxt	txt	14,</>
-percenttxt	txt	14,<PERCENTAGE>
+percenttxt	txt	14,<PORCENTAJE>
 bonustxt	txt	14,<BONUS 1 CREDIT>
-teamtxt	txt	14,<SHIELD OF TEAMMATES>
+teamtxt	txt	14,<ESTADO DEL EQUIPO>
 percenttxt2	txt	14,<%>
-perfecttxt	txt	14,<PERFECT//>
+perfecttxt	txt	14,<PERFECTO//>
 slippytxt	txt	14,<SLIPPY>
 peppytxt	txt	14,<PEPPY>
 falcotxt	txt	14,<FALCO>
-deadtxt	txt	14,<IS DOWN>
-stagetxt	txt	14,<STAGE>
+deadtxt	txt	14,<ESTA MUERTO>
+stagetxt	txt	14,<ETAPA>
 	ENDC
 
 	IFEQ	SPANISH
