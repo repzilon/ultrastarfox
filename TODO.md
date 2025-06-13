@@ -18,6 +18,8 @@ Miscellanous hacks
 ------------------
 - [x] Add an FPS counter without the full debug information (code comment was erroneous)
 - [x] Improve message character translation documentation
+- [ ] Support 4bpp bitmaps in foxfont
+- [ ] Cross compile updated foxfont for DJGPP
 
 French Canadian Hack
 --------------------
