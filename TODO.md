@@ -23,9 +23,9 @@ Miscellanous hacks
 
 French Canadian Hack
 --------------------
-- [ ] Edit the German bitmap font to put umlauted letters in a more logical place, hopefully something ISO-8859-1 compliant for ease of editing
-- [ ] Update the German messages to reflect new placement of letters
-- [ ] Edit the German bitmap font (again) to add French diacritics
+- [x] Edit the German bitmap font to put umlauted letters in a more logical place, hopefully something ISO-8859-1 compliant for ease of editing
+- [x] Update the German messages to reflect new placement of letters
+- [x] Edit the German bitmap font (again) to add French diacritics
 - [ ] Modify the France (PAL) build to use the German bitmap font
 - [ ] Update the French messages to use diacritics
 - [ ] Add the French Canadian build configuration (NTSC, region code FC, French messages, StarFox (not Starwing) logo, North American (purple) controller button image)
