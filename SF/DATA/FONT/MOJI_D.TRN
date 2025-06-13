@@ -2,13 +2,13 @@
 ; comments go like this:
 ; ISO-8859-15 hex codes
 ; ISO-8859-15 chars
-; game's font - ^ = Big font, * = Japanese
+; game's font - ^ = Big font, * = Japanese, ?U = Unknown char
 ; This file is encoded in UTF-8.
 
 ;             20  21  22  23  24  25  26  27
 ;             SP  !   "   #   $   %   &   '
-;             SP  !!  0^  .   0^  %   0^  '
-    MOJI     $27,$46,$00,$43,$00,$25,$00,$44
+;             SP  !   "   .   ?U  %   ?U  '
+    MOJI     $27,$46,$76,$43,$47,$25,$47,$44
 
 ;			 28  29  2A  2B  2C  2D  2E  2F
 ;			 (   )   :   +   ,   -   .   ?
@@ -22,13 +22,13 @@
 
 ;             38  39  3A  3B  3C  3D  3E  3F
 ;             8   9   :   ;   <   =   >   ?
-;             8^  9^  A*  ;   0^  B*  0^  ?
-    MOJI     $08,$09,$89,$84,$00,$8A,$00,$45
+;             8^  9^  ?U  ;   ?U  ?U  ?U  ?
+    MOJI     $08,$09,$47,$84,$47,$47,$47,$45
 
 ;             40  41  42  43  44  45  46  47
 ;             @   A   B   C   D   E   F   G
-;             L*  A^  B^  C^  D^  E^  F^  G^
-    MOJI     $8B,$0A,$0B,$0C,$0D,$0E,$0F,$10
+;             ?U  A^  B^  C^  D^  E^  F^  G^
+    MOJI     $47,$0A,$0B,$0C,$0D,$0E,$0F,$10
 
 ;             48  49  4A  4B  4C  4D  4E  4F
 ;             H   I   J   K   L   M   N   O
@@ -42,13 +42,13 @@
 
 ;             58  59  5A  5B  5C  5D  5E  5F
 ;             X   Y   Z   [   \   ]   ^   _
-;             X^  Y^  Z^  0^  0^  0^  ,   0^
-    MOJI     $21,$22,$23,$00,$00,$00,$87,$00
+;             X^  Y^  Z^  ?U  ?U  ?U  ?U  ?U
+    MOJI     $21,$22,$23,$47,$47,$47,$47,$47
 
 ;             60  61  62  63  64  65  66  67
 ;             `   a   b   c   d   e   f   g
-;             0^  a   b   c   d   e   f   g
-    MOJI     $00,$28,$29,$2A,$2B,$2C,$2D,$2E
+;             ?U  a   b   c   d   e   f   g
+    MOJI     $47,$28,$29,$2A,$2B,$2C,$2D,$2E
 
 ;             68  69  6A  6B  6C  6D  6E  6F
 ;             h   i   j   k   l   m   n   o
@@ -60,90 +60,90 @@
 ;             p   q   r   s   t   u   v   w
     MOJI     $37,$38,$39,$3A,$3B,$3C,$3D,$3E
 
-;             78  79  7A  7B  7C  7D  7E  7F    ; End of standard ASCII, Start of extended ASCII
+;             78  79  7A  7B  7C  7D  7E  7F    ; End of standard ASCII
 ;             x   y   z   {   |   }   ~  DEL
-;             x   y   z   0^  0^  0^  0^  *     ; Japanese characters begin here
-    MOJI     $3F,$40,$41,$00,$00,$00,$00,$4F
+;             x   y   z   ?U  ?U  ?U  ~   ?U
+    MOJI     $3F,$40,$41,$47,$47,$47,$79,$47
 
-;             80  81  82  83  84  85  86  87
+;             80  81  82  83  84  85  86  87    ; C1 control characters
 ;            PAD HOP BPH NBH IND NEL SSA ESA
-;             0^  0^  0^  0^  0^  0^ キki 0^
-    MOJI     $00,$00,$00,$00,$00,$00,$4E,$00
+;             ?U  ?U  ?U  ?U  ?U  ?U  ?U  ?U
+    MOJI     $47,$47,$47,$47,$47,$47,$47,$47
 
 ;             88  89  8A  8B  8C  8D  8E  8F
 ;            HTS HTJ VTS PLD PLU  RI SS2 SS3
-;            ケke ō  サsa シsi スsu セse ソso タta
-    MOJI     $50,$51,$52,$53,$54,$55,$56,$57
+;             ?U  ?U  ?U  ?U  ?U  ?U  ?U  ?U
+    MOJI     $47,$47,$47,$47,$47,$47,$47,$47
 
 ;             90  91  92  93  94  95  96  97
 ;            DCS PU1 PU2 STS CCH  MW SPA EPA
-;            チti ツtu テte トto ナna ニni ヌnu ネne
-    MOJI     $58,$59,$5A,$5B,$5C,$5D,$5E,$5F
+;             ?U  ?U  ?U  ?U  ?U  ?U  ?U  ?U
+    MOJI     $47,$47,$47,$47,$47,$47,$47,$47
 
 ;             98  99  9A  9B  9C  9D  9E  9F
 ;            SOS SGCI SCI CSI ST OSC  PM APC
-;            ノno ハha ヒhi フfu ヘhe ホho マma ミmi
-    MOJI     $60,$61,$62,$63,$64,$65,$66,$67
+;             ?U  ?U  ?U  ?U  ?U  ?U  ?U  ?U
+    MOJI     $47,$47,$47,$47,$47,$47,$47,$47
 
-;             A0  A1  A2  A3  A4  A5  A6  A7
-;            NBSP ¡   ¢   £   €   ¥   Š   §
-;            ムmu メme モmo ヤya ユyu ヨyo ラra リri
-    MOJI     $68,$69,$6A,$6B,$6C,$6D,$6E,$6F
+;             A0  A1  A2  A3  A4  A5  A6  A7    ; End of C1 control block
+;            NBSP ¡   ¢   £   €   ¥   Š   §     ; There is no in-game currency
+;             SP  ¡   ?U  ?U  ?U  ?U  S^  ?U
+    MOJI     $27,$85,$47,$47,$47,$47,$1C,$47
 
 ;             A8  A9  AA  AB  AC  AD  AE  AF
 ;             š   ©   ª   «   ¬  SHY  ®   ¯
-;            ルru レre ロro ワwa ヲwo ンn*  ﾞ*   ﾟ*
-    MOJI     $70,$71,$72,$73,$74,$75,$76,$77
+;             s   ?U  ?U  "  ?U  ?U  ?U  ?U
+    MOJI     $3A,$47,$47,$76,$47,$47,$47,$47
 
 ;             B0  B1  B2  B3  B4  B5  B6  B7
 ;             °   ±   ²   ³   Ž   µ   ¶   ·
-;            。*  〜*  *   *   *   *   *   *
-    MOJI     $78,$79,$7A,$7B,$7C,$7D,$7E,$7F
+;             °   ?U  ?U  ?U  Z^  u  ?U   ·
+    MOJI     $77,$47,$47,$47,$47,$3C,$47,$87
 
 ;             B8  B9  BA  BB  BC  BD  BE  BF
 ;             ž   ¹   º   »   Œ   œ   Ÿ   ¿
-;             *   *   *   ,*  ;*  !*  ?*  ,
-    MOJI     $80,$81,$82,$83,$84,$85,$86,$87
+;             z   ?U  °   "   ?U  œ   Y^  ¿
+    MOJI     $41,$81,$77,$76,$47,$61,$22,$86
 
-;             C0  C1  C2  C3  C4  C5  C6  C7
+;             C0  C1  C2  C3  C4  C5  C6  C7    ; Accented capital letters are mapped to unaccented ones
 ;             À   Á   Â   Ã   Ä   Å   Æ   Ç
-;            ・*  A*  B*  L*  0^  0^  0^  0^
-    MOJI     $88,$89,$8A,$8B,$00,$00,$00,$00
+;             A^  A^  A^  A^  A^  A^  ?U  C^
+    MOJI     $0A,$0A,$0A,$0A,$0A,$0A,$47,$0C
 
-;             C8  C9  CA  CB  CC  CD  CE  CF    ; Mostly unused
+;             C8  C9  CA  CB  CC  CD  CE  CF
 ;             È   É   Ê   Ë   Ì   Í   Î   Ï
-;             0^  0^  0^  0^  0^  0^  0^  0^
-    MOJI     $00,$00,$00,$00,$00,$00,$00,$00
+;             E^  E^  E^  E^  I^  I^  I^  I^
+    MOJI     $0E,$0E,$0E,$0E,$12,$12,$12,$12
 
 ;             D0  D1  D2  D3  D4  D5  D6  D7
 ;             Ð   Ñ   Ò   Ó   Ô   Õ   Ö   ×
-;             0^  0^  0^  0^  0^  0^  0^  0^
-    MOJI     $00,$00,$00,$00,$00,$00,$00,$00
+;             D^  N^  O^  O^  O^  O^  O^  x
+    MOJI     $0D,$17,$18,$18,$18,$18,$18,$3F
 
-;             D8  D9  DA  DB  DC  DD  DE  DF    ; 2 German characters
-;             Ø   Ù   Ú   Û   Ü   Ý   Þ   ß
-;             0^  0^  0^  0^  Ü   0^  0^  ß
-    MOJI     $00,$00,$00,$00,$4B,$00,$00,$49
+;             D8  D9  DA  DB  DC  DD  DE  DF
+;             Ø   Ù   Ú   Û   Ü   Ý   Þ   ß     ; 2 mapped German letters here
+;             O^  U^  U^  U^  Ü^  Y^  D^  ß
+    MOJI     $18,$1E,$1E,$1E,$82,$22,$0D,$62
 
-;             E0  E1  E2  E3  E4  E5  E6  E7    ; 1 German character
+;             E0  E1  E2  E3  E4  E5  E6  E7
 ;             à   á   â   ã   ä   å   æ   ç
-;             0^  0^  0^  0^  ä   0^  0^  0^
-    MOJI     $00,$00,$00,$00,$48,$00,$00,$00
+;             à   á   â   ã   ä   å   æ   ç
+    MOJI     $48,$49,$4A,$4B,$4C,$4D,$4E,$4F
 
 ;             E8  E9  EA  EB  EC  ED  EE  EF
 ;             è   é   ê   ë   ì   í   î   ï
-;             0^  0^  0^  0^  0^  0^  0^  0^
-    MOJI     $00,$00,$00,$00,$00,$00,$00,$00
+;             è   é   ê   ë   ì   í   î   ï
+    MOJI     $52,$53,$54,$55,$56,$57,$58,$59
 
-;             F0  F1  F2  F3  F4  F5  F6  F7    ; 1 German character
+;             F0  F1  F2  F3  F4  F5  F6  F7
 ;             ð   ñ   ò   ó   ô   õ   ö   ÷
-;             0^  0^  0^  0^  0^  0^  ö   0^
-    MOJI     $00,$00,$00,$00,$00,$00,$4C,$00
+;             ð   ñ   ò   ó   ô   õ   ö   ?U
+    MOJI     $50,$5A,$5B,$5C,$5D,$5E,$5F,$47
 
-;             F8  F9  FA  FB  FC  FD  FE  FF    ; 1 German character
+;             F8  F9  FA  FB  FC  FD  FE  FF
 ;             ø   ù   ú   û   ü   ý   þ   ÿ
-;             0^  0^  0^  0^  ü   0^  0^  0^
-    MOJI     $00,$00,$00,$00,$4A,$00,$00,$00
+;             ø   ù   ú   û   ü   ý   þ   ÿ
+    MOJI     $60,$63,$64,$65,$66,$67,$51,$68
 
 
 
