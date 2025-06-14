@@ -92,8 +92,8 @@
 
 ;             A8  A9  AA  AB  AC  AD  AE  AF
 ;             š   ©   ª   «   ¬  SHY  ®   ¯
-;             s   ?U  ?U  "  ?U  ?U  ?U  ?U
-    MOJI     $3A,$47,$47,$76,$47,$47,$47,$47
+;             š   ?U  ?U  "  ?U  ?U  ?U  ?U
+    MOJI     $69,$47,$47,$76,$47,$47,$47,$47
 
 ;             B0  B1  B2  B3  B4  B5  B6  B7
 ;             °   ±   ²   ³   Ž   µ   ¶   ·
@@ -102,8 +102,8 @@
 
 ;             B8  B9  BA  BB  BC  BD  BE  BF
 ;             ž   ¹   º   »   Œ   œ   Ÿ   ¿
-;             z   ?U  °   "   ?U  œ   Y^  ¿
-    MOJI     $41,$81,$77,$76,$47,$61,$22,$86
+;             ž   ?U  °   "   ?U  œ   Y^  ¿
+    MOJI     $6A,$81,$77,$76,$47,$61,$22,$86
 
 ;             C0  C1  C2  C3  C4  C5  C6  C7    ; Accented capital letters are mapped to unaccented ones
 ;             À   Á   Â   Ã   Ä   Å   Æ   Ç
