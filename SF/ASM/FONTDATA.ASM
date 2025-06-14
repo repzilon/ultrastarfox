@@ -14,7 +14,7 @@ font0trn	incfile	data\\font\\moji_\1.trn
 font0fon	equ	font0wid+\2
 	endm
 
-	IFEQ	german
+	IFNE	JAPANESE
 	incfont	0,140
 	ELSEIF
 
