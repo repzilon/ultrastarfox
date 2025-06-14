@@ -4,7 +4,8 @@ SFCONV_VER := 0.11.0
 SFCONV_OUT := build/release
 CC := cc
 # Does -march=native also work on Clang?
-CFLAGS_OPTIM := -O2 -pipe
+CFLAGS_OPTIM := -O2 -pipe -fomit-frame-pointer
+CFLAGS_WARN := -W -Wall -Werror=format-security
 
 all: bgconv/bin/palconv mugconv/foxchr bgconv/bin/sf_crunch bgconv/bin/superfamiconv mugconv/superfamiconv/superfamiconv cgx2fx fx2cgx fontconv/foxfont
 
@@ -57,22 +58,22 @@ permissions:
 mrproper: distclean nowindows permissions
 
 bgconv/bin/palconv: palconv_src/palconv.c
-	$(CC) $(CFLAGS_OPTIM) palconv_src/palconv.c -o bgconv/bin/palconv
+	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) palconv_src/palconv.c -o bgconv/bin/palconv
 
 bgconv/bin/sf_crunch: cru_src/sf_crunch_mod.c
-	$(CC) $(CFLAGS_OPTIM) cru_src/sf_crunch_mod.c -o bgconv/bin/sf_crunch
+	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) cru_src/sf_crunch_mod.c -o bgconv/bin/sf_crunch
 
 mugconv/foxchr: mugconv/foxchr_source/foxchr.c mugconv/foxchr_source/foxchr.h
-	$(CC) $(CFLAGS_OPTIM) mugconv/foxchr_source/foxchr.c -o mugconv/foxchr
+	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) mugconv/foxchr_source/foxchr.c -o mugconv/foxchr
 
 cgx2fx: cgx2fx_fx2cgx_src/cgx2fx.c
-	$(CC) $(CFLAGS_OPTIM) cgx2fx_fx2cgx_src/cgx2fx.c -o cgx2fx
+	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) cgx2fx_fx2cgx_src/cgx2fx.c -o cgx2fx
 
 fx2cgx: cgx2fx_fx2cgx_src/fx2cgx.c
-	$(CC) $(CFLAGS_OPTIM) cgx2fx_fx2cgx_src/fx2cgx.c -o fx2cgx
+	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) cgx2fx_fx2cgx_src/fx2cgx.c -o fx2cgx
 
 fontconv/foxfont: fontconv/foxfont_source/foxfont.c fontconv/foxfont_source/foxfont.h
-	$(CC) $(CFLAGS_OPTIM) fontconv/foxfont_source/foxfont.c -o fontconv/foxfont
+	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) fontconv/foxfont_source/foxfont.c -o fontconv/foxfont
 
 SuperFamiconv-$(SFCONV_VER).tar.gz:
 	curl https://codeload.github.com/Optiroc/SuperFamiconv/tar.gz/refs/tags/v$(SFCONV_VER) -o SuperFamiconv-$(SFCONV_VER).tar.gz
@@ -90,15 +91,15 @@ mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/s
 	install -CS ./SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv ./mugconv/superfamiconv
 
 romExtender2: extend_src/romExtenderv2.c
-	$(CC) $(CFLAGS_OPTIM) extend_src/romExtenderv2.c -o romExtender2
+	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) extend_src/romExtenderv2.c -o romExtender2
 
 inccol: inccol_src/inccol.c
-	$(CC) $(CFLAGS_OPTIM) inccol_src/inccol.c -o inccol
+	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) inccol_src/inccol.c -o inccol
 
 argonautmapdec: mapdec_src/argonautmapdecoder.c
-	$(CC) $(CFLAGS_OPTIM) mapdec_src/argonautmapdecoder.c -o argonautmapdec
+	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) mapdec_src/argonautmapdecoder.c -o argonautmapdec
 
 fxedit2: unmerge_src/fxedit_v2.c
-	$(CC) $(CFLAGS_OPTIM) unmerge_src/fxedit_v2.c -o fxedit2
+	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) unmerge_src/fxedit_v2.c -o fxedit2
 
 .PHONY: all sink kitchensink clean distclean nowindows permissions mrproper
