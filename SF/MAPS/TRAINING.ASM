@@ -17,15 +17,15 @@ trnmapmsgcnt = 1
 
 .trnmsgtest
 
-	mapwait	1000
-
 ; loops through every single message in the message file
 
 	REPT totalmsgs+1 ; number of total messages in the message file
-	mapwait	1000
+	mapwait	1500
 	mapmsg	trnmapmsgcnt
 trnmapmsgcnt = trnmapmsgcnt+1
 	ENDR
+
+	mapwait	1000
 
 	mapgoto	.trnmsgtest
 
