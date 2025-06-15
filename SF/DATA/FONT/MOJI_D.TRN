@@ -47,8 +47,8 @@
 
 ;             60  61  62  63  64  65  66  67
 ;             `   a   b   c   d   e   f   g
-;             ?U  a   b   c   d   e   f   g
-    MOJI     $47,$28,$29,$2A,$2B,$2C,$2D,$2E
+;             '^  a   b   c   d   e   f   g
+    MOJI     $82,$28,$29,$2A,$2B,$2C,$2D,$2E
 
 ;             68  69  6A  6B  6C  6D  6E  6F
 ;             h   i   j   k   l   m   n   o
@@ -105,15 +105,15 @@
 ;             ž   ?U  °   "   ?U  œ   Y^  ¿
     MOJI     $6A,$81,$77,$76,$47,$61,$22,$86
 
-;             C0  C1  C2  C3  C4  C5  C6  C7    ; Accented capital letters are mapped to unaccented ones
+;             C0  C1  C2  C3  C4  C5  C6  C7    ; Most accented capital letters are mapped to unaccented ones
 ;             À   Á   Â   Ã   Ä   Å   Æ   Ç
 ;             A^  A^  A^  A^  A^  A^  ?U  C^
     MOJI     $0A,$0A,$0A,$0A,$0A,$0A,$47,$0C
 
 ;             C8  C9  CA  CB  CC  CD  CE  CF
 ;             È   É   Ê   Ë   Ì   Í   Î   Ï
-;             E^  E^  E^  E^  I^  I^  I^  I^
-    MOJI     $0E,$0E,$0E,$0E,$12,$12,$12,$12
+;             È^  É^  E^  E^  I^  I^  I^  Ï^
+    MOJI     $7E,$7F,$0E,$0E,$12,$12,$12,$80
 
 ;             D0  D1  D2  D3  D4  D5  D6  D7
 ;             Ð   Ñ   Ò   Ó   Ô   Õ   Ö   ×
@@ -123,7 +123,7 @@
 ;             D8  D9  DA  DB  DC  DD  DE  DF
 ;             Ø   Ù   Ú   Û   Ü   Ý   Þ   ß     ; 2 mapped German letters here
 ;             O^  U^  U^  U^  Ü^  Y^  D^  ß
-    MOJI     $18,$1E,$1E,$1E,$82,$22,$0D,$62
+    MOJI     $18,$1E,$1E,$1E,$81,$22,$0D,$62
 
 ;             E0  E1  E2  E3  E4  E5  E6  E7
 ;             à   á   â   ã   ä   å   æ   ç

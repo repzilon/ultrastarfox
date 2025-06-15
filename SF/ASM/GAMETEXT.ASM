@@ -1,3 +1,4 @@
+; Character set of this file is ISO-8859-15.
 ; format is:
 ; textname	txt colour(1-15), <TEXT>
 
@@ -25,7 +26,7 @@ totalscoretxt	txt	14,<POINTAGE TOTAL>		;french total score
 slashtxt	txt	14,</>
 percenttxt	txt	14,<POURCENTAGE>
 bonustxt	txt	14,<BONI UN CREDIT>
-teamtxt	txt	14,<ETAT DES EQUIPIERS>
+teamtxt	txt	14,<ÉTAT DES ÉQUIPIERS>
 percenttxt2	txt	14,<%>
 perfecttxt	txt	14,<PARFAIT//>
 slippytxt	txt	14,<SLIPPY>

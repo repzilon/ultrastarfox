@@ -21,11 +21,15 @@ Miscellanous hacks
 - [ ] Support 4bpp bitmaps in foxfont
 - [ ] Cross compile updated foxfont for DJGPP
 
-French Canadian Hack
---------------------
+French Canadian Translation
+---------------------------
 - [x] Edit the German bitmap font to put umlauted letters in a more logical place, hopefully something ISO-8859-1 compliant for ease of editing
 - [x] Update the German messages to reflect new placement of letters
 - [x] Edit the German bitmap font (again) to add French diacritics
-- [x] Modify the France (PAL) build to use the German bitmap font
-- [ ] Update the French messages to use diacritics
-- [ ] Add the French Canadian build configuration (NTSC, region code FC, French messages, StarFox (not Starwing) logo, North American (purple) controller button image)
+- [x] Modify the French language build to use the modified German bitmap font
+- [x] Update the French messages to use diacritics
+- [ ] Find out how German map, control and stage title graphics are selected
+- [ ] Convert graphics to a easier format to edit?
+- [ ] Make French version of the graphics
+- [ ] Edit build system to select French graphics
+- [ ] Add the French Canadian build configuration (NTSC, language code FC, French messages, StarFox (not Starwing) logo, North American (purple) controller button image)
