@@ -1104,8 +1104,12 @@ end_level_seq	ai16 ; Set A/X/Y to 16 bit
 printspeclp
 	jsl	transfer_l ; Go to transfer loop subroutine
 
+	; For an obsure reason, the routines places text 1 pixel above
+	; numbers. As a workaround, pass 1 pixel lower to the ypos
+	; argument of text/char message routine, but not to number 
+	; message routines.
 	ai16 ; Set A/X/Y to 16 bit
-	clrmes	totalscoretxt,16,44	;total score
+	clrmes	totalscoretxt,16,(scoretotalypos+1)	;total score
 
 	a16 ; set A to 16 bit
 	jsr	calctotalscore ; Get total score
@@ -1114,7 +1118,7 @@ printspeclp
 
 	lda	#176 ; Load 176 into A
 	sta.l	m_x1 ; Store A (Long) at MARIO chip X var
-	lda	#39 ; Load 39 into A
+	lda	#scoretotalypos ; Load 44 into A
 	sta.l	m_y1 ; Store A (Long) at MARIO chip Y var
 	;this subtracts 8 from x1 if >=100 and adds 8 if <10
 	call_mario mprtperc	; Tell MARIO chip to print percentage?
@@ -1127,7 +1131,7 @@ printspeclp
 	dec	a ; Decrement A
 	bne	.graph ; branch to .graph if A != 9
 
-	clrmes	bonustxt,16,24 ;print 'bonus...'
+	clrmes	bonustxt,16,(scoretextypos+1) ;print 'bonus...'
 
 	lda	plotx1
 	lbeq	.doneg
@@ -1153,7 +1157,7 @@ printspeclp
 	lda	#10
 	sta	plotx1
 .nc
-	clrmes	scoretxt,16,24
+	clrmes	scoretxt,16,(scoretextypos+1)
 
 	lda	#60
 	sta.l	m_x1
@@ -1168,7 +1172,7 @@ printspeclp
 	lda	#176
 	sta.l	m_x1
 
-	lda	#24
+	lda	#scoretextypos
 
 	sta.l	m_y1
 	lda	cla1
@@ -1179,6 +1183,11 @@ printspeclp
 	clc
 	adc	#4
 	sta.l	m_x1
+
+	lda	#scoretextypos
+	inc	a
+	sta.l	m_y1
+
 	lda	#percenttxt2&WM
 	sta.l	m_txtdata
 	call_mario	mprintstr

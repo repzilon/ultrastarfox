@@ -75,7 +75,7 @@ bombcounterdirection	equ	0
 
 ; Change these to change the overall position of the message box on screen
 friendmsgxadd	equ	0
-friendmsgyadd	equ	3
+friendmsgyadd	equ	2
 
 ; relative positions of each part of the message box
 
@@ -94,6 +94,12 @@ friendhpy	equ	177-friendmsgyadd
 ; friend mugshot pos
 friendmugshotx	equ	6+(friendmsgxadd/8)
 friendmugshoty	equ	152-((friendmsgyadd/8)*8)
+
+;; Score screen positions
+; use 24 instead of 22 for Japanese
+scoretextypos	equ	22
+; default is 44 for all regions
+scoretotalypos	equ	44
 
 ;; Palettes
 

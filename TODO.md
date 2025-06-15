@@ -32,4 +32,6 @@ French Canadian Translation
 - [ ] Convert graphics to a easier format to edit?
 - [ ] Make French version of the graphics
 - [ ] Edit build system to select French graphics
+- [ ] Extract strings from ENDSEQ.ASM
+- [ ] Translate end sequence
 - [ ] Add the French Canadian build configuration (NTSC, language code FC, French messages, StarFox (not Starwing) logo, North American (purple) controller button image)
