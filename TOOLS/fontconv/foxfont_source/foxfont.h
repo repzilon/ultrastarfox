@@ -32,15 +32,14 @@
 #define TILEHGHT	12
 #define BMPWDTH		56
 #define BMPHGHT		240
-#define BMPBITS		8						// bitmap must be 8bit
 #define TILESMAX	((BMPWDTH / TILEWDTH) * (BMPHGHT / TILEHGHT))
 #define EMPTYTILE	5						// how wide the empty 'space' tile is
 
 // -------- function declarations --------- //
 
-FILE * openBitmap(char *fileName);
+FILE * openBitmap(char *fileName, unsigned char *bppOut);
 char * createOutputFileName(char *);
-void convertBMP2Fon(FILE *, char *);
+void convertBMP2Fon(FILE *, char *, unsigned char bpp);
 
 // -------- bitmap file structure --------- //
 

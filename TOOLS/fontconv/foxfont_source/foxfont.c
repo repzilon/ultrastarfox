@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 {
 	if (argc < 2){
 		printf("* " CLI_FILEDESCRIPTION_STR " " CLI_FILEVERSION_STR " *\n\n");
-		printf("USAGE: foxfont 8bit_56x240_font.bmp\n");
+		printf("USAGE: foxfont 8or4bit_56x240_font.bmp\n");
 		exit(EX_USAGE);
 	}
 
@@ -16,30 +16,32 @@ int main(int argc, char *argv[])
 	char *outputFileName = createOutputFileName(argv[1]);
 
 	// verify input bitmap, set file pointer fpBitmap to start of pixel data
-	FILE * fpBitmap = openBitmap(argv[1]);
+	unsigned char bpp; // used as an 8-bit integer, not a character
+	FILE * fpBitmap = openBitmap(argv[1], &bpp);
 
-	// convert 8bit to 2bpp and save to disk
-	convertBMP2Fon(fpBitmap, outputFileName);
+	// convert 8bpp or 4bpp to 2bpp and save to disk
+	convertBMP2Fon(fpBitmap, outputFileName, bpp);
 
 	printf("PROGRAM ERROR: Foxfont ended unexpectedly.\n");
 	exit(EX_SOFTWARE);
 }
 
-void convertBMP2Fon(FILE * fpBitmap, char * outputFileName)
+void convertBMP2Fon(FILE * fpBitmap, char * outputFileName, unsigned char bpp)
 {
 	// ============================================
 	// flip bitmap pixel data so it's easier to use
 	// ============================================
+	int divider = 8 / bpp;
 
 	// create buffer that will have pixels in the right orientation
-	char *pixBuff = (char *) malloc(BMPWDTH * BMPHGHT * sizeof(*pixBuff));
+	char *pixBuff = (char *) malloc(BMPWDTH * BMPHGHT * sizeof(*pixBuff) / divider);
 
 	// create pointer to bottom row of pixBuff
-	char *pixBuffPtr = pixBuff + (BMPWDTH * BMPHGHT) - BMPWDTH;
+	char *pixBuffPtr = pixBuff + (((BMPWDTH * BMPHGHT) - BMPWDTH) / divider);
 
 	for (int tmp = 0; tmp < BMPHGHT; tmp++) {
-		fread(pixBuffPtr, 1, BMPWDTH, fpBitmap);	// copy a row from bottom of bmp to bottom of pixBuff
-		pixBuffPtr -= BMPWDTH;						// set pointer to next row of pixels (descending)
+		fread(pixBuffPtr, 1, BMPWDTH / divider, fpBitmap);	// copy a row from bottom of bmp to bottom of pixBuff
+		pixBuffPtr -= BMPWDTH / divider;					// set pointer to next row of pixels (descending)
 	}
 	fclose(fpBitmap);
 
@@ -54,27 +56,49 @@ void convertBMP2Fon(FILE * fpBitmap, char * outputFileName)
 	char *outBuffPtr = outBuff;
 	pixBuffPtr = pixBuff;							// reset pixBuffPtr
 
-	// convert 20 rows of tiles from pixBuff to outBuff
-	for (int bmpRow = 0; bmpRow < (BMPHGHT / TILEHGHT); bmpRow++) {
-		// draw 7 tiles (columns) per row in bitmap
-		for (int tile = 0; tile < (BMPWDTH / TILEWDTH); tile++) {
-			// draw 8 rows of pixels of the tile
-			for (int row = 0; row < TILEHGHT; row++) {
-				// draw one row of pixels of the tile
-				for (int shift = 7; shift >= 0; shift--) {
-					*outBuffPtr       |= (*pixBuffPtr & 0x01) << shift;
-					*(outBuffPtr + 1) |= ((*pixBuffPtr & 0x02) >> 1) << shift;
-					pixBuffPtr++;
+	int bmpRow, tile, row, shift;
+	if (bpp == 8) {
+		// convert 20 rows of tiles from pixBuff to outBuff
+		for (bmpRow = 0; bmpRow < (BMPHGHT / TILEHGHT); bmpRow++) {
+			// draw 7 tiles (columns) per row in bitmap
+			for (tile = 0; tile < (BMPWDTH / TILEWDTH); tile++) {
+				// draw 8 rows of pixels of the tile
+				for (row = 0; row < TILEHGHT; row++) {
+					// draw one row of pixels of the tile
+					for (shift = (TILEWDTH - 1); shift >= 0; shift--) {
+						*outBuffPtr       |= (*pixBuffPtr & 0x01) << shift;
+						*(outBuffPtr + 1) |= ((*pixBuffPtr & 0x02) >> 1) << shift;
+						pixBuffPtr++;
+					}
+					outBuffPtr += 2;
+					pixBuffPtr += BMPWDTH - TILEWDTH;
 				}
-				outBuffPtr += 2;
-				pixBuffPtr += BMPWDTH - TILEWDTH;
+				// set pointer to beginning of next tile
+				pixBuffPtr -= (BMPWDTH * TILEHGHT) - TILEWDTH;
 			}
-			// set pointer to beginning of next tile
-			pixBuffPtr -= (BMPWDTH * TILEHGHT) - TILEWDTH;
+			// set pointer to next row of tiles in the bitmap
+			pixBuffPtr += BMPWDTH * (TILEHGHT - 1);
 		}
-		// set pointer to next row of tiles in the bitmap
-		pixBuffPtr += BMPWDTH * (TILEHGHT - 1);
+	} else if (bpp == 4) {
+		for (bmpRow = 0; bmpRow < (BMPHGHT / TILEHGHT); bmpRow++) {
+			for (tile = 0; tile < (BMPWDTH / TILEWDTH); tile++) {
+				for (row = 0; row < TILEHGHT; row++) {
+					for (shift = (TILEWDTH - 2); shift >= 0; shift-=2) {
+						*outBuffPtr       |= ((*pixBuffPtr & 0x10) >> 4) << (shift + 1);
+						*outBuffPtr       |= (*pixBuffPtr & 0x01) << shift;
+						*(outBuffPtr + 1) |= ((*pixBuffPtr & 0x20) >> 5) << (shift + 1);
+						*(outBuffPtr + 1) |= ((*pixBuffPtr & 0x02) >> 1) << shift;
+						pixBuffPtr++;
+					}
+					outBuffPtr += 2;
+					pixBuffPtr += (BMPWDTH - TILEWDTH) / 2;
+				}
+				pixBuffPtr -= ((BMPWDTH * TILEHGHT) - TILEWDTH) / 2;
+			}
+			pixBuffPtr += (BMPWDTH * (TILEHGHT - 1)) / 2;
+		}
 	}
+
 	#ifdef DEBUG
 	if (pixBuffPtr != pixBuff + BMPWDTH * BMPHGHT) {
 		printf("DEBUG ERROR: pixBuffPtr off by %d\n", pixBuffPtr - (pixBuff + BMPWDTH * BMPHGHT));
@@ -97,7 +121,7 @@ void convertBMP2Fon(FILE * fpBitmap, char * outputFileName)
 	// =====================
 	outBuffPtr = outBuff;						// reset pointer to beginning of 2bpp buffer
 	char twoBppRowH, twoBppRowL;				// holds the pixels of each character
-	int shift;									// stores the width of individual characters
+	// shift now stores the width of individual characters
 
 	// process 140 tiles
 	for(int tile = 0; tile < TILESMAX; tile++) {
@@ -155,7 +179,7 @@ void convertBMP2Fon(FILE * fpBitmap, char * outputFileName)
 	exit(EX_OK);
 }
 
-FILE * openBitmap(char *fileName)
+FILE * openBitmap(char *fileName, unsigned char *bppOut)
 {
 	// ==============================================
 	// open fileName and verify bmp header data
@@ -202,14 +226,20 @@ FILE * openBitmap(char *fileName)
 		exit(EX_DATAERR);
 	}
 
-	if (fileSize < bmp_header.offset + BMPWDTH*BMPHGHT) {
-		printf("ERROR: \"%s\" file too small to hold %dx%d font data.\n", fileName, BMPWDTH, BMPHGHT);
-		fclose(fpBitmap);
-		exit(EX_DATAERR);
-	}
-
-	if (bmp_header.bits != BMPBITS) {
-		printf("ERROR: bitmap must be indexed %dbit color.\n", BMPBITS);
+	if (bmp_header.bits == 8) {
+		if (fileSize < bmp_header.offset + BMPWDTH*BMPHGHT) {
+			printf("ERROR: \"%s\" file too small to hold %dx%d font data.\n", fileName, BMPWDTH, BMPHGHT);
+			fclose(fpBitmap);
+			exit(EX_DATAERR);
+		}
+	} else if (bmp_header.bits == 4) {
+		if (fileSize < bmp_header.offset + (BMPWDTH*BMPHGHT/2)) {
+			printf("ERROR: \"%s\" file too small to hold %dx%d font data.\n", fileName, BMPWDTH, BMPHGHT);
+			fclose(fpBitmap);
+			exit(EX_DATAERR);
+		}
+	} else {
+		puts("ERROR: bitmap must be indexed 8bit or 4bit color.");
 		fclose(fpBitmap);
 		exit(EX_DATAERR);
 	}
@@ -243,6 +273,7 @@ FILE * openBitmap(char *fileName)
 		fseek(fpBitmap, bmp_header.offset, SEEK_SET);
 	}
 
+	*bppOut = bmp_header.bits;
 	return fpBitmap;
 }
 
