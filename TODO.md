@@ -20,6 +20,7 @@ Miscellanous hacks
 - [x] Improve message character translation documentation
 - [x] Support 4bpp bitmaps in foxfont
 - [ ] Cross compile updated foxfont for DJGPP
+- [ ] Correct timing of the intro sequence when built for GSU-2
 
 French Canadian Translation
 ---------------------------
@@ -28,7 +29,7 @@ French Canadian Translation
 - [x] Edit the German bitmap font (again) to add French diacritics
 - [x] Modify the French language build to use the modified German bitmap font
 - [x] Update the French messages to use diacritics
-- [ ] Find out how German map, control and stage title graphics are selected
+- [x] Find out how German map, control and stage title graphics are selected
 - [ ] Convert graphics to a easier format to edit?
 - [ ] Make French version of the graphics
 - [ ] Edit build system to select French graphics
