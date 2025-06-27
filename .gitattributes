@@ -1,0 +1,21 @@
+# Default to CRLF
+*					text=crlf
+# Force CRLF, regardless of base setting above
+*.v?proj			text eol=crlf
+*.BAT				text eol=crlf
+*.bat				text eol=crlf
+*.cmd				text eol=crlf
+./SF/Makefile		text eol=crlf
+*.INC               text eol=crlf
+# Force LF, regardless of base setting at the top
+*.sh				text eol=lf
+./Makefile*			text eol=lf
+./TOOLS/Makefile	text eol=lf
+# Use platform line ending
+dosbos-x.conf		text
+*.py				text
+# Binary files (the next line is for graphic files, with a pattern to exclude .git* files)
+[a-zA-Z0-9]*.*[Gg]*	-text
+*.bmp				-text
+*.pdf				-text
+*.SCR				-text
