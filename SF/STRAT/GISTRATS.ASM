@@ -892,7 +892,11 @@ boss7intro_Istrat
 	s_set_strat	x,boss7intro_strat
 	s_setnoremove_behind	x
 
+	IFNE fast
+	s_set_vecs	x,#0,#4,#12
+	ELSEIF
 	s_set_vecs	x,#0,#5,#15
+	ENDC
 	s_nodepthcue	x
 	IFNE	RUMBLE
 	s_queue_rumble_table	idlerumble1

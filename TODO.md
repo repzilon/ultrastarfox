@@ -20,7 +20,8 @@ Miscellanous hacks
 - [x] Improve message character translation documentation
 - [x] Support 4bpp bitmaps in foxfont
 - [ ] Cross compile updated foxfont for DJGPP
-- [ ] Correct timing of the intro sequence when built for GSU-2
+- [x] Correct timing of the intro sequence when built for 21 MHz Super FX
+- [ ] Raise the cap to 24 fps on NTSC by making a telecine-inspired approach
 
 French Canadian Translation
 ---------------------------
