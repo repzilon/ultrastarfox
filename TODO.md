@@ -7,7 +7,7 @@ Immediate fixes
 
 Tool porting
 ------------
-- [ ] Create a .gitattributes file to set line endings (everything CRLF except Makefiles for *nix and shell scripts which are LF)
+- [x] Create a .gitattributes file to set line endings (everything CRLF except Makefiles for *nix and shell scripts which are LF)
 - [x] Add a kitchensink target in the TOOLS Makefile
 - [ ] Remove duplicated DOS/DJGPP binaries in TOOLS that are also in BIN
 - [ ] Test the Makefiles under Linux
