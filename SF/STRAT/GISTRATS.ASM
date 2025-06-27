@@ -865,7 +865,11 @@ boss7intro_Istrat
 	s_set_strat	x,boss7intro_strat
 	s_setnoremove_behind	x
 
+	IFNE fast
+	s_set_vecs	x,#0,#4,#12
+	ELSEIF
 	s_set_vecs	x,#0,#5,#15
+	ENDC
 	s_nodepthcue	x
 
 	s_make_childobj	#deboss_0,#1,boss7intropart_Istrat,enemy1	      

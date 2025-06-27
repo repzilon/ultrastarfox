@@ -124,6 +124,14 @@ mapdobj	macro	frame,x,y,z,shape,strategy
 	db	is_\6
 	endm
 
+introobj	macro	frame,x,y,z,shape,strategy
+	IFNE fast
+	mapobj	((\1)*7/5),\2,\3,\4,\5,\6
+	ELSEIF
+	mapobj	\1,\2,\3,\4,\5,\6
+	ENDC
+	endm
+
 mapobj	macro	frame,x,y,shape,strategy
 
 qqmapnormobj	=	1
@@ -576,6 +584,14 @@ mapmother	macro	frame,x,y,z,shape,strategy,map
 	dw	(\6)&wm		; strategy
 	db	(\6)>>16	; strategy
 	dw	(\7)&$7fff	; map
+	endm
+
+introwait	macro
+	IFNE	fast
+	mapwait	((\1)*7/5)
+	ELSEIF
+	mapwait	\1
+	ENDC
 	endm
 
 mapwait	macro	; map wait function
