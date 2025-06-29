@@ -451,31 +451,66 @@ print_sprite_mes
 sprsbase
 
 stagemes
-	IFEQ	GERMAN
+	IFNE	GERMAN
+	dw	espr-sprsbase
+	dw	tspr-sprsbase
+	dw	aspr-sprsbase
+	dw	pspr-sprsbase
+	dw	pspr-sprsbase
+	dw	espr-sprsbase
+	ENDC
+	IFNE	FRENCH
+	dw	espr-sprsbase
+	dw	tspr-sprsbase
+	dw	aspr-sprsbase
+	dw	pspr-sprsbase
+	dw	espr-sprsbase
+	ENDC
+	IFNE	SPANISH
+	dw	espr-sprsbase
+	dw	tspr-sprsbase
+	dw	aspr-sprsbase
+	dw	pspr-sprsbase
+	dw	aspr-sprsbase
+	ENDC
+	IFEQ	GERMAN+FRENCH+SPANISH
 	dw	sspr-sprsbase
 	dw	tspr-sprsbase
 	dw	aspr-sprsbase
 	dw	gspr-sprsbase
 	dw	espr-sprsbase
-	dw	dashspr-sprsbase
-	dw	-1
-
-	ELSEIF
-
-	dw	espr-sprsbase
-	dw	tspr-sprsbase
-	dw	aspr-sprsbase
-	dw	pspr-sprsbase
-	dw	pspr-sprsbase
-	dw	espr-sprsbase
-	dw	dashspr-sprsbase
-	dw	-1
-	
-
 	ENDC
+	dw	dashspr-sprsbase
+	dw	-1
 
 scramblemes
-	IFEQ	GERMAN	
+	IFNE	GERMAN
+	dw	spacespr-sprsbase
+	dw	spacespr-sprsbase
+	dw	spacespr-sprsbase
+	dw	aspr-sprsbase
+	dw	lspr-sprsbase
+	dw	aspr-sprsbase
+	dw	rspr-sprsbase
+	dw	mspr-sprsbase
+	ENDC
+	IFNE	FRENCH
+	dw	aspr-sprsbase
+	dw	lspr-sprsbase
+	dw	espr-sprsbase
+	dw	rspr-sprsbase
+	dw	tspr-sprsbase
+	dw	espr-sprsbase
+	ENDC
+	IFNE	SPANISH
+	dw	aspr-sprsbase
+	dw	lspr-sprsbase
+	dw	aspr-sprsbase
+	dw	rspr-sprsbase
+	dw	mspr-sprsbase
+	dw	aspr-sprsbase
+	ENDC
+	IFEQ	GERMAN+FRENCH+SPANISH
 	dw	sspr-sprsbase
 	dw	cspr-sprsbase
 	dw	rspr-sprsbase
@@ -484,36 +519,38 @@ scramblemes
 	dw	bspr-sprsbase
 	dw	lspr-sprsbase
 	dw	espr-sprsbase
-	dw	-1
-	
-	ELSEIF
-	
-	dw	spacespr-sprsbase
-	dw	spacespr-sprsbase
-	dw	spacespr-sprsbase
-	dw	aspr-sprsbase
-	dw	lspr-sprsbase
-	dw	aspr-sprsbase
-	dw	rspr-sprsbase
-	dw	mspr-sprsbase
-	dw	-1
 	ENDC
+	dw	-1
 	
 clearmes
-	IFEQ	GERMAN
+	IFNE	GERMAN
+	dw	espr-sprsbase
+	dw	nspr-sprsbase
+	dw	dspr-sprsbase
+	dw	espr-sprsbase
+	ENDC
+	IFNE FRENCH
+	dw	fspr-sprsbase
+	dw	aspr-sprsbase
+	dw	ispr-sprsbase
+	dw	tspr-sprsbase
+	dw	espr-sprsbase
+	ENDC
+	IFNE	SPANISH
+	dw	hspr-sprsbase
+	dw	espr-sprsbase
+	dw	cspr-sprsbase
+	dw	hspr-sprsbase
+	dw	aspr-sprsbase
+	ENDC
+	IFEQ	GERMAN+FRENCH+SPANISH
 	dw	cspr-sprsbase
 	dw	lspr-sprsbase
 	dw	espr-sprsbase
 	dw	aspr-sprsbase
 	dw	rspr-sprsbase
-	dw	-1
-	ELSEIF
-	dw	espr-sprsbase
-	dw	nspr-sprsbase
-	dw	dspr-sprsbase
-	dw	espr-sprsbase
-	dw	-1
 	ENDC
+	dw	-1
 
 stageptrs	dw	lev0mes-sprsbase
 	dw	lev1mes-sprsbase
@@ -562,7 +599,18 @@ lev13mes	dw	onespr-sprsbase
 	dw	threespr-sprsbase
 	dw	-1
 
-trainingmes	dw	tspr-sprsbase
+trainingmes	
+	IFNE	messagetest
+	dw	mspr-sprsbase
+	dw	espr-sprsbase
+	dw	sspr-sprsbase
+	dw	sspr-sprsbase
+	dw	aspr-sprsbase
+	dw	gspr-sprsbase
+	dw	espr-sprsbase
+	dw	sspr-sprsbase
+	ELSEIF
+	dw	tspr-sprsbase
 	dw	rspr-sprsbase
 	dw	aspr-sprsbase
 	dw	ispr-sprsbase
@@ -570,6 +618,7 @@ trainingmes	dw	tspr-sprsbase
 	dw	ispr-sprsbase
 	dw	nspr-sprsbase
 	dw	gspr-sprsbase
+	ENDC
 	dw	-1
 
 okmes	dw	smok1spr-sprsbase
@@ -658,8 +707,10 @@ pspr	dw	$34+3<<12+spradd,$35+3<<12+spradd
 	dw	$46+3<<12+spradd,$47+3<<12+spradd
 dspr	dw	$38+3<<12+spradd,$48+3<<12+spradd
 	dw	$3a+3<<12+spradd,$48+3<<12+spradd+1<<15
-
-
+fspr	dw	16+3<<12+spradd,1+3<<12+spradd
+	dw	$46+3<<12+spradd,$47+3<<12+spradd
+hspr	dw	10+3<<12+spradd+1<<15,11+3<<12+spradd+1<<15
+	dw	10+3<<12+spradd,11+3<<12+spradd
 
 ;set specflash with 50 to flash 1 smartbomb
 do_spec_weap	a16
