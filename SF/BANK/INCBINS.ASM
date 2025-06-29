@@ -26,10 +26,17 @@ msprites3
 	inccru	bgbccr,data\b.ccr
 	inccru	bgbpcr,data\b.pcr
 
-	IFEQ	german
-	inccru	sprites,data\obj-1.ccr
-	ELSEIF
+	IFNE	german
 	inccru	sprites,data\obj-1-g.ccr
+	ENDC
+	IFNE	french
+	inccru	sprites,data\obj-1-g.ccr
+	ENDC
+	IFNE	spanish
+	inccru	sprites,data\obj-1-g.ccr
+	ENDC
+	IFEQ	german+french+spanish
+	inccru	sprites,data\obj-1.ccr
 	ENDC
 
 	inccru	bgetestccr,data\e-test.ccr

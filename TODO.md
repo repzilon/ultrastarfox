@@ -31,9 +31,9 @@ French Canadian Translation
 - [x] Modify the French language build to use the modified German bitmap font
 - [x] Update the French messages to use diacritics
 - [x] Find out how German map, control and stage title graphics are selected
-- [ ] Convert graphics to a easier format to edit?
-- [ ] Make French version of the graphics
-- [ ] Edit build system to select French graphics
+- [ ] Convert graphics to a easier format to edit? ==WIP==
+- [ ] Make French version of the graphics ==WIP==
+- [ ] Edit build system to select French graphics ==WIP==
 - [ ] Extract strings from ENDSEQ.ASM
 - [ ] Translate end sequence
 - [ ] Add the French Canadian build configuration (NTSC, language code FC, French messages, StarFox (not Starwing) logo, North American (purple) controller button image)
