@@ -30,7 +30,7 @@ msprites3
 	inccru	sprites,data\obj-1-g.ccr
 	ENDC
 	IFNE	french
-	inccru	sprites,data\obj-1-g.ccr
+	inccru	sprites,data\obj-1-f.ccr
 	ENDC
 	IFNE	spanish
 	inccru	sprites,data\obj-1-g.ccr
@@ -68,13 +68,16 @@ msprites3
 	inccru	bg32ccr,data\3-2.ccr
 	inccru	bgfsbg3ccr,data\fs-bg3.ccr
 
-	IFEQ	german
-	inccru	mapccr,data\map.ccr
-	inccru	bg33ccr,data\3-3.ccr
-	ELSEIF
+	IFNE	german
 	inccru	mapccr,data\map-g.ccr
-	inccru	bg33ccr,data\3-3.ccr
 	ENDC
+	IFNE	french
+	inccru	mapccr,data\map-f.ccr
+	ENDC	
+	IFEQ	german+french
+	inccru	mapccr,data\map.ccr
+	ENDC
+	inccru	bg33ccr,data\3-3.ccr
 
 	inccru	bgfsnipcr,data\fs-ni.pcr
 	inccru	bgtsspcr,data\t-ss.pcr
@@ -122,16 +125,19 @@ msprites3
 	IFNE	JAPANESE
 	inccru	bgcontccr,data\cont.ccr
 	inccru	bgcontpcr,data\cont.pcr
-	elseif
-
-	IFEQ	german
-	inccru	bgcontccr,data\cont-2.ccr
-	inccru	bgcontpcr,data\cont-2.pcr
-	ELSEIF
+	ENDC
+	IFNE	german
 	inccru	bgcontccr,data\cont-2-g.ccr
 	inccru	bgcontpcr,data\cont-2-g.pcr
 	ENDC
-	endc
+	IFNE	french
+	inccru	bgcontccr,data\cont-2-f.ccr
+	inccru	bgcontpcr,data\cont-2.pcr
+	ENDC
+	IFEQ	JAPANESE+german+french
+	inccru	bgcontccr,data\cont-2.ccr
+	inccru	bgcontpcr,data\cont-2.pcr
+	ENDC
 
 	IFEQ	titlelogo ; if titlelogo=0 (JP)
 	inccru	bgti3ccr,data\ti-3.ccr
