@@ -74,3 +74,17 @@ TOOLS/argonautmapdec
 TOOLS/fxedit2
 TOOLS/inccol
 TOOLS/romExtender2
+
+# Removed Windows executables
+dosbox-x.exe
+TOOLS/bgconv/bin/palconv.exe
+TOOLS/bgconv/bin/sf_crunch.exe
+TOOLS/bgconv/bin/superfamiconv.exe
+TOOLS/cgx2fx_win.exe
+TOOLS/fontconv/foxfont.exe
+TOOLS/fx2cgx_win.exe
+TOOLS/mugconv/foxchr.exe
+TOOLS/mugconv/superfamiconv/superfamiconv.exe
+TOOLS/palconv.exe
+TOOLS/palconv_win64.exe
+TOOLS/sf_crunch.exe
