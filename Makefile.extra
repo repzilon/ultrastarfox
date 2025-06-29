@@ -1,3 +1,7 @@
+SFCONV_VER := 0.11.0
+SFCONV_OUT := build/release
+SFCONV_EXE := TOOLS/SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv
+
 ${HOME}/.cargo/bin/cargo:
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
@@ -45,6 +49,21 @@ permissions:
 	chmod +x 'optionalstuff/textures/sg.rom 09-23-92/'
 	chmod +x *.sh */*/*.sh
 
+prebuild: SF/DATA/CONT-2-F.CGX SF/DATA/MAP-F.CGX SF/DATA/OBJ-1-F.CGX
+	true
+	
+$(SFCONV_EXE): TOOLS/Makefile
+	$(MAKE) -C TOOLS "bgconv/bin/superfamiconv"
+
+SF/DATA/CONT-2-F.CGX: SF/DATA/CONT-2-F.png $(SFCONV_EXE)
+	$(SFCONV_EXE) -v -i SF/DATA/CONT-2-F.png -B 4 -R -D -t SF/DATA/CONT-2-F.CGX
+
+SF/DATA/MAP-F.CGX: SF/DATA/MAP-F.png $(SFCONV_EXE)
+	$(SFCONV_EXE) -v -i SF/DATA/MAP-F.png -B 4 -R -D -t SF/DATA/MAP-F.CGX
+
+SF/DATA/OBJ-1-F.CGX: SF/DATA/OBJ-1-F.png $(SFCONV_EXE)
+	$(SFCONV_EXE) -v -i SF/DATA/OBJ-1-F.png -B 4 -R -D -t SF/DATA/OBJ-1-F.CGX
+
 mrproper: distclean nowindows permissions
 
-.PHONY: tools clean distclean nowindows permissions mrproper
+.PHONY: tools clean distclean nowindows permissions mrproper prebuild
