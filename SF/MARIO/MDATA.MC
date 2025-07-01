@@ -686,7 +686,15 @@ msg_presented
 	mariomsg	<PRESENTED>
 
 msg_presents
+	IFNE	spanish
+	mariomsg	<PRESENTA>
+	ENDC
+	IFNE	french
+	mariomsg	<PRESENTE>
+	ENDC
+	IFEQ	spanish+french
 	mariomsg	<PRESENTS>
+	ENDC
 
 msg_developed
 	mariomsg	<ASSISTED>
