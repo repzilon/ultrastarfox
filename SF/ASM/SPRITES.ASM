@@ -609,7 +609,18 @@ trainingmes
 	dw	gspr-sprsbase
 	dw	espr-sprsbase
 	dw	sspr-sprsbase
-	ELSEIF
+	endc
+	ifeq	messagetest
+	ifne	french
+	dw	tspr-sprsbase
+	dw	uspr-sprsbase
+	dw	tspr-sprsbase
+	dw	ospr-sprsbase
+	dw	rspr-sprsbase
+	dw	ispr-sprsbase
+	dw	espr-sprsbase
+	dw	lspr-sprsbase
+	elseif
 	dw	tspr-sprsbase
 	dw	rspr-sprsbase
 	dw	aspr-sprsbase
@@ -618,6 +629,7 @@ trainingmes
 	dw	ispr-sprsbase
 	dw	nspr-sprsbase
 	dw	gspr-sprsbase
+	endc
 	ENDC
 	dw	-1
 
@@ -711,6 +723,8 @@ fspr	dw	16+3<<12+spradd,1+3<<12+spradd
 	dw	$46+3<<12+spradd,$47+3<<12+spradd
 hspr	dw	10+3<<12+spradd+1<<15,11+3<<12+spradd+1<<15
 	dw	10+3<<12+spradd,11+3<<12+spradd
+uspr	dw	$6d+3<<12+spradd,$6e+3<<12+spradd
+	dw	$3a+3<<12+spradd,$3b+3<<12+spradd
 
 ;set specflash with 50 to flash 1 smartbomb
 do_spec_weap	a16
