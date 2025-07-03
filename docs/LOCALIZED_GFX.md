@@ -5,7 +5,7 @@ Graphic files are located in SF/DATA, palettes in SF/DATA/COL.
 |------------------|-----------|------------|-------------|--------------|-------------|-------------|
 | Title logo       | TI-3.CGX  | TI-3-G.CGX | TI-3-US.CGX | TI-3-G.CGX   | CP*.COL?    | CP*.COL     |
 | Controls screen  | CONT.CGX  | CONT-2.CGX | CONT-2.CGX  | CONT-2-G.CGX | BG2-E*.COL? | BG2-E*.COL  |
-| Training/Game    | OBJ-2.CGX | OBJ-3.CGX  | OBJ-3.CGX   | OBJ-4.CGX    | ?           |             |
+| Training/Game    | OBJ-2.CGX | OBJ-3.CGX  | OBJ-3.CGX   | OBJ-4.CGX    | OBJ-1.COL?  | ?           |
 | Lylat system map | MAP.CGX   | MAP.CGX    | MAP.CGX     | MAP-G.CGX    | NIGHT.COL   | MAP_C.COL   |
 | Scramble/Stage   | OBJ-1.CGX | OBJ-1.CGX  | OBJ-1.CGX   | OBJ-1-G.SGX  | ?           | ?           |
 

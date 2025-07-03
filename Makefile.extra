@@ -49,7 +49,7 @@ permissions:
 	chmod +x 'optionalstuff/textures/sg.rom 09-23-92/'
 	chmod +x *.sh */*/*.sh
 
-prebuild: SF/DATA/CONT-2-F.CGX SF/DATA/MAP-F.CGX SF/DATA/OBJ-1-F.CGX
+prebuild: SF/DATA/CONT-2-F.CGX SF/DATA/MAP-F.CGX SF/DATA/OBJ-1-F.CGX SF/DATA/OBJ-2-F.CGX
 	true
 	
 $(SFCONV_EXE): TOOLS/Makefile
@@ -63,6 +63,9 @@ SF/DATA/MAP-F.CGX: SF/DATA/MAP-F.png $(SFCONV_EXE)
 
 SF/DATA/OBJ-1-F.CGX: SF/DATA/OBJ-1-F.png $(SFCONV_EXE)
 	$(SFCONV_EXE) -v -i SF/DATA/OBJ-1-F.png -B 4 -R -D -t SF/DATA/OBJ-1-F.CGX
+
+SF/DATA/OBJ-2-F.CGX: SF/DATA/OBJ-2-F.png $(SFCONV_EXE)
+	$(SFCONV_EXE) -v -i SF/DATA/OBJ-2-F.png -B 4 -R -D -t SF/DATA/OBJ-2-F.CGX
 
 mrproper: distclean nowindows permissions
 

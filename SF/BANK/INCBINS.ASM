@@ -242,16 +242,15 @@ musicsize	=	0
 
 	ifne	JAPANESE ; if JAPANESE = 1
 	inccru	obj2ccr,data\obj-2.ccr ; training/game text (JP)
-	elseif
+	endc
 	ifne	german ; if german = 1
 	inccru	obj2ccr,data\obj-4.ccr ; training/game text (GER)
-	elseif
-	ifne	pal ; if german = 1
-	inccru	obj2ccr,data\obj-3.ccr ; training/game text (US/EU)
-	elseif
-	inccru	obj2ccr,data\obj-3.ccr ; training/game text (US/EU)
 	endc
+	ifne	french
+	inccru	obj2ccr,data\obj-2-f.ccr ; training/game text (FRA)
 	endc
+	ifeq	JAPANESE+german+french
+	inccru	obj2ccr,data\obj-3.ccr ; training/game text (US/EU)
 	endc
 
 	ifgt	@-$200000
