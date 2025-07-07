@@ -44,10 +44,14 @@ msprites3
 	inccru	bgetest2ccr,data\e-test2.ccr
 	inccru	bgetest2pcr,data\e-test2.pcr
 
-	IFEQ	german
-	inccru	bgfoxccr,data\fox.ccr
-	ELSEIF
+	IFNE	german
 	inccru	bgfoxccr,data\fox-g.ccr
+	ENDC
+	IFNE	french
+	inccru	bgfoxccr,data\fox-f.ccr
+	ENDC
+	IFEQ	german+french
+	inccru	bgfoxccr,data\fox.ccr
 	ENDC
 
 	inccru	bgfoxpcr,data\fox.pcr

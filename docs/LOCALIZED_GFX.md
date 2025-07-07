@@ -8,6 +8,7 @@ Graphic files are located in SF/DATA, palettes in SF/DATA/COL.
 | Training/Game    | OBJ-2.CGX | OBJ-3.CGX  | OBJ-3.CGX   | OBJ-4.CGX    | OBJ-1.COL?  | ?           |
 | Lylat system map | MAP.CGX   | MAP.CGX    | MAP.CGX     | MAP-G.CGX    | NIGHT.COL   | MAP_C.COL   |
 | Scramble/Stage   | OBJ-1.CGX | OBJ-1.CGX  | OBJ-1.CGX   | OBJ-1-G.SGX  | ?           | ?           |
+| Continue screen  | FOX.CGX   | FOX.CGX    | FOX.CGX     | FOX-G.CGX    | BG2-C.COL?  | BG2-B.COL   |
 
 Which graphic files gets included to the ROM is defined in SF/BANK/INCBINS.ASM source file.
 
