@@ -17,6 +17,7 @@ msu			equ 0
 msuvideo	equ	0
 
 ; enable/disable FastROM [1 = on, 0=off]
+; On real hardware, only supported by the Super FX 3 found in The Ultimate DOOM
 FASTROM	equ 0
 
 ; Disables the SuperFX clock divider, 
