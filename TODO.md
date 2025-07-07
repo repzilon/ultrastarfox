@@ -21,7 +21,7 @@ Miscellanous hacks
 - [x] Support 4bpp bitmaps in foxfont
 - [ ] Cross compile updated foxfont for DJGPP
 - [x] Correct timing of the intro sequence when built for 21 MHz Super FX
-- [ ] Raise the cap to 24 fps on NTSC by making a telecine-inspired approach
+- [ ] MUCH Later: raise the cap to 24 fps on NTSC by implementing a telecine-inspired approach
 
 French Canadian Translation
 ---------------------------
@@ -31,7 +31,7 @@ French Canadian Translation
 - [x] Modify the French language build to use the modified German bitmap font
 - [x] Update the French messages to use diacritics
 - [x] Find out how German map, control and stage title graphics are selected
-- [ ] Convert graphics to a easier format to edit? ==WIP==
+- [ ] Convert graphics to a easier format to edit ==WIP==
 - [ ] Make French version of the graphics ==WIP==
 - [ ] Edit build system to select French graphics ==WIP==
 - [ ] Extract strings from ENDSEQ.ASM
