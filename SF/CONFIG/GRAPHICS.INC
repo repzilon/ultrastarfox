@@ -7,7 +7,7 @@
 ; Increases framerate cap to 30FPS, no pacing changes.
 ; Has no effect on PAL builds, as that version already
 ; does this to compensate for 50hz.
-; Does not work on hardware.
+; Breaks on real NTSC hardware.
 ; [0 = off, 1 = on]
 _30fps	equ	0
 

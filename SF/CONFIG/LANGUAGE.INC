@@ -12,10 +12,10 @@ JAPANESE	equ	0
 ; German language version [0 = off, 1 = on]
 german		equ	0
 
-; French language version [0 = off, 1 = on] (TEXT WITH DIACRITICS, NO GFX)
 french		equ	0
+; French language version [0 = off, 1 = on] (TEXT WITH DIACRITICS, GFX IN PROGRESS)
 
-; Spanish language version [0 = off, 1 = on] (TEXT ONLY, NO DIACRITICS OR GFX)
+; Spanish language version [0 = off, 1 = on] (UNTRANSLATED TEXT, DIACRITICS AVAILABLE, NO GFX)
 spanish		equ	0
 
 ;####################################################################################################################
