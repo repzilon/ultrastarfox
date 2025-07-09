@@ -210,14 +210,22 @@ stratsfrozen
 	sta	framecount
 	inc	frames
 	lda	framecount
+	IFEQ	pal
 	cmp	#60		; per second
+	ELSEIF
+	cmp	#50
+	ENDC
 	bcc	.noreset
 	lda	frames
 	sta	framesb
 	stz	frames
 	lda	framecount
 	sec
+	IFEQ	pal
 	sbc	#60
+	ELSEIF
+	sbc	#50
+	ENDC
 	sta	framecount
 .noreset
 
