@@ -96,8 +96,7 @@ Install DOSBOX-X from Homebrew: ``brew install dosbox-x``
 Then, from cloning the repository to building, follow the Linux instructions above.
 
 ## Uploading ROM to SNES over USB with SD2SNES/FXPak(Pro)
-
-Uses [USB2SNES-cli](https://github.com/Hyphen-ated/usb2snes-cli) fork by Hyphen-ated. A prebuilt windows EXE is provided.  
+Uses [USB2SNES-cli](https://github.com/Hyphen-ated/usb2snes-cli) fork by Hyphen-ated.
 Download [QUSB2SNES](https://github.com/Skarsnik/QUsb2snes/releases).  
 Extract it somewhere and run it. Set it up for an SD2SNES/FXPak Pro.  
 **QUSB2SNES must be running in the background for uploading to function.**  
