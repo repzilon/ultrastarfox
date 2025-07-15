@@ -66,21 +66,6 @@ bgconv/bin/sf_crunch: cru_src/sf_crunch_mod.c
 mugconv/foxchr: mugconv/foxchr_source/foxchr.c mugconv/foxchr_source/foxchr.h
 	$(CC) $(CFLAGS_OPTIM) -pipe $(CFLAGS_WARN) mugconv/foxchr_source/foxchr.c -o mugconv/foxchr
 
-SuperFamiconv-$(SUPERFAMICONV_VERSION).tar.gz:
-	curl https://codeload.github.com/Optiroc/SuperFamiconv/tar.gz/refs/tags/v$(SUPERFAMICONV_VERSION) -o SuperFamiconv-$(SUPERFAMICONV_VERSION).tar.gz
-
-SuperFamiconv-$(SUPERFAMICONV_VERSION)/Makefile: SuperFamiconv-$(SUPERFAMICONV_VERSION).tar.gz
-	tar -zxf SuperFamiconv-$(SUPERFAMICONV_VERSION).tar.gz
-
-SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv: SuperFamiconv-$(SUPERFAMICONV_VERSION)/Makefile
-	make -C SuperFamiconv-$(SUPERFAMICONV_VERSION)
-
-bgconv/bin/superfamiconv: SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv
-	install -CS ./SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv ./bgconv/bin
-
-mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv
-	install -CS ./SuperFamiconv-$(SUPERFAMICONV_VERSION)/bin/superfamiconv ./mugconv/superfamiconv
-
 cgx2fx: cgx2fx_fx2cgx_src/cgx2fx.c
 	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) cgx2fx_fx2cgx_src/cgx2fx.c -o cgx2fx
 
