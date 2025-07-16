@@ -96,7 +96,7 @@ msprites3
 	inccru	bgtfspcr,data\t-f-s.pcr
 	inccru	bg23pcr,data\2-3.pcr
 	inccru	bg23bpcr,data\2-3b.pcr
-	inccru	mappcr,data\map.pcr
+	inccru	mappcr,data\map-2.pcr
 	inccru	bgstarspcr,data\stars.pcr
 	inccru	bg32pcr,data\3-2.pcr
 	inccru	bg13bpcr,data\1-3-b.pcr
@@ -136,7 +136,7 @@ msprites3
 	ENDC
 	IFNE	french
 	inccru	bgcontccr,data\cont-2-f.ccr
-	inccru	bgcontpcr,data\cont-2.pcr
+	inccru	bgcontpcr,data\cont-2-f.pcr
 	ENDC
 	IFEQ	JAPANESE+german+french
 	inccru	bgcontccr,data\cont-2.ccr
