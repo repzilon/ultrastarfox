@@ -116,10 +116,14 @@ msprites3
 
 	bank	23
 
-	IFEQ	german
-	inccru	bgcppcr,data\cp.pcr
-	ELSEIF
+	IFNE	german
 	inccru	bgcppcr,data\cp-p.pcr
+	ENDC
+	IFNE	french
+	inccru	bgcppcr,data\cp-p.pcr
+	ENDC
+	IFEQ	german+french
+	inccru	bgcppcr,data\cp.pcr
 	ENDC
 
 	inccru	bgtstccr,data\t-st.ccr
@@ -165,10 +169,14 @@ msprites3
 
 	inccru	bg24ccr,data\2-4.ccr
 
-	IFEQ	GERMAN					
-	inccru	bgcpccr,data\cp.ccr
-	ELSEIF
+	IFNE	GERMAN
 	inccru	bgcpccr,data\cp-p.ccr
+	ENDC
+	IFNE	FRENCH
+	inccru	bgcpccr,data\cp-ff.ccr
+	ENDC
+	IFEQ	GERMAN+FRENCH
+	inccru	bgcpccr,data\cp.ccr
 	ENDC
 
 facedata	incbin	data\face.cgx
