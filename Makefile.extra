@@ -43,6 +43,9 @@ nowindows:
 	rm -f usb2snes-cli.exe
 	$(MAKE) -C TOOLS nowindows
 
+nodosdupes: nodosdup.sh
+	sh ./nodosdup.sh
+
 permissions:
 	chmod +x 'optionalstuff/textures/sg.rom 09-23-92/'
 	chmod -x CHANGES *.* */*.* */*/*.* */*/*/*.*
@@ -89,6 +92,6 @@ SF/DATA/FOX-F.CGX: SF/DATA/FOX-F.png $(SFCONV_EXE)
 SF/DATA/CP-FF.CGX: SF/DATA/CP-FF.png $(SFCONV_EXE)
 	$(SFCONV_EXE) -v -i SF/DATA/CP-FF.png -B 4 -R -D -t SF/DATA/CP-FF.CGX
 
-mrproper: distclean nowindows permissions
+mrproper: distclean nowindows permissions nodosdupes
 
 .PHONY: tools clean distclean nowindows permissions mrproper prebuild lineendings

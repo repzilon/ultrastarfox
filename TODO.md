@@ -7,9 +7,8 @@ Immediate fixes
 
 Tool porting
 ------------
-- [ ] Create a .gitattributes file to set line endings (everything CRLF except Makefiles for *nix and shell scripts which are LF)
 - [x] Add a kitchensink target in the TOOLS Makefile
-- [ ] Remove duplicated DOS/DJGPP binaries in TOOLS that are also in BIN
+- [x] Remove duplicated DOS/DJGPP binaries in TOOLS that are also in BIN
 - [ ] Test the Makefiles under Linux
 - [ ] MUCH Later: provide a Makefile for cross compiling tools on DJGPP (might build a retro PC to test on native DJGPP, including my 20-25 year-old DJGPP Zip disk from a parallel port Zip drive as well). Important: keep the existing executables in the repository so anybody with a modern computer can still build the game without the pain of setting up a cross-compiler.
 - [ ] MUCH Later: try to build UltraStarFox on a retro PC (something like the fastest PC able to run Windows 98, so the main build system can run natively without waiting days after it)
