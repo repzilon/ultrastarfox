@@ -88,3 +88,8 @@ TOOLS/mugconv/superfamiconv/superfamiconv.exe
 TOOLS/palconv.exe
 TOOLS/palconv_win64.exe
 TOOLS/sf_crunch.exe
+
+# Tools written in C#
+TOOLS/SharpUltraStarFoxTools/.vs/
+TOOLS/SharpUltraStarFoxTools/*/bin/
+TOOLS/SharpUltraStarFoxTools/*/obj/
