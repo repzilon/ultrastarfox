@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -26,9 +27,9 @@ namespace UltraStarFox.Tools.EndText
 			}
 
 			var strEndSeqAsm = File.ReadAllText(args[0], encoding);
-			var dicJapanese = new Dictionary<string, string>();
-			var dicEnglish = new Dictionary<string, string>();
-			var dicGerman = new Dictionary<string, string>();
+			var dicJapanese = new SortedDictionary<string, string>();
+			var dicEnglish = new SortedDictionary<string, string>();
+			var dicGerman = new SortedDictionary<string, string>();
 
 			strEndSeqAsm = ExtractStages(strEndSeqAsm, dicJapanese, dicEnglish, dicGerman);
 			strEndSeqAsm = ExtractSectors(strEndSeqAsm, dicJapanese, dicEnglish, dicGerman);
@@ -37,8 +38,8 @@ namespace UltraStarFox.Tools.EndText
 			strEndSeqAsm = ExtractAndross(strEndSeqAsm, dicJapanese, dicEnglish, dicGerman);
 
 			// Start a crude French and a cruder Spanish translation with common words
-			var dicFrench = new Dictionary<string, string>();
-			var dicSpanish = new Dictionary<string, string>();
+			var dicFrench = new SortedDictionary<string, string>();
+			var dicSpanish = new SortedDictionary<string, string>();
 			foreach (var kvp in dicEnglish) {
 				dicFrench.Add(kvp.Key, kvp.Value.Replace("NAME   -", "NOM    -").Replace("WEAPON -", "ARME   -")
 					.Replace("SIZE   -", "TAILLE -").Replace("LEVEL ", "ROUTE ").Replace("SECTOR ", "SECTEUR ")
@@ -46,6 +47,39 @@ namespace UltraStarFox.Tools.EndText
 				// Do you have a synonym for "tamaño" that neither use ~ nor tone accents?
 				dicSpanish.Add(kvp.Key, kvp.Value.Replace("NAME   -", "NOMBRE -").Replace("WEAPON -", "ARMA   -")
 					.Replace("LEVEL ", "NIVEL "));
+			}
+
+			// Merge identical terms, using English as base
+			// a. Find duplicates
+			var dicFrequencies = new Dictionary<string, int>(dicEnglish.Count);
+			foreach (var text in dicEnglish.Values) {
+				if (dicFrequencies.ContainsKey(text)) {
+					dicFrequencies[text]++;
+				} else {
+					dicFrequencies.Add(text, 1);
+				}
+			}
+			var lstRepeated = dicFrequencies.Where(IsDuplicated).Select(KeyOf).ToList();
+			// b. Squash duplicates
+			foreach (var text in lstRepeated) {
+				var strNewKey = "bossgentxt_" + text.Replace(" ", "").Replace('-', '_').Replace('*', '_').ToLowerInvariant();
+				var strarOldKeys = dicEnglish.Where(x => x.Value == text).Select(KeyOf).ToArray();
+				var strOldKey = strarOldKeys[0];
+
+				dicEnglish.Add(strNewKey, text);
+				dicJapanese.Add(strNewKey, dicJapanese[strOldKey]);
+				dicGerman.Add(strNewKey, dicGerman[strOldKey]);
+				dicFrench.Add(strNewKey, dicFrench[strOldKey]);
+				dicSpanish.Add(strNewKey, dicSpanish[strOldKey]);
+				for (int i = 0; i < strarOldKeys.Length; i++) {
+					strOldKey = strarOldKeys[i];
+					dicEnglish.Remove(strOldKey);
+					dicJapanese.Remove(strOldKey);
+					dicGerman.Remove(strOldKey);
+					dicFrench.Remove(strOldKey);
+					dicSpanish.Remove(strOldKey);
+					strEndSeqAsm = strEndSeqAsm.Replace(strOldKey, strNewKey);
+				}
 			}
 
 			// On Windows, the program itself, not the OS, is responsible for setting the console output character set.
@@ -60,7 +94,7 @@ namespace UltraStarFox.Tools.EndText
 		}
 
 		private static string ExtractStages(string assemblySourceCode,
-		Dictionary<string, string> japanese, Dictionary<string, string> english, Dictionary<string, string> german)
+		IDictionary<string, string> japanese, IDictionary<string, string> english, IDictionary<string, string> german)
 		{
 			const string kStagePattern = @"([a-z0-9]+)\tSETDPOS\t7[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z 0-9]+)'\W+ELSEIF\W+DB\t'([A-Z 0-9]+)'\W+ENDC\W+;.*\W+.*\W+SETDPOS\t9[*]32[+]6\W+DB\t'([A-Z]+)'";
 			var colMatches = Regex.Matches(assemblySourceCode, kStagePattern);
@@ -73,7 +107,7 @@ namespace UltraStarFox.Tools.EndText
 		}
 
 		private static string ExtractSectors(string assemblySourceCode,
-		Dictionary<string, string> japanese, Dictionary<string, string> english, Dictionary<string, string> german)
+		IDictionary<string, string> japanese, IDictionary<string, string> english, IDictionary<string, string> german)
 		{
 			const string kSectorPattern = @"([a-z0-9]+)\tSETDPOS\t7[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z 0-9]+)'\W+ELSEIF\W+DB\t'([A-Z 0-9]+)'\W+ENDC\W+;.*\W+.*\W+SETDPOS\t9[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z #$%]+)'\W+ELSEIF\W+DB\t'([A-Z #$%]+)'";
 			var colMatches = Regex.Matches(assemblySourceCode, kSectorPattern);
@@ -86,7 +120,7 @@ namespace UltraStarFox.Tools.EndText
 		}
 
 		private static string ExtractArmada(string assemblySourceCode,
-		Dictionary<string, string> japanese, Dictionary<string, string> english, Dictionary<string, string> german)
+		IDictionary<string, string> japanese, IDictionary<string, string> english, IDictionary<string, string> german)
 		{
 			const string kArmadaPattern = @"([a-z0-9]+)\tSETDPOS\t7[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z 0-9]+)'\W+ELSEIF\W+DB\t'([A-Z 0-9]+)'\W+ENDC\W+;.*\W+.*\W+SETDPOS\t9[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z #$%]+)'\W+ELSEIF\W+DB\t'([A-Z #$%-]+)'\W+ENDC\W+SETDPOS\t11[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z]+)'\W+ELSEIF\W+DB\t'([A-Z]+)'";
 			var colMatches = Regex.Matches(assemblySourceCode, kArmadaPattern);
@@ -104,8 +138,8 @@ namespace UltraStarFox.Tools.EndText
 			return Regex.Replace(assemblySourceCode, kArmadaPattern, "$1\tSETDPOS\t7*32+6\n\t$1_level\n\tSETDPOS\t9*32+6\n\t$1_stage\n\tSETDPOS\t11*32+6\n\t$1_stage2");
 		}
 
-		private static GroupCollection AddStage(Dictionary<string, string> japanese, Dictionary<string, string> english,
-		Dictionary<string, string> german, MatchCollection colMatches, int i, bool germanSharesStage)
+		private static GroupCollection AddStage(IDictionary<string, string> japanese, IDictionary<string, string> english,
+		IDictionary<string, string> german, MatchCollection colMatches, int i, bool germanSharesStage)
 		{
 			var match = colMatches[i].Groups;
 			var strLabel = match[1].Value;
@@ -120,7 +154,7 @@ namespace UltraStarFox.Tools.EndText
 		}
 
 		private static string ExtractBosses(string assemblySourceCode,
-		Dictionary<string, string> japanese, Dictionary<string, string> english, Dictionary<string, string> german)
+		IDictionary<string, string> japanese, IDictionary<string, string> english, IDictionary<string, string> german)
 		{
 			const string kBossPattern = @"([A-Za-z0-9]+)\W+SETDPOS\t25[*]32[+]6\W+DB\t""([A-Z -]+)""\W+SETDPOS\t26[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t""([A-Z -]+)""\W+ELSEIF\W+DB\t""([A-Z -]+)""\W+ENDC\W+SETDPOS\t27[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t""([A-Z0-9 *-]+)""\W+ELSEIF\W+DB\t""([A-Z0-9 *-]+)""";
 			var colMatches = Regex.Matches(assemblySourceCode, kBossPattern);
@@ -141,7 +175,7 @@ namespace UltraStarFox.Tools.EndText
 		}
 
 		private static string ExtractAndross(string assemblySourceCode,
-		Dictionary<string, string> japanese, Dictionary<string, string> english, Dictionary<string, string> german)
+		IDictionary<string, string> japanese, IDictionary<string, string> english, IDictionary<string, string> german)
 		{
 			const string kAndrossPattern = @"([A-Za-z0-9]+)\tSETDPOS\t25[*]32[+]6\W+ifne\tJAPANESE\W+DB\t""([A-Z .-]+)""\W+elseif\W+DB\t""([A-Z .-]+)""\W+endc\W+SETDPOS\t26[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t""([A-Z -]+)""\W+ELSEIF\W+DB\t""([A-Z -]+)""\W+ENDC\W+SETDPOS\t27[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t""([A-Z0-9 *-]+)""\W+ELSEIF\W+DB\t""([A-Z0-9 *-]+)""";
 			var colMatches = Regex.Matches(assemblySourceCode, kAndrossPattern);
@@ -161,7 +195,7 @@ namespace UltraStarFox.Tools.EndText
 			return Regex.Replace(assemblySourceCode, kAndrossPattern, "$1\tSETDPOS\t25*32+6\n\t$1_name\n\tSETDPOS\t26*32+6\n\t$1_weapon\n\tSETDPOS\t27*32+6\n\t$1_size");
 		}
 
-		private static void Add(Dictionary<string, string> destination, string label,
+		private static void Add(IDictionary<string, string> destination, string label,
 		string name, string weapon, string size)
 		{
 			destination.Add(label + "_name", name);
@@ -169,15 +203,25 @@ namespace UltraStarFox.Tools.EndText
 			destination.Add(label + "_size", size);
 		}
 
-		private static void Add(Dictionary<string, string> destination, string label, string level, string stage)
+		private static void Add(IDictionary<string, string> destination, string label, string level, string stage)
 		{
 			destination.Add(label + "_level", level);
 			destination.Add(label + "_stage", stage);
 		}
 
+		private static bool IsDuplicated(KeyValuePair<string, int> freq)
+		{
+			return freq.Value > 1;
+		}
+
+		private static string KeyOf<T>(KeyValuePair<string, T> freq)
+		{
+			return freq.Key;
+		}
+
 		private static void OutputDictionary(TextWriter writer,
-		Dictionary<string, string> japanese, Dictionary<string, string> english, Dictionary<string, string> german,
-		Dictionary<string, string> french, Dictionary<string, string> spanish)
+		IDictionary<string, string> japanese, IDictionary<string, string> english, IDictionary<string, string> german,
+		IDictionary<string, string> french, IDictionary<string, string> spanish)
 		{
 			writer.Write("\t; Character set of this file is ");
 			writer.Write(writer.Encoding.WebName);
@@ -196,20 +240,20 @@ namespace UltraStarFox.Tools.EndText
 			OutputDictionary(writer, english);
 		}
 
-		private static void OutputDictionary(TextWriter writer, string language, Dictionary<string, string> dictionary)
+		private static void OutputDictionary(TextWriter writer, string language, IDictionary<string, string> dictionary)
 		{
 			writer.Write("\tIFNE\t");
 			writer.WriteLine(language);
 			CommonOutputDictionary(writer, dictionary);
 		}
 
-		private static void OutputDictionary(TextWriter writer, Dictionary<string, string> dictionary)
+		private static void OutputDictionary(TextWriter writer, IDictionary<string, string> dictionary)
 		{
 			writer.WriteLine("\tIFEQ\tGERMAN+FRENCH+JAPANESE+SPANISH");
 			CommonOutputDictionary(writer, dictionary);
 		}
 
-		private static void CommonOutputDictionary(TextWriter writer, Dictionary<string, string> dictionary)
+		private static void CommonOutputDictionary(TextWriter writer, IDictionary<string, string> dictionary)
 		{
 			foreach (var kvp in dictionary) {
 				writer.Write(kvp.Key);
