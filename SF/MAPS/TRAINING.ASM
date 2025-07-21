@@ -29,7 +29,41 @@ trnmapmsgcnt = trnmapmsgcnt+1
 
 	mapgoto	.trnmsgtest
 
-	ELSEIF
+	ENDC
+
+	IFNE	trainingbossroll
+	markboss	boss11
+	markboss	boss12
+	markboss	boss13
+	markboss	boss14
+	markboss	boss15
+	markboss	boss16
+	markboss	boss21
+	markboss	boss22
+	markboss	boss23
+	markboss	boss24
+	markboss	boss25
+	markboss	boss26
+	markboss	boss31
+	markboss	boss32
+	markboss	boss33
+	markboss	boss34
+	markboss	boss35
+	markboss	boss36
+	markboss	boss37
+	markboss	bossfinal
+	mapwait	1000
+	setvar.n	levelfinished,6
+	mapwait	1000
+	setvar.n	levelfinished,9
+.lp	mapwait	3000
+	start_65816
+	jsl	endseq_l
+	end_65816
+	mapgoto	.lp
+	ENDC
+
+	IFEQ messagetest+trainingbossroll
 ;***********************************************************************
 	pathobj	0000,0000,0000,3000,zaco_5,trn_ck,10,10
 	mapobj	0000,1200,0000,5000,BU_8,HARD180YR_ISTRAT

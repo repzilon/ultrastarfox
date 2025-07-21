@@ -36,6 +36,10 @@ debugfont			equ	0
 ; [0 = off, 1 = on]
 prntrouln_on		equ 0
 
+; Run boss roll sequence in training level
+; [0 = off, 1 = on]
+trainingbossroll	equ 0
+
 ; Redirect training mode button in controls select to a different map
 ; [0 = off, 1 = on]
 trainingmapredirect	equ	0
