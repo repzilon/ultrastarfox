@@ -106,7 +106,7 @@ namespace UltraStarFox.Tools.EndText
 			for (int i = 0; i < c; i++) {
 				AddStage(japanese, english, german, colMatches, i, true);
 			}
-			return Regex.Replace(assemblySourceCode, kStagePattern, "$1\tSETDPOS\t7*32+6\n\t$1_level\n\tSETDPOS\t9*32+6\n\t$1_stage");
+			return assemblySourceCode.VarReplace(kStagePattern, "$1\tSETDPOS\t7*32+6\n\t@level\n\tSETDPOS\t9*32+6\n\t@stage");
 		}
 
 		private static string ExtractSectors(string assemblySourceCode,
@@ -119,7 +119,7 @@ namespace UltraStarFox.Tools.EndText
 			for (int i = 0; i < c; i++) {
 				AddStage(japanese, english, german, colMatches, i, false);
 			}
-			return Regex.Replace(assemblySourceCode, kSectorPattern, "$1\tSETDPOS\t7*32+6\n\t$1_level\n\tSETDPOS\t9*32+6\n\t$1_stage");
+			return assemblySourceCode.VarReplace(kSectorPattern, "$1\tSETDPOS\t7*32+6\n\t@level\n\tSETDPOS\t9*32+6\n\t@stage");
 		}
 
 		private static string ExtractArmada(string assemblySourceCode,
@@ -138,7 +138,7 @@ namespace UltraStarFox.Tools.EndText
 				english.Add(strLabel + "_stage2", strArmada);
 				german.Add(strLabel + "_stage2", match[7].Value);
 			}
-			return Regex.Replace(assemblySourceCode, kArmadaPattern, "$1\tSETDPOS\t7*32+6\n\t$1_level\n\tSETDPOS\t9*32+6\n\t$1_stage\n\tSETDPOS\t11*32+6\n\t$1_stage2");
+			return assemblySourceCode.VarReplace(kArmadaPattern, "$1\tSETDPOS\t7*32+6\n\t@level\n\tSETDPOS\t9*32+6\n\t@stage\n\tSETDPOS\t11*32+6\n\t@stage2");
 		}
 
 		private static GroupCollection AddStage(IDictionary<string, string> japanese, IDictionary<string, string> english,
@@ -174,7 +174,7 @@ namespace UltraStarFox.Tools.EndText
 				Add(english, strLabel, strName, strWeapon, strSize);
 				Add(german, strLabel, strName, match[4].Value, match[6].Value);
 			}
-			return Regex.Replace(assemblySourceCode, kBossPattern, "$1\tSETDPOS\t25*32+6\n\t$1_name\n\tSETDPOS\t26*32+6\n\t$1_weapon\n\tSETDPOS\t27*32+6\n\t$1_size");
+			return assemblySourceCode.VarReplace(kBossPattern, "$1\tSETDPOS\t25*32+6\n\t@name\n\tSETDPOS\t26*32+6\n\t@weapon\n\tSETDPOS\t27*32+6\n\t@size");
 		}
 
 		private static string ExtractAndross(string assemblySourceCode,
@@ -195,7 +195,7 @@ namespace UltraStarFox.Tools.EndText
 				Add(english, strLabel, strName, strWeapon, strSize);
 				Add(german, strLabel, strName, match[5].Value, match[7].Value);
 			}
-			return Regex.Replace(assemblySourceCode, kAndrossPattern, "$1\tSETDPOS\t25*32+6\n\t$1_name\n\tSETDPOS\t26*32+6\n\t$1_weapon\n\tSETDPOS\t27*32+6\n\t$1_size");
+			return assemblySourceCode.VarReplace(kAndrossPattern, "$1\tSETDPOS\t25*32+6\n\t@name\n\tSETDPOS\t26*32+6\n\t@weapon\n\tSETDPOS\t27*32+6\n\t@size");
 		}
 
 		private static void Add(IDictionary<string, string> destination, string label,
@@ -210,6 +210,13 @@ namespace UltraStarFox.Tools.EndText
 		{
 			destination.Add(label + "_level", level);
 			destination.Add(label + "_stage", stage);
+		}
+
+		private static string VarReplace(this string assemblySourceCode, string regexSearchPatter, string replacementPattern)
+		{
+			// You want space cash, it's there
+			var expandedPattern = Regex.Replace(replacementPattern, @"@([a-z0-9]+)", "RUN\t' DB \"%£_$1\"'").Replace("£", "£$1");
+			return Regex.Replace(assemblySourceCode, regexSearchPatter, expandedPattern).Replace('£', '$');
 		}
 
 		private static bool IsDuplicated(KeyValuePair<string, int> freq)
@@ -229,8 +236,6 @@ namespace UltraStarFox.Tools.EndText
 			writer.Write("\t; Character set of this file is ");
 			writer.Write(writer.Encoding.WebName);
 			writer.WriteFileLine(".").WriteFileLine();
-
-			writer.WriteFileLine("bt MACRO").WriteFileLine("\tdb\t'\\1'").WriteFileLine("\tENDM").WriteFileLine();
 
 			OutputDictionary(writer, "GERMAN", german);
 			OutputDictionary(writer, "FRENCH", french);
@@ -255,10 +260,14 @@ namespace UltraStarFox.Tools.EndText
 		private static void CommonOutputDictionary(TextWriter writer, IDictionary<string, string> dictionary)
 		{
 			foreach (var kvp in dictionary) {
+				// STRING bossgentxt_level1="LEVEL 1"
+				writer.Write("\tSTRING\t");
 				writer.Write(kvp.Key);
-				writer.Write("\tbt\t<");
-				writer.Write(kvp.Value);
-				writer.WriteFileLine(">");
+				writer.Write("[");
+				writer.Write(kvp.Value.Length + 1);
+				writer.Write("]=\"");
+				writer.Write(kvp.Value.Replace("%", "%%"));
+				writer.WriteFileLine("\"");
 			}
 			writer.WriteFileLine("\tENDC").WriteFileLine();
 		}

@@ -93,3 +93,4 @@ TOOLS/sf_crunch.exe
 TOOLS/SharpUltraStarFoxTools/.vs/
 TOOLS/SharpUltraStarFoxTools/*/bin/
 TOOLS/SharpUltraStarFoxTools/*/obj/
+TOOLS/SharpUltraStarFoxTools/*/*.csproj.user

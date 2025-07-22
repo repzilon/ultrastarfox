@@ -46,6 +46,7 @@ bg3xspd	equ	4
 bg3yspd	equ	2
 
 	incpublics	EXT\endseq.ext
+	include	ASM\endtext.asm
 
 
 ;--------------------------------------------------------------------------
@@ -1079,487 +1080,224 @@ bossfinaldemo	defdemo	0000,0,Space_viewCY,-200,face_b,monolith_istrat
 
 demotxtbase
 boss11txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 1'
-	ELSEIF
-	DB	'ROUTE 1'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 1'
+	RUN	' DB "%$bossgentxt_level1"'
 	SETDPOS	9*32+6
-	DB	'CORNERIA'
+	RUN	' DB "%$bossgentxt_corneria"'
 	DB	0
 boss21txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 2'
-	ELSEIF
-	DB	'ROUTE 2'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 1'
+	RUN	' DB "%$bossgentxt_level2"'
 	SETDPOS	9*32+6
-	DB	'CORNERIA'
+	RUN	' DB "%$bossgentxt_corneria"'
 	DB	0
 boss31txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 3'
-	ELSEIF
-	DB	'ROUTE 3'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 1'
+	RUN	' DB "%$bossgentxt_level3"'
 	SETDPOS	9*32+6
-	DB	'CORNERIA'
+	RUN	' DB "%$bossgentxt_corneria"'
 	DB	0
 boss11txt2
-boss21txt2
-	SETDPOS	25*32+6
-	DB	"NAME   - ATTACK CARRIER"
+boss21txt2	SETDPOS	25*32+6
+	RUN	' DB "%$boss21txt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - MISSILE BLASTER"
-	ELSEIF
-	DB	"WAFFE  - MISSILE BLASTER"
-	ENDC
+	RUN	' DB "%$boss21txt2_weapon"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H70*W100*D150"
-	ELSEIF
-	DB	"GROESSE- H70*B100*T150"
-	ENDC
+	RUN	' DB "%$boss21txt2_size"'
 	DB	0,0
 boss31txt2	SETDPOS	25*32+6
-	DB	"NAME   - DESTRUCTOR"
+	RUN	' DB "%$boss31txt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - PLASMA"
-	ELSEIF
-	DB	"WAFFE  - PLASMA"
-	ENDC
+	RUN	' DB "%$boss31txt2_weapon"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H45*W150*D90"
-	ELSEIF
-	DB	"GROESSE- H45*B150*T90"
-	ENDC
+	RUN	' DB "%$boss31txt2_size"'
 	DB	0,0
 
 boss12txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 1'
-	ELSEIF
-	DB	'ROUTE 1'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 2'
+	RUN	' DB "%$bossgentxt_level1"'
 	SETDPOS	9*32+6
-	DB	'ASTEROID'
+	RUN	' DB "%$bossgentxt_asteroid"'
 	DB	0
 boss22txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 2'
-	ELSEIF
-	DB	'ROUTE 2'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 2'
+	RUN	' DB "%$bossgentxt_level2"'
 	SETDPOS	9*32+6
-	IFEQ	GERMAN
-	DB	'SECTOR %'
-	ELSEIF
-	DB	'SEKTOR %'
-	ENDC
+	RUN	' DB "%$boss22txt_stage"'
 	DB	0
 boss12txt2
 boss22txt2	SETDPOS	25*32+6
-	DB	"NAME   - ROCK CRUSHER"
+	RUN	' DB "%$boss22txt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - LASER"
-	ELSEIF
-	DB	"WAFFE  - LASER"
-	ENDC
+	RUN	' DB "%$bossgentxt_weapon_laser"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H60*W86*D45"
-	ELSEIF
-	DB	"GROESSE- H60*B86*T45"
-	ENDC
+	RUN	' DB "%$boss22txt2_size"'
 	DB	0,0
 boss32txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 3'
-	ELSEIF
-	DB	'ROUTE 3'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 2'
+	RUN	' DB "%$bossgentxt_level3"'
 	SETDPOS	9*32+6
-	DB	'ASTEROID'
+	RUN	' DB "%$bossgentxt_asteroid"'
 	DB	0
 boss32txt2	SETDPOS	25*32+6
-	DB	"NAME   - BLADE BARRIER"
+	RUN	' DB "%$boss32txt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - WEB ATTACK"
-	ELSEIF
-	DB	"WAFFE  - WEB ATTACK"
-	ENDC
+	RUN	' DB "%$boss32txt2_weapon"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H90*W90*D65"
-	ELSEIF
-	DB	"GROESSE- H90*B90*T65"
-	ENDC
+	RUN	' DB "%$boss32txt2_size"'
 	DB	0,0
 
 boss13txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 1'
-	ELSEIF
-	DB	'ROUTE 1'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 3'
+	RUN	' DB "%$bossgentxt_level1"'
 	SETDPOS	9*32+6
-	IFEQ	GERMAN
-	DB	'SPACE'
-	ELSEIF
-	DB	'RAUM-'
-	ENDC
+	RUN	' DB "%$boss13txt_stage"'
 	SETDPOS	11*32+6
-	IFEQ	GERMAN
-	DB	'ARMADA'
-	ELSEIF
-	DB	'FLOTTE'
-	ENDC
+	RUN	' DB "%$boss13txt_stage2"'
 	DB	0
 boss13txt2	SETDPOS	25*32+6
-	DB	"NAME   - ATOMIC BASE"
+	RUN	' DB "%$boss13txt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - LASER"
-	ELSEIF
-	DB	"WAFFE  - LASER"
-	ENDC
+	RUN	' DB "%$bossgentxt_weapon_laser"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H600*W850*D1200"
-	ELSEIF
-	DB	"GROESSE- H600*B850*T1200"
-	ENDC
+	RUN	' DB "%$boss13txt2_size"'
 	DB	0,0
 boss23txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 2'
-	ELSEIF
-	DB	'ROUTE 2'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 3'
+	RUN	' DB "%$bossgentxt_level2"'
 	SETDPOS	9*32+6
-	DB	'TITANIA'
+	RUN	' DB "%$boss23txt_stage"'
 	DB	0
 boss23txt2	SETDPOS	25*32+6
-	DB	"NAME   - PROFESSOR HANGER"
+	RUN	' DB "%$boss23txt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - SHADOW THRUSTER"
-	ELSEIF
-	DB	"WAFFE  - SHADOW THRUSTER"
-	ENDC
+	RUN	' DB "%$boss23txt2_weapon"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H25*W18*D30"
-	ELSEIF
-	DB	"GROESSE- H25*B18*T30"
-	ENDC
+	RUN	' DB "%$boss23txt2_size"'
 	DB	0,0
 boss33txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 3'
-	ELSEIF
-	DB	'ROUTE 3'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 3'
+	RUN	' DB "%$bossgentxt_level3"'
 	SETDPOS	9*32+6
-	DB	'FORTUNA'
+	RUN	' DB "%$boss33txt_stage"'
 	DB	0
 boss33txt2	SETDPOS	25*32+6
-	DB	"NAME   - MONARCH DODORA"
+	RUN	' DB "%$boss33txt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - FIRE BREATH"
-	ELSEIF
-	DB	"WAFFE  - FIRE BREATH"
-	ENDC
+	RUN	' DB "%$boss33txt2_weapon"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H85*W160*D200"
-	ELSEIF
-	DB	"GROESSE- H85*B160*T200"
-	ENDC
+	RUN	' DB "%$boss33txt2_size"'
 	DB	0,0
 
 boss14txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 1'
-	ELSEIF
-	DB	'ROUTE 1'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 4'
+	RUN	' DB "%$bossgentxt_level1"'
 	SETDPOS	9*32+6
-	DB	'METEOR'
+	RUN	' DB "%$boss14txt_stage"'
 	DB	0
 boss14txt2	SETDPOS	25*32+6
-	DB	"NAME   - DANCING INSECTOR"
+	RUN	' DB "%$boss14txt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - FIRE BLASTER"
-	ELSEIF
-	DB	"WAFFE  - FIRE BLASTER"
-	ENDC
+	RUN	' DB "%$boss14txt2_weapon"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H120*W87*D72"
-	ELSEIF
-	DB	"GROESSE- H120*B87*T72"
-	ENDC
+	RUN	' DB "%$boss14txt2_size"'
 	DB	0,0
 boss24txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 2'
-	ELSEIF
-	DB	'ROUTE 2'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 4'
+	RUN	' DB "%$bossgentxt_level2"'
 	SETDPOS	9*32+6
-	IFEQ	GERMAN
-	DB	'SECTOR $'
-	ELSEIF
-	DB	'SEKTOR $'
-	ENDC
+	RUN	' DB "%$boss24txt_stage"'
 	DB	0
 boss24txt2	SETDPOS	25*32+6
-	DB	"NAME   - PLASMA HYDRA"
+	RUN	' DB "%$boss24txt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - PLASMA SPEWER"
-	ELSEIF
-	DB	"WAFFE  - PLASMA SPEWER"
-	ENDC
+	RUN	' DB "%$boss24txt2_weapon"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H96*W280*D55"
-	ELSEIF
-	DB	"GROESSE- H96*B280*T55"
-	ENDC
+	RUN	' DB "%$boss24txt2_size"'
 	DB	0,0
 boss34txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 3'
-	ELSEIF
-	DB	'ROUTE 3'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 4'
+	RUN	' DB "%$bossgentxt_level3"'
 	SETDPOS	9*32+6
-	IFEQ	GERMAN
-	DB	'SECTOR #'
-	ELSEIF
-	DB	'SEKTOR #'
-	ENDC
+	RUN	' DB "%$boss34txt_stage"'
 	DB	0
 boss34txt2	SETDPOS	25*32+6
-	DB	"NAME   - ATOMIC BASE II"
+	RUN	' DB "%$boss34txt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - LASER"
-	ELSEIF
-	DB	"WAFFE  - LASER"
-	ENDC
+	RUN	' DB "%$bossgentxt_weapon_laser"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H92*W90*D1100"
-	ELSEIF
-	DB	"GROESSE- H92*B90*T1100"
-	ENDC
+	RUN	' DB "%$boss34txt2_size"'
 	DB	0,0
 
 boss15txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 1'
-	ELSEIF
-	DB	'ROUTE 1'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 5'
+	RUN	' DB "%$bossgentxt_level1"'
 	SETDPOS	9*32+6
-	DB	'VENOM'
+	RUN	' DB "%$bossgentxt_venom"'
 	DB	0
 boss25txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 2'
-	ELSEIF
-	DB	'ROUTE 2'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 5'
+	RUN	' DB "%$bossgentxt_level2"'
 	SETDPOS	9*32+6
-	DB	'VENOM'
+	RUN	' DB "%$bossgentxt_venom"'
 	DB	0
 boss15txt2	SETDPOS	25*32+6
-	DB	"NAME   - PHANTRON"
+	RUN	' DB "%$boss15txt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - LASER"
-	ELSEIF
-	DB	"WAFFE  - LASER"
-	ENDC
+	RUN	' DB "%$bossgentxt_weapon_laser"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H25*W22*D31"
-	ELSEIF
-	DB	"GROESSE- H25*B22*T31"
-	ENDC
+	RUN	' DB "%$boss15txt2_size"'
 	DB	0,0
 boss25txt2	SETDPOS	25*32+6
-	DB	"NAME   - METAL SMASHER"
+	RUN	' DB "%$boss25txt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - CRUSH ATTACK"
-	ELSEIF
-	DB	"WAFFE  - CRUSH ATTACK"
-	ENDC
+	RUN	' DB "%$boss25txt2_weapon"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H17*W20*D38"
-	ELSEIF
-	DB	"GROESSE- H17*B20*T38"
-	ENDC
+	RUN	' DB "%$boss25txt2_size"'
 	DB	0,0
 
 boss16txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 1'
-	ELSEIF
-	DB	'ROUTE 1'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 6'
+	RUN	' DB "%$bossgentxt_level1"'
 	SETDPOS	9*32+6
-	DB	'VENOM'
+	RUN	' DB "%$bossgentxt_venom"'
 	DB	0
 boss26txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 2'
-	ELSEIF
-	DB	'ROUTE 2'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 6'
+	RUN	' DB "%$bossgentxt_level2"'
 	SETDPOS	9*32+6
-	DB	'VENOM'
+	RUN	' DB "%$bossgentxt_venom"'
 	DB	0
 boss26txt2	SETDPOS	25*32+6
-	DB	"NAME   - GALACTIC RIDER"
+	RUN	' DB "%$boss26txt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - AIR BIKERS"
-	ELSEIF
-	DB	"WAFFE  - AIR BIKERS"
-	ENDC
+	RUN	' DB "%$boss26txt2_weapon"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H80*W61*D25"
-	ELSEIF
-	DB	"GROESSE- H80*B61*T25"
-	ENDC
+	RUN	' DB "%$boss26txt2_size"'
 	DB	0,0
 
 boss35txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 3'
-	ELSEIF
-	DB	'ROUTE 3'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 5'
+	RUN	' DB "%$bossgentxt_level3"'
 	SETDPOS	9*32+6
-	DB	'MACBETH'
+	RUN	' DB "%$boss35txt_stage"'
 	DB	0
 boss35txt2	SETDPOS	25*32+6
-	DB	"NAME   - SPINNING CORE"
+	RUN	' DB "%$boss35txt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - LASER"
-	ELSEIF
-	DB	"WAFFE  - LASER"
-	ENDC
+	RUN	' DB "%$bossgentxt_weapon_laser"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H63*W52*D45"
-	ELSEIF
-	DB	"GROESSE- H63*B52*T45"
-	ENDC
+	RUN	' DB "%$boss35txt2_size"'
 	DB	0,0
 
 boss36txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 3'
-	ELSEIF
-	DB	'ROUTE 3'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 6'
+	RUN	' DB "%$bossgentxt_level3"'
 	SETDPOS	9*32+6
-	DB	'VENOM'
+	RUN	' DB "%$bossgentxt_venom"'
 	DB	0
 
 boss36txt2	SETDPOS	25*32+6
-	DB	"NAME   - GREAT COMMANDER"
+	RUN	' DB "%$bossgentxt_name_greatcommander"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - LASER"
-	ELSEIF
-	DB	"WAFFE  - LASER"
-	ENDC
+	RUN	' DB "%$bossgentxt_weapon_laser"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H73*W97*D250"
-	ELSEIF
-	DB	"GROESSE- H73*B97*T250"
-	ENDC
+	RUN	' DB "%$bossgentxt_size_h73_w97_d250"'
 	DB	0,0
 
 boss37txt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	'LEVEL 3'
-	ELSEIF
-	DB	'ROUTE 3'
-	ENDC
-;	SETDPOS	8*32+6
-;	DB	'STAGE 7'
+	RUN	' DB "%$bossgentxt_level3"'
 	SETDPOS	9*32+6
-	DB	'VENOM'
+	RUN	' DB "%$bossgentxt_venom"'
 	DB	0
 boss37txt2	SETDPOS	25*32+6
-	DB	"NAME   - GREAT COMMANDER"
+	RUN	' DB "%$bossgentxt_name_greatcommander"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - IRON BALLS"
-	ELSEIF
-	DB	"WAFFE  - IRON BALLS"
-	ENDC
+	RUN	' DB "%$boss37txt2_weapon"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H73*W97*D250"
-	ELSEIF
-	DB	"GROESSE- H73*B97*T250"
-	ENDC
+	RUN	' DB "%$bossgentxt_size_h73_w97_d250"'
 	DB	0,0
 
 
@@ -1578,23 +1316,11 @@ bossfinaltxt	SETDPOS	7*32+6
 	ENDC
 	DB	0
 bossfinaltxt2	SETDPOS	25*32+6
-	ifne	JAPANESE
-	DB	"NAME   - ANDORF..."
-	elseif
-	DB	"NAME   - ANDROSS..."
-	endc
+	RUN	' DB "%$bossfinaltxt2_name"'
 	SETDPOS	26*32+6
-	IFEQ	GERMAN
-	DB	"WEAPON - TELEKINESIS"
-	ELSEIF
-	DB	"WAFFE  - TELEKINESIS"
-	ENDC
+	RUN	' DB "%$bossfinaltxt2_weapon"'
 	SETDPOS	27*32+6
-	IFEQ	GERMAN
-	DB	"SIZE   - H100*W80*D30"
-	ELSEIF
-	DB	"GROESSE- H100*B80*T30"
-	ENDC
+	RUN	' DB "%$bossfinaltxt2_size"'
 	DB	0,0
 
 
@@ -1803,6 +1529,7 @@ tit_strat
 	s_add_alvar	B,x,al_rotz,#2
 	s_add_playerz x
 	s_end_strat
+
 
 
 
