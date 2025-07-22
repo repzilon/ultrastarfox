@@ -82,14 +82,17 @@ namespace UltraStarFox.Tools.EndText
 				}
 			}
 
+			strEndSeqAsm = Regex.Replace(strEndSeqAsm, @"incpublics\tEXT\\endseq.ext", "$0\r\n\tinclude\tASM\\endtext.asm");
+
 			// On Windows, the program itself, not the OS, is responsible for setting the console output character set.
 			Console.OutputEncoding = encoding;
-			using (var wrtEndText = new StreamWriter("endtext.asm", false, encoding)) {
+			using (var wrtEndText = new StreamWriter("ENDTEXT.ASM", false, encoding)) {
 				OutputDictionary(wrtEndText, dicJapanese, dicEnglish, dicGerman, dicFrench, dicSpanish);
 			}
 			//*
-			using (var wrtEndSeqNew = new StreamWriter("endseqnu.asm", false, encoding)) {
-				wrtEndSeqNew.WriteLine(strEndSeqAsm);
+			using (var wrtEndSeqNew = new StreamWriter("ENDSEQNU.ASM", false, encoding)) {
+				strEndSeqAsm = strEndSeqAsm.Replace("\r\n", "\n").Replace("\n", "\r\n");	// normalize to CRLF
+				wrtEndSeqNew.WriteFileLine(strEndSeqAsm);
 			}// */
 		}
 
@@ -109,7 +112,7 @@ namespace UltraStarFox.Tools.EndText
 		private static string ExtractSectors(string assemblySourceCode,
 		IDictionary<string, string> japanese, IDictionary<string, string> english, IDictionary<string, string> german)
 		{
-			const string kSectorPattern = @"([a-z0-9]+)\tSETDPOS\t7[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z 0-9]+)'\W+ELSEIF\W+DB\t'([A-Z 0-9]+)'\W+ENDC\W+;.*\W+.*\W+SETDPOS\t9[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z #$%]+)'\W+ELSEIF\W+DB\t'([A-Z #$%]+)'";
+			const string kSectorPattern = @"([a-z0-9]+)\tSETDPOS\t7[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z 0-9]+)'\W+ELSEIF\W+DB\t'([A-Z 0-9]+)'\W+ENDC\W+;.*\W+.*\W+SETDPOS\t9[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z #$%]+)'\W+ELSEIF\W+DB\t'([A-Z #$%]+)'\W+ENDC";
 			var colMatches = Regex.Matches(assemblySourceCode, kSectorPattern);
 			var c = colMatches.Count;
 
@@ -122,7 +125,7 @@ namespace UltraStarFox.Tools.EndText
 		private static string ExtractArmada(string assemblySourceCode,
 		IDictionary<string, string> japanese, IDictionary<string, string> english, IDictionary<string, string> german)
 		{
-			const string kArmadaPattern = @"([a-z0-9]+)\tSETDPOS\t7[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z 0-9]+)'\W+ELSEIF\W+DB\t'([A-Z 0-9]+)'\W+ENDC\W+;.*\W+.*\W+SETDPOS\t9[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z #$%]+)'\W+ELSEIF\W+DB\t'([A-Z #$%-]+)'\W+ENDC\W+SETDPOS\t11[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z]+)'\W+ELSEIF\W+DB\t'([A-Z]+)'";
+			const string kArmadaPattern = @"([a-z0-9]+)\tSETDPOS\t7[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z 0-9]+)'\W+ELSEIF\W+DB\t'([A-Z 0-9]+)'\W+ENDC\W+;.*\W+.*\W+SETDPOS\t9[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z #$%]+)'\W+ELSEIF\W+DB\t'([A-Z #$%-]+)'\W+ENDC\W+SETDPOS\t11[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t'([A-Z]+)'\W+ELSEIF\W+DB\t'([A-Z]+)'\W+ENDC";
 			var colMatches = Regex.Matches(assemblySourceCode, kArmadaPattern);
 			var c = colMatches.Count;
 
@@ -156,7 +159,7 @@ namespace UltraStarFox.Tools.EndText
 		private static string ExtractBosses(string assemblySourceCode,
 		IDictionary<string, string> japanese, IDictionary<string, string> english, IDictionary<string, string> german)
 		{
-			const string kBossPattern = @"([A-Za-z0-9]+)\W+SETDPOS\t25[*]32[+]6\W+DB\t""([A-Z -]+)""\W+SETDPOS\t26[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t""([A-Z -]+)""\W+ELSEIF\W+DB\t""([A-Z -]+)""\W+ENDC\W+SETDPOS\t27[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t""([A-Z0-9 *-]+)""\W+ELSEIF\W+DB\t""([A-Z0-9 *-]+)""";
+			const string kBossPattern = @"([A-Za-z0-9]+)\W+SETDPOS\t25[*]32[+]6\W+DB\t""([A-Z -]+)""\W+SETDPOS\t26[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t""([A-Z -]+)""\W+ELSEIF\W+DB\t""([A-Z -]+)""\W+ENDC\W+SETDPOS\t27[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t""([A-Z0-9 *-]+)""\W+ELSEIF\W+DB\t""([A-Z0-9 *-]+)""\W+ENDC";
 			var colMatches = Regex.Matches(assemblySourceCode, kBossPattern);
 			var c = colMatches.Count;
 
@@ -177,7 +180,7 @@ namespace UltraStarFox.Tools.EndText
 		private static string ExtractAndross(string assemblySourceCode,
 		IDictionary<string, string> japanese, IDictionary<string, string> english, IDictionary<string, string> german)
 		{
-			const string kAndrossPattern = @"([A-Za-z0-9]+)\tSETDPOS\t25[*]32[+]6\W+ifne\tJAPANESE\W+DB\t""([A-Z .-]+)""\W+elseif\W+DB\t""([A-Z .-]+)""\W+endc\W+SETDPOS\t26[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t""([A-Z -]+)""\W+ELSEIF\W+DB\t""([A-Z -]+)""\W+ENDC\W+SETDPOS\t27[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t""([A-Z0-9 *-]+)""\W+ELSEIF\W+DB\t""([A-Z0-9 *-]+)""";
+			const string kAndrossPattern = @"([A-Za-z0-9]+)\tSETDPOS\t25[*]32[+]6\W+ifne\tJAPANESE\W+DB\t""([A-Z .-]+)""\W+elseif\W+DB\t""([A-Z .-]+)""\W+endc\W+SETDPOS\t26[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t""([A-Z -]+)""\W+ELSEIF\W+DB\t""([A-Z -]+)""\W+ENDC\W+SETDPOS\t27[*]32[+]6\W+IFEQ\tGERMAN\W+DB\t""([A-Z0-9 *-]+)""\W+ELSEIF\W+DB\t""([A-Z0-9 *-]+)""\W+ENDC";
 			var colMatches = Regex.Matches(assemblySourceCode, kAndrossPattern);
 			var c = colMatches.Count;
 
@@ -225,13 +228,9 @@ namespace UltraStarFox.Tools.EndText
 		{
 			writer.Write("\t; Character set of this file is ");
 			writer.Write(writer.Encoding.WebName);
-			writer.WriteLine(".");
-			writer.WriteLine();
+			writer.WriteFileLine(".").WriteFileLine();
 
-			writer.WriteLine("bt MACRO");
-			writer.WriteLine("\tdb\t'\\1'");
-			writer.WriteLine("\tENDM");
-			writer.WriteLine();
+			writer.WriteFileLine("bt MACRO").WriteFileLine("\tdb\t'\\1'").WriteFileLine("\tENDM").WriteFileLine();
 
 			OutputDictionary(writer, "GERMAN", german);
 			OutputDictionary(writer, "FRENCH", french);
@@ -243,13 +242,13 @@ namespace UltraStarFox.Tools.EndText
 		private static void OutputDictionary(TextWriter writer, string language, IDictionary<string, string> dictionary)
 		{
 			writer.Write("\tIFNE\t");
-			writer.WriteLine(language);
+			writer.WriteFileLine(language);
 			CommonOutputDictionary(writer, dictionary);
 		}
 
 		private static void OutputDictionary(TextWriter writer, IDictionary<string, string> dictionary)
 		{
-			writer.WriteLine("\tIFEQ\tGERMAN+FRENCH+JAPANESE+SPANISH");
+			writer.WriteFileLine("\tIFEQ\tGERMAN+FRENCH+JAPANESE+SPANISH");
 			CommonOutputDictionary(writer, dictionary);
 		}
 
@@ -259,10 +258,26 @@ namespace UltraStarFox.Tools.EndText
 				writer.Write(kvp.Key);
 				writer.Write("\tbt\t<");
 				writer.Write(kvp.Value);
-				writer.WriteLine(">");
+				writer.WriteFileLine(">");
 			}
-			writer.WriteLine("\tENDC");
-			writer.WriteLine();
+			writer.WriteFileLine("\tENDC").WriteFileLine();
+		}
+
+		private static TextWriter WriteFileLine(this TextWriter writer, string text)
+		{
+			if (writer is StreamWriter) {	// Force CRLF when we write files
+				writer.Write(text);
+				writer.Write("\r\n");
+			} else {    // Use platform new line for console output
+				writer.WriteLine(text);
+			}
+			return writer;	// Allow call chaining
+		}
+
+		private static TextWriter WriteFileLine(this TextWriter writer)
+		{
+			writer.Write(writer is StreamWriter ? "\r\n" : Environment.NewLine);
+			return writer;
 		}
 	}
 }
