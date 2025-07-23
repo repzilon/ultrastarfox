@@ -1096,18 +1096,24 @@ boss31txt	SETDPOS	7*32+6
 	DB	0
 boss11txt2
 boss21txt2	SETDPOS	25*32+6
-	RUN	' DB "%$boss21txt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$boss21txt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$boss21txt2_weapon"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$boss21txt2_weaponv"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$boss21txt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$boss21txt2_sizev"'
 	DB	0,0
 boss31txt2	SETDPOS	25*32+6
-	RUN	' DB "%$boss31txt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$boss31txt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$boss31txt2_weapon"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$boss31txt2_weaponv"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$boss31txt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$boss31txt2_sizev"'
 	DB	0,0
 
 boss12txt	SETDPOS	7*32+6
@@ -1122,11 +1128,14 @@ boss22txt	SETDPOS	7*32+6
 	DB	0
 boss12txt2
 boss22txt2	SETDPOS	25*32+6
-	RUN	' DB "%$boss22txt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$boss22txt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$bossgentxt_weapon_laser"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$bossgentxt_laser"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$boss22txt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$boss22txt2_sizev"'
 	DB	0,0
 boss32txt	SETDPOS	7*32+6
 	RUN	' DB "%$bossgentxt_level3"'
@@ -1134,11 +1143,14 @@ boss32txt	SETDPOS	7*32+6
 	RUN	' DB "%$bossgentxt_asteroid"'
 	DB	0
 boss32txt2	SETDPOS	25*32+6
-	RUN	' DB "%$boss32txt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$boss32txt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$boss32txt2_weapon"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$boss32txt2_weaponv"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$boss32txt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$boss32txt2_sizev"'
 	DB	0,0
 
 boss13txt	SETDPOS	7*32+6
@@ -1149,11 +1161,14 @@ boss13txt	SETDPOS	7*32+6
 	RUN	' DB "%$boss13txt_stage2"'
 	DB	0
 boss13txt2	SETDPOS	25*32+6
-	RUN	' DB "%$boss13txt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$boss13txt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$bossgentxt_weapon_laser"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$bossgentxt_laser"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$boss13txt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$boss13txt2_sizev"'
 	DB	0,0
 boss23txt	SETDPOS	7*32+6
 	RUN	' DB "%$bossgentxt_level2"'
@@ -1161,11 +1176,14 @@ boss23txt	SETDPOS	7*32+6
 	RUN	' DB "%$boss23txt_stage"'
 	DB	0
 boss23txt2	SETDPOS	25*32+6
-	RUN	' DB "%$boss23txt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$boss23txt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$boss23txt2_weapon"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$boss23txt2_weaponv"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$boss23txt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$boss23txt2_sizev"'
 	DB	0,0
 boss33txt	SETDPOS	7*32+6
 	RUN	' DB "%$bossgentxt_level3"'
@@ -1173,11 +1191,14 @@ boss33txt	SETDPOS	7*32+6
 	RUN	' DB "%$boss33txt_stage"'
 	DB	0
 boss33txt2	SETDPOS	25*32+6
-	RUN	' DB "%$boss33txt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$boss33txt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$boss33txt2_weapon"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$boss33txt2_weaponv"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$boss33txt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$boss33txt2_sizev"'
 	DB	0,0
 
 boss14txt	SETDPOS	7*32+6
@@ -1186,11 +1207,14 @@ boss14txt	SETDPOS	7*32+6
 	RUN	' DB "%$boss14txt_stage"'
 	DB	0
 boss14txt2	SETDPOS	25*32+6
-	RUN	' DB "%$boss14txt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$boss14txt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$boss14txt2_weapon"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$boss14txt2_weaponv"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$boss14txt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$boss14txt2_sizev"'
 	DB	0,0
 boss24txt	SETDPOS	7*32+6
 	RUN	' DB "%$bossgentxt_level2"'
@@ -1198,11 +1222,14 @@ boss24txt	SETDPOS	7*32+6
 	RUN	' DB "%$boss24txt_stage"'
 	DB	0
 boss24txt2	SETDPOS	25*32+6
-	RUN	' DB "%$boss24txt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$boss24txt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$boss24txt2_weapon"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$boss24txt2_weaponv"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$boss24txt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$boss24txt2_sizev"'
 	DB	0,0
 boss34txt	SETDPOS	7*32+6
 	RUN	' DB "%$bossgentxt_level3"'
@@ -1210,11 +1237,14 @@ boss34txt	SETDPOS	7*32+6
 	RUN	' DB "%$boss34txt_stage"'
 	DB	0
 boss34txt2	SETDPOS	25*32+6
-	RUN	' DB "%$boss34txt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$boss34txt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$bossgentxt_weapon_laser"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$bossgentxt_laser"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$boss34txt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$boss34txt2_sizev"'
 	DB	0,0
 
 boss15txt	SETDPOS	7*32+6
@@ -1228,18 +1258,24 @@ boss25txt	SETDPOS	7*32+6
 	RUN	' DB "%$bossgentxt_venom"'
 	DB	0
 boss15txt2	SETDPOS	25*32+6
-	RUN	' DB "%$boss15txt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$boss15txt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$bossgentxt_weapon_laser"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$bossgentxt_laser"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$boss15txt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$boss15txt2_sizev"'
 	DB	0,0
 boss25txt2	SETDPOS	25*32+6
-	RUN	' DB "%$boss25txt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$boss25txt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$boss25txt2_weapon"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$boss25txt2_weaponv"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$boss25txt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$boss25txt2_sizev"'
 	DB	0,0
 
 boss16txt	SETDPOS	7*32+6
@@ -1253,11 +1289,14 @@ boss26txt	SETDPOS	7*32+6
 	RUN	' DB "%$bossgentxt_venom"'
 	DB	0
 boss26txt2	SETDPOS	25*32+6
-	RUN	' DB "%$boss26txt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$boss26txt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$boss26txt2_weapon"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$boss26txt2_weaponv"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$boss26txt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$boss26txt2_sizev"'
 	DB	0,0
 
 boss35txt	SETDPOS	7*32+6
@@ -1266,11 +1305,14 @@ boss35txt	SETDPOS	7*32+6
 	RUN	' DB "%$boss35txt_stage"'
 	DB	0
 boss35txt2	SETDPOS	25*32+6
-	RUN	' DB "%$boss35txt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$boss35txt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$bossgentxt_weapon_laser"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$bossgentxt_laser"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$boss35txt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$boss35txt2_sizev"'
 	DB	0,0
 
 boss36txt	SETDPOS	7*32+6
@@ -1280,11 +1322,14 @@ boss36txt	SETDPOS	7*32+6
 	DB	0
 
 boss36txt2	SETDPOS	25*32+6
-	RUN	' DB "%$bossgentxt_name_greatcommander"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$bossgentxt_greatcommander"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$bossgentxt_weapon_laser"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$bossgentxt_laser"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$bossgentxt_size_h73_w97_d250"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$bossgentxt_h73_w97_d250"'
 	DB	0,0
 
 boss37txt	SETDPOS	7*32+6
@@ -1293,34 +1338,32 @@ boss37txt	SETDPOS	7*32+6
 	RUN	' DB "%$bossgentxt_venom"'
 	DB	0
 boss37txt2	SETDPOS	25*32+6
-	RUN	' DB "%$bossgentxt_name_greatcommander"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$bossgentxt_greatcommander"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$boss37txt2_weapon"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$boss37txt2_weaponv"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$bossgentxt_size_h73_w97_d250"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$bossgentxt_h73_w97_d250"'
 	DB	0,0
 
 
 
 bossfinaltxt	SETDPOS	7*32+6
-	IFEQ	GERMAN
-	DB	"FINAL"
-	ELSEIF
-	DB	"LETZTE"
-	ENDC
+	RUN	' DB "%$bossfinaltxt_level"'
 	SETDPOS	8*32+6
-	IFEQ	GERMAN
-	DB	"STAGE"
-	ELSEIF
-	DB	"ETAPPE"
-	ENDC
+	RUN	' DB "%$bossfinaltxt_stage"'
 	DB	0
 bossfinaltxt2	SETDPOS	25*32+6
-	RUN	' DB "%$bossfinaltxt2_name"'
+	RUN	' DB "%$bossgentxt_name"'
+	RUN	' DB "%$bossfinaltxt2_namev"'
 	SETDPOS	26*32+6
-	RUN	' DB "%$bossfinaltxt2_weapon"'
+	RUN	' DB "%$bossgentxt_weapon"'
+	RUN	' DB "%$bossfinaltxt2_weaponv"'
 	SETDPOS	27*32+6
-	RUN	' DB "%$bossfinaltxt2_size"'
+	RUN	' DB "%$bossgentxt_size"'
+	RUN	' DB "%$bossfinaltxt2_sizev"'
 	DB	0,0
 
 
