@@ -9,3 +9,7 @@ The .TRN files maps from character codes found in message files of the MSG direc
 Messages files for European languages are strictly single octet (an 8-bit byte). For Japanese text, a simple variable byte scheme is used. Dakuten (looking like straight double quotes) and handakuten (looking like the degree sign) are used next to the appropriate katakana to graphically compose the phonogram (a character representing a syllable), when needed.
 
 The build process will generate MOJI_0.FON from MOJI_0.bmp and use MOJI_0.TRN to read from the language-specific message file for outputting sequences of tile numbers embedded as constants. Those constants are later referenced, through a table, as an argument of a call to a text display routine. Depending on the language build configuration (and the fork), the MOJI_D files may be used instead.
+
+# MOJI_0 Tile Table
+
+<img title="" src="img/moji_0.png" alt="MOJI_0.FON" width="303" data-align="left">

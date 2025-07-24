@@ -63,6 +63,9 @@ bg_hole_1	init_bg	mode2
 	sta.l	testk4
 	a8
 	bgm	bhole
+	IFNE	MSU1
+	msuplay	levelblackhole,repeat
+	ENDC
 	space	night
 
 bg_1_1i_1	init_bg	mode2
@@ -75,6 +78,9 @@ bg_1_1i_1	init_bg	mode2
 	hofmode	tunnel3
 	set_zdepthtable	tunnel
 	bgm	10
+	IFNE	MSU1
+	msuplay	scramble,repeat
+	ENDC
 	lda	#0
 	sta.l	m_meters
 	shadowheight 0
@@ -96,6 +102,9 @@ bg_1_1c_1	init_bg	mode2		;what I see from the tunnel
 	shadowheight 0
 	bg2Yscroll	232
 	bgm	11
+	IFNE	MSU1
+	msuplay	level1_1,repeat
+	ENDC
 	lda	#1
 	sta.l	m_meters
 	planet	night
@@ -112,6 +121,9 @@ bg_3_1c_1	init_bg	mode2		;what I see from the tunnel
 	shadowheight 0
 	bg2Yscroll	232
 	bgm	11
+	IFNE	MSU1
+	msuplay	level1_1,repeat
+	ENDC
 	lda	#1
 	sta.l	m_meters
 	planet	red
@@ -129,6 +141,9 @@ bg_training_1	init_bg	mode2
 	shadowheight 0
 	bg2Yscroll	232
 	bgm	training
+	IFNE	MSU1
+	msuplay trainingmode,repeat
+	ENDC
 	planet	night
 
 bg_1_2_1	init_bg	mode2
@@ -139,6 +154,9 @@ bg_1_2_1	init_bg	mode2
 	info	von,hon,zon,space
 	pstrat	playerinsidespaceflyin,b,abc
 	bgm	12
+	IFNE	MSU1
+	msuplay	level1_2,repeat
+	ENDC
 	hofmode	rotate
 	bg2Yscroll	232
 	space	night
@@ -151,6 +169,9 @@ bg_special_1	init_bg	mode2
 	info	von,hon,zon,space
 	pstrat	playerinsidespaceflyin,b,abc
 	bgm	special
+	IFNE	MSU1
+	msuplay	levelootd,repeat
+	ENDC
 	hofmode	bhole
 	a16
 	lda	#0
@@ -174,6 +195,9 @@ bg_1_3i_1	init_bg	mode2
 	hofmode	rotate
 	bg2Yscroll	232
 	bgm	13
+	IFNE	MSU1
+	msuplay	level1_3,repeat
+	ENDC
 	space	night
 
 bg_1_3a_1	init_bg	mode2
@@ -258,6 +282,9 @@ bg_1_4_1	init_bg	mode2
 	bg2Yscroll	232
 	shadowheight 0
 	bgm	14
+	IFNE	MSU1
+	msuplay	level1_4,repeat
+	ENDC
 	set_zdepthtable	mist
 	planet	night
 
@@ -278,6 +305,9 @@ bg_1_5_1	init_bg	mode2
 	hofmode	rotate
 	scrollbg	164
 	bgm	15
+	IFNE	MSU1
+	msuplay	level1_2,repeat
+	ENDC
 	space	night
 
 bg_1_6a_1	init_bg	mode2
@@ -291,6 +321,9 @@ bg_1_6a_1	init_bg	mode2
 	hofmode	rotate
 	bg2Yscroll	232
 	bgm	16
+	IFNE	MSU1
+	msuplay	level1_6,repeat
+	ENDC
 	shadowheight 0
 	flashbg
 	planet	night
@@ -370,6 +403,9 @@ bg_1_7c_1	init_bg	mode2
 	shadowheight 0
 	bg2Yscroll	232-60
 	bgm	endseq
+	IFNE	MSU1
+	msuplay	gameenddemo,repeat
+	ENDC
 	space	night
 
 
@@ -383,6 +419,9 @@ bg_2_2_1	init_bg	mode2
 	hofmode	rotate
 	bg2Yscroll	232
 	bgm	22
+	IFNE	MSU1
+	msuplay	level2_2,repeat
+	ENDC
 	space	night
 
 bg_2_3a_1	init_bg	mode2
@@ -394,6 +433,9 @@ bg_2_3a_1	init_bg	mode2
 	info	von,hon,zon,snow
 	pstrat	playeronplanet,a,ab
 	bgm	23
+	IFNE	MSU1
+	msuplay	level2_3,repeat
+	ENDC
 	bg2Yscroll	232
 	set_zdepthtable	mist
 	shadowheight 0
@@ -449,6 +491,9 @@ bg_2_4_1	init_bg	mode2
 	info	von,zon,hon,space
 	pstrat	playerspaceflyin,a,abc
 	bgm	24
+	IFNE	MSU1
+	msuplay	level2_4,repeat
+	ENDC
 	hofmode	rotate
 	bg2Yscroll	232
 	space	night
@@ -463,6 +508,9 @@ bg_2_5_1	init_bg	mode2
 	hofmode	nograd
 	scrollbg	164
 	bgm	25
+	IFNE	MSU1
+	msuplay	level1_2,repeat
+	ENDC
 	space	night
 	
 bg_2_6a_1
@@ -487,6 +535,9 @@ bg_2_6a_1
 	info	hon,voff,zoff,nodots
 	pstrat	playercolonyflyin,a,ab
 	bgm	26
+	IFNE	MSU1
+	msuplay	level2_6,repeat
+	ENDC
 	water	night,colony,3
 
 bg_2_6b_1	
@@ -536,6 +587,9 @@ bg_3_2_1	init_bg	mode2
 	hofmode	rotate
 	bg2Yscroll	24
 	bgm	32
+	IFNE	MSU1
+	msuplay	level1_2,repeat
+	ENDC
 	space	night
 
 bg_3_3a_1	init_bg	mode2
@@ -550,6 +604,9 @@ bg_3_3a_1	init_bg	mode2
 	hofmode	rotate
 	bg2Yscroll	232
 	bgm	33
+	IFNE	MSU1
+	msuplay	level3_3,repeat
+	ENDC
 	planet	mist
 
 bg_3_4a_1	blink
@@ -564,6 +621,9 @@ bg_3_4b_1	init_bg	mode2
 	hofmode	rotate
 	bg2Yscroll	232
 	bgm	34
+	IFNE	MSU1
+	msuplay	level2_2,repeat
+	ENDC
 	space	night
 
 bg_3_4c_1	init_bg	mode2
@@ -602,6 +662,9 @@ bg_3_5_1	init_bg	mode2
 	lda	#1
 	sta	noxrot
 	bgm	35
+	IFNE	MSU1
+	msuplay	level3_5,repeat
+	ENDC
 	undergnd	red
 
 bg_3_6_1	init_bg	mode2
@@ -614,6 +677,9 @@ bg_3_6_1	init_bg	mode2
 	hofmode	rotate
 	scrollbg	164
 	bgm	36
+	IFNE	MSU1
+	msuplay	level1_2,repeat
+	ENDC
 	space	night
 
 bg_3_7a_1	init_bg	mode2
@@ -629,6 +695,9 @@ bg_3_7a_1	init_bg	mode2
 	bg2Yscroll	232
 	flashbg
 	bgm	37
+	IFNE	MSU1
+	msuplay	level1_6,repeat
+	ENDC
 	planet	night
 
 
@@ -719,6 +788,9 @@ bg_title_1
 	hofmode	rotate
 	bg2Yscroll	257
 	bgm	title
+	IFNE	MSU1
+	msuplay	title,repeat
+	ENDC
 	lda	#1+2+4
 	sta	tm
 	space	night

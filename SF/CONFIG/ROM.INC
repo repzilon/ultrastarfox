@@ -13,15 +13,10 @@ SUPERFX3	equ 0
 ; MSU-1 support (not yet implemented)
 msu1		equ	0
 
-; Old-style MSU-1 support (DEPRECATED, to be rewritten) [0 = off, 1 = on]
-; The game looks for the MSU-1 on startup.
-; If the MSU-1 is not present, the game falls back to SPC700 audio.
-msu_legacy	equ 0
-
-; MSU-1 video player (not yet implemented)
-; requires that MSU-1 support be enabled
-; [0 = off, 1 = on]
-msuvideo	equ	0
+; MSU-1 data streaming support
+; You must add a recipe to all in the makefile to assemble the data file (there are comments there that explain this).
+; The MSU-1 data file source lives in the MSUDATA directory.
+msudata		equ	0
 
 ; enable/disable FastROM [1 = on, 0=off]
 ; Note that this is not supported by the real MARIO or Super FX 1/2 chips.
@@ -49,23 +44,21 @@ japan		equ 0
 ; PAL/NTSC [0 = NTSC, 1 = PAL] (DO NOT USE IF JAPAN = 1)
 pal			equ	0
 
-;  ROM name
+; Game Name
 
-; internal rom name, [0 = STAR FOX, 1 = STAR WING, 2 = Custom Name]
-internalname	equ	0
+; Changes the ROM header and Credits game names.
+; ROM Header name: [0 = STAR FOX, 1 = STAR WING, 2 = Custom Name]
+; End Credits name: [0 = STAR FOX, 1 = STARWING, 2 = Custom Name]
+gamename	equ	0
 
-; field for a custom name. the internal ROM name must be 21 CHARACTERS long. No more, no less.
+; Custom header name
+; field for a custom internal ROM name. the internal ROM name must be 21 ASCII CHARACTERS long. No more, no less.
 docustomname	MACRO
 ;		"---------------------"  line name up with these quotes
 	db	"ULTRASTARFOX         "
 	ENDM
 
-
-; Credits name
-
-; Changes the game name that shows up in the credits [0 = STAR FOX, 1 = STARWING, 2 = Custom Name]
-; distance to camera may need to be manually adjusted in MAPS\CREDITS.ASM
-credzname	equ	0
+; Custom credits name
 
 ; field for custom credits name
 docredzname	MACRO
@@ -73,12 +66,3 @@ docredzname	MACRO
 	ENDM
 
 ;####################################################################################################################
-
-; Sanity checks (do not touch)
-
-	IFEQ	msu_legacy!msu1
-	IFNE	msuvideo
-	printf	"msu must be enabled in CONFIG\ROM.INC!"
-	fail
-	ENDC
-	ENDC

@@ -91,8 +91,8 @@ abort_vn
 	inccru	bgandpcr,data\and.pcr
 	incfile	STRAT\istrats.asm
 	incfile	STRAT\d3strats.asm
-	IFNE	msu_legacy
-	include	ASM\MSU.ASM ; Include MSU playback logic
+	IFNE	MSU1
+	include	ASM\MSUDRV.ASM ; MSU-1 music driver
 	ENDC
 	bankend	32
 
@@ -114,15 +114,15 @@ abort_vn
 	org	$00ffc0,$7fc0
 	; Game name (must be 21 ASCII characters long)
 	; This section is controlled by CONFIG\ROM.INC.
-	IFEQ	internalname	; if internalname = 0
+	IFEQ	gamename	; if gamename = 0
 	db	"STAR FOX             "  
-	ENDC					; if internalname = 1
+	ENDC					; if gamename = 1
 	
-	IFEQ	internalname-1
+	IFEQ	gamename-1
 	db	"STAR WING            "  
 	ENDC
 
-	IFEQ	internalname-2
+	IFEQ	gamename-2
 	docustomname ; invoke macro to do custom name
 	ENDC
 

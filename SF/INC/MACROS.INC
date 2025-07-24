@@ -5554,24 +5554,6 @@ databank	MACRO
 	ENDM
 
 ;-------------------------------------------------------------------
-sdebug	MACRO
-	IFNE	debuginfo2
-	a8
-	stz	gameover
-	ENDC
-	ENDM
-edebug	MACRO
-	IFNE	debuginfo2
-	a8
-	lda	gameover
-	cmp	#0
-	beq	.ok\@
-	blink
-.ok\@
-	ENDC
-	ENDM
-
-;-------------------------------------------------------------------
 incsnd	MACRO			;INCBINS A FILE AND 'SPLITS' IT!
 rompos	=	(firstsndbnk*$8000)+musicsize
 sndbank	=	(rompos/$8000)
@@ -5603,30 +5585,18 @@ startbgm	MACRO			;SET PORT 0 IF IRQ'S ENABLED
 	ifne	longa
 	error	"wrong mode"
 	endc
-;	lda	msupresent
-;	bne	.no\@
 	lda	#\1
 	sta	bgm_music
 	stz	bgmcnt
-;.no\@
 	ENDM
 ;-------------------------------------------------------------------
 bootapu	MACRO
 	php
 	i16
 	ldx	\1
-;	lda	msupresent
-;	bne	.nobgm\@
 	jsr	sbootapu
 	plp
 	rtl
-;.nobgm\@
-;	lda.l	sndtbl,x
-;	sta	bgm_music
-;	inx ; increment X
-;	stx	snd_ptr
-;	plp
-;	rtl
 	endm
 ;-------------------------------------------------------------------
 snd_data	macro

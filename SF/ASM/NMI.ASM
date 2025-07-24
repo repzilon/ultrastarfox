@@ -31,19 +31,6 @@ copy_to_0101_l
 	sasm_mvn	$1f,$00
 	ENDC
 
-	IFNE	msu_legacy
-; Copy MSU fade handler to $0162 (right after the NMI/IRQ handler in RAM)
-	ai16
-	ldx	#msufadehan&WM ; src data addr
-	ldy	#$0162 ; dest data addr
-	lda	#msufadehanend-msufadehan-1 ; len of data to copy
-	IFNE	FASTROM
-	sasm_mvn	$9f,$80
-	ELSEIF
-	sasm_mvn	$1f,$00
-	ENDC
-	ENDC
-
 	a8i16 ; set A to 8 bit and X/Y to 16 bit
 
 ; old NMIHAN uploader code, retained for future reference
@@ -77,13 +64,7 @@ nmihan ; Start of NMI handler
 	nop		;$010b ; No Operation
 .irq	ai16		;$010c	irq
 	pha	; Push A to stack
-
-	IFNE	msu_legacy
-	jsl	$000162 ; Legacy MSU-1 fade routine (unstable!!)
-	ELSEIF
-
 	lda.l	m_sfr ; Load m_sfr into A (MARIO chip flags?)
-	ENDC
 
 	IFEQ	RUMBLE
 	bmi	.qexit ; branch if a = 1
@@ -109,10 +90,24 @@ nmihan ; Start of NMI handler
 	plb ; Pull data bank from stack
 	ENDC ; End conditional
 
+	IFNE	MSU1
+; Handle MSU-1 fades
+	lda msufadeflag	; check fade flag
+	beq .msu1han_nofade	; if zero, don't fade
+	lda curmsuvolume	; load current volume
+	beq .msu1han_nofade	; if zero, don't fade
+	sec
+	sbc	#msu_voldecrement
+	sta curmsuvolume	; store new volume
+	sta msu_volume	; set msu-1 volume
+.msu1han_nofade
+	ENDC
+
 	IFNE	RUMBLE
 ; Randy's rumble controller fix for hardware
 ; HACK: Force re-read of controller bits to get timing right for rumble handler
 
+; This part is to make sure that you don't overrun blanking
 	lda	slhvr				; Latch Raster Position
 	lda	stat78r				; Update H/V Counters
 	lda	opvctr				; Get Low 8Bits VPos
@@ -126,6 +121,8 @@ nmihan ; Start of NMI handler
 .to_skip_rumble
 	brl	.skip_rumble
 
+; This part does the equivalent of the auto-read of the controllers,
+; which is what the rumble hardware is looking for
 .readjoy
 	lda	#$01
 	sta	JOYSER0				; Reset Data Counter
@@ -135,15 +132,19 @@ nmihan ; Start of NMI handler
 	nop
 	nop
 
-	ldy	#16-1				; Read 16 Controller Bits
-.readjoy2
-	lda	JOYSER0				; Controller I
-	dey
-	bpl	.readjoy2
+;	ldy	#16-1				; Read 16 Controller Bits
+;.readjoy2
+;	lda	JOYSER0				; Controller I
+;	dey
+;	bpl	.readjoy2
 
-	ldx	#$40
+; Clock controller port 1 16 times
+; Saves 70 cycles
+	jsl	clkjoyser016x_l
 
 ; Handle rumble controller commands
+
+	ldx	#$40
 
 ; Send magic number 01110010 (rumble sentry)
 ; send a bit, clock controller port 1
@@ -174,18 +175,14 @@ nmihan ; Start of NMI handler
 ; Handle sequenced rumbles
 	lda	rumble_index
 	beq	.notable	; If rumble_index == 0, handle timed rumbles
-	phx
 	ldx	rumble_index
-	dex
-	lda.l	rumble_table,x
-	inx
+	lda.l	rumble_table,x - 1
 	inx
 	stx	rumble_index
-	plx
 	cmp #0
 	beq	.rumblehan_turnoffmotors
-	cmp #$19	; So I don't have to pull X twice - Kando
-	bne	.rumblehan_donerumblecmd2	; If you hit a $19, end it all. Otherwise, run it.
+	cmp #rmblend	; So I don't have to pull X twice - Kando
+	bne	.rumblehan_donerumblecmd2	; If you hit a rmblend, end it all. Otherwise, run it.
 	stz	rumble_index
 	bra	.rumblehan_turnoffmotors
 
@@ -198,12 +195,10 @@ nmihan ; Start of NMI handler
 	bra	.rumblehan_donerumblecmd
 	
 .rumblehan_donerumblecmd2
-	cmp #$91	; Is the current table value == $91?
+	cmp	#rmblloop	; Is the current table value == rmblloop?
 	bne	.rumblehan_donerumblecmd
-	pha	; Yes! Loop rumble sequence.
-	lda #1
+	lda	#1	; Yes! Loop rumble sequence.
 	sta	rumble_index
-	pla
 	bra .rumblehan_recheck
 
 .rumblehan_turnoffmotors
@@ -305,32 +300,4 @@ nmihan ; Start of NMI handler
 	rti ; Return from interrupt
 
 nmihanend ; End of NMI Handler
-
-	IFNE	msu_legacy
-msufadehan
-	lda.l msu_017f
-	and	#$00ff
-	cmp	#$00f1
-	beq	.k1
-	bra	.skipfade
-	rtl
-.k1
-	a8
-	lda.l msu_017e
-	beq .endslow
-	dec a
-	dec a
-	cmp #$10
-	bcs .k2
-.endslow
-	lda #$00
-	sta.l	msu_017f ;erase fade flag
-.k2	sta.l	msu_017e
-	sta	msu_volume
-.skipfade
-	ai16
-	lda.l m_sfr
-	rtl
-msufadehanend
-	ENDC
 

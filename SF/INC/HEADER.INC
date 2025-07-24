@@ -50,8 +50,14 @@ totaltime	=	0
 	include	INC\sfcregs.inc	; SNES registers
 	include INC\mregs.inc	; MARIO chip registers
 	include	INC\msuregs.inc	; MSU-1 registers
-	IFNE	msu_legacy
+
+; MSU-1 stuff
+	IFNE	MSU1
+	include	INC\msumacs.inc
 	include	INC\msutrks.inc	; MSU-1 tracklist
+	IFNE	MSUDATA
+	include MSUDATA\MSUDATA.INC ; MSU-1 data file offsets
+	ENDC
 	ENDC
 
 ; Sound effect IDs

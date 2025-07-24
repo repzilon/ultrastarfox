@@ -9,12 +9,13 @@
 	include	EXT\ga2strat.ext
 	include	EXT\dstrats.ext
 	include	EXT\bootnmi.ext
+	include	EXT\msudrv.ext
 
 	bank	11
 	IFNE	RUMBLE
 	; used by both PCSTRATS and PISTRATS
 hyperspacerumbletab
-	db	$FF,$7F,$91
+	db	$FF,$7F,rmblloop
 	ENDC
 	incfile	STRAT\pistrats.asm
 	incfile	STRAT\pcstrats.asm

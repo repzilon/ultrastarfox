@@ -110,8 +110,6 @@ initgame_l ; Initialize game
 	stz	sdpck3 ; store 0 at sdpck3 var
 
 	a8 ; set A to 8 bit
-	lda	#1 ; Load 1 into A
-	sta	shieldon ; Store A into shieldon var (shield on)
 	stz	showtype ; store 0 at showtype var
 	stz	msg_count1 ; store 0 at msg_count1 var
 	stz	msg_count2 ; store 0 at msg_count2 var
@@ -1393,25 +1391,6 @@ checkbonus	jsr	calctotalscore
 
 bonertab	dw	2100,1900,1700,1500,1300,1100,900,700,500,300,100,0
 
-
-	IFNE	msu_legacy
-pauseStart
-	a8
-	LDA	#audiostate_pause
-	STA	msu_control
-	LDA #$64
-	RTS
-
-pauseEnd
-; the original MSU-1 patch NOP'd instructions
-; to make room and moved those 2 here
-;	STZ $1202 ; cont0
-;	STZ $1204 ; contl0
-	LDA #audiostate_repeat
-	STA msu_control
-	RTS
-    ENDC
-
 ;--------------------------------------------------------------------
 dopause	php
 	a8i16
@@ -1425,8 +1404,9 @@ dopause	php
 	jsl	transfer_l		;transfer bitmap, do strats etc.
 	jsr	printpause
 	jsl	transfer_l		;transfer bitmap, do strats etc.
-	IFNE	msu_legacy
-	jsr pauseStart
+	IFNE	msu1
+	LDA	#audiostate_none
+	STA	msu_control
 	ENDC
 	a8
 .wait	waitdma	100
@@ -1441,8 +1421,9 @@ dopause	php
 	lda	joy1h
 	bit	#key_start
 	bne	.wait3
-	IFNE	msu_legacy
-	jsr pauseEnd
+	IFNE	msu1
+	LDA #audiostate_repeat
+	STA msu_control
 	endc
 	stz	cont0
 	stz	contl0

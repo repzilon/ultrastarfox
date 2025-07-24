@@ -1,16 +1,19 @@
 # UltraStarFox
 
-Star Fox / Starwing source code, modified for ease-of-use and ROMHacking.  
+Star Fox / Starwing source code, modified for ease-of-use and ROMhacking.  
 
 Go [here](#building) to jump straight to the building instructions.  
 
 ## Credits (A-Z)
-- **Kandowontu** - The Original Star Fox Guy, Lifesaver, MSU-1 Patch RE, Rumble System Programmer (Sequences), Rumble Effect Programmer/Polishing, Implemented several features (Mouse, Debug Mode/Crash Handler Restoration, Limit Removals, Easy Wireframes, other fixes and improvements)  
+
+- **H A M G E R** - Wireframe shield meter color changing Super FX code
+- **Kandowontu** - The Original Star Fox Guy, Lifesaver, Rumble System Programmer (Sequences), Rumble Effect Programmer/Polishing, Implemented several features (Mouse, Debug Mode/Crash Handler Restoration, Limit Removals, Easy Wireframes, other fixes and improvements)  
 - **MrL314** - Texture Limit Removal Super FX Code  
 - **Phonymike** - Tools (mugconv, fontconv), ROM Header  
 - **Randal Linden** - Rumble Pad Designer, Rumble Pad Docs, Rumble System Programmer (Rumble Pad NMI Code)  
+- **Repzilon** - Misc. documentation
 - **SegaRetro92** - Texture/Palette Docs, General Graphics Stuff, Author of Several Graphics Tools, German Version GFX/Text Restoration   
-- **Sunlit** - Maintainer, Documentation, Toolchain Engineer, MSU-1 Patch RE, Rumble System Programmer ("Flat Rate" Rumble), Rumble Effect Programmer, Tool Author, German Version GFX/Text Restoration  
+- **Sunlit** - Maintainer, Documentation, Toolchain Engineer, Rumble System Programmer ("Flat Rate" Rumble), Rumble Effect Programmer, Tool Author, German Version GFX/Text Restoration, Release Builder Script  
 
 ## Features
 
@@ -19,7 +22,6 @@ Go [here](#building) to jump straight to the building instructions.
 - Uses GSU-2/Super FX 2 @21.4Mhz instead of MARIO Chip 1 @10.7Mhz
 - Super FX MS1 high-speed multiply enabled (if 21mhz is enabled)
 - FastROM support (Do not enable if you are targeting a real cartridge with a real MARIO/GSU-1/GSU-2 IC chip!)
-- MSU-1 support (Original ASM patch by Kurrono, ported by Kando and Sunlit) (**DEPRECATED, TO BE REWRITTEN**)
 
 ## Accessory Support
 
@@ -28,7 +30,7 @@ Go [here](#building) to jump straight to the building instructions.
 
 ## QOL / Ease-of-use
 
-- Very configurable, see ``SF\CONFIG\CONFIG.INC`` for more info
+- Very configurable out-of-the-box, see ``SF\CONFIG\CONFIG.INC`` for more info
 - Lots of free ROM space (2MB/16Mbit ROM)
 - Bugfixes and improvements
 - Build process optimized for speed
@@ -36,6 +38,7 @@ Go [here](#building) to jump straight to the building instructions.
 - Uses ARGLINK and ARGSFX from Star Fox 2 as linker and assembler instead of SL and SASM
 - Easier creation of wireframe models (replace face3 and face4 with aface3 and aface4 in your shape file)
 - Upload ROM directly to SNES and boot with QUsb2Snes and a SD2SNES/FXPak Pro flash cartridge
+- Easily create patches for your ROMhack with ``buildrelease.cmd``
 
 ## Limits Removed/Increased
 
@@ -61,7 +64,7 @@ To build ROM with Logging, run ``build to log.cmd``.
 
 To clean, run ``clean.cmd``.  
 
-After building, a debug symbol map will be created at, and a bank space report at ``BANKS.CSV``.  
+After building, a debug symbol map will be created at ``SYMBOLS.TXT``, and a bank space report at ``BANKS.CSV``.  
 
 ## Building on Linux
 
@@ -110,6 +113,7 @@ All changes to be submitted should be made to the [main](https://github.com/Sunl
 ## Helpful Links/Tools
 
 [Argonaut 65816/Super FX Assembly Extension for VS Code](https://github.com/Sunlitspace542/65816-superfx-asm-argonaut-vscode)  
+[ArgSfx/SASM Assembler Manual](https://github.com/Sunlitspace542/ArgSfx-SASM-Docs/tree/main)  
 [SNES Development Manual](https://archive.org/details/SNESDevManual)  
 [fullsnes - SNES Hardware Specifications (by Nocash)](https://problemkaputt.de/fullsnes.htm)  
 [MSU-1 Documentation](https://github.com/Sunlitspace542/MSU-1-Docs)  
@@ -124,6 +128,7 @@ All changes to be submitted should be made to the [main](https://github.com/Sunl
 1. Optimize game where possible (We already have FastROM and 21Mhz SuperFX 2, can we go any further?)  
 2. Annotate and document code (not so sure about doing this anymore)  
 3. MAYBE: Disassemble all BIN files in SND directory, add documentation on custom music and the like  
+4. Reimplement MSU-1 support using the driver I wrote for Star Fox CD
 
 ## Project Structure
 
@@ -143,10 +148,10 @@ ultrastarfox
 │   ├── MARIO: .MC MARIO (SuperFX) ASM code
 │   ├── MSG: Message files for English, Japanese, German, and French
 │   ├── MSPRITES: contains interleaved FXGfx format textures
-│   ├── PATH: contains all PATH language code
-│   ├── SHAPES: contains all shape files
+│   ├── PATH: contains all PATH language code (used for some object behaviors)
+│   ├── SHAPES: contains all shape (model) files
 │   ├── SND: sound/music data
-│   └── STRAT: Code for Strategies (Object behaviors)
+│   └── STRAT: Code for Strategies (object behaviors)
 ├── TOOLS: tools such as PACKER and SHAPED
 └── DOCS: .md format text files covering various aspects of Star Fox
 ```
