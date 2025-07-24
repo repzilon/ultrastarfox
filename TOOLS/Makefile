@@ -33,6 +33,8 @@ clean-sink:
 	rm -f fxedit2
 
 clean: clean-tools clean-sink clean-superfamiconv
+	rm -rf SharpUltraStarFoxTools/*/bin/
+	rm -rf SharpUltraStarFoxTools/*/obj/
 
 distclean: clean-tools clean-sink
 	rm -f SuperFamiconv-*.tar.gz
