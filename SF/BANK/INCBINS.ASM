@@ -267,10 +267,17 @@ musicsize	=	0
 	inccru	obj2ccr,data\obj-3.ccr ; training/game text (US/EU)
 	endc
 
+	IFNE	fast
 	ifgt	@-$200000
 	PRINTF	"%01%31MORE THAN 16 MEGA-BITS OF ROM USED!!%n%00"
 	FAIL
 	endc
+	ELSEIF
+	ifgt	@-$100000
+	PRINTF	"%01%31MORE THAN 8 MEGA-BITS OF ROM USED WITH SUPER FX 1!!%n%00"
+	FAIL
+	endc
+	ENDC
 
 	include	INC\tail.inc
 

@@ -160,12 +160,17 @@ abort_vn
 							 ; (20) SlowROM LoROM
 							 ; (30) FastROM LoROM
 	ENDC
+	IFNE	fast
 	db	$14					; Cartridge Type
 							 ; (13) MARIO Chip 1 / Super FX 1 (StarFox 1)
 							 ; (14) Super FX 2 (DOOM) / Super FX 3 (The Ultimate DOOM)
 							 ; (15) Battery + Super FX 2 (Yoshi's Island, StarFox 2)
 							 ; (1A) Battery + Super FX 1 (Stunt Race FX)
 	db	$0b					; ROM Size (0A = 8mbit, 0B = 16mbit)
+	ELSEIF					
+	db	$13					; Super FX 1 with its 8 Mbit limit
+	db	$0a
+	ENDC
 	db	$00					; RAM Size (if 0, use exp RAM size above)
 	db	hdr_region			; Destination Code (from below)
 	db	$33					; Fixed Value
