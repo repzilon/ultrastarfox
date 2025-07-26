@@ -46,6 +46,9 @@ ops_bgmlen	equ	*-ops_bgm
 
 sector_y	incbinfile	snd\sgbgmj.bin
 sector_ylen	equ	*-sector_y
+
+	incshapes	SHAPES\shapes6.asm
+	incshapes	SHAPES\shapes7.asm
 	bankend	16
 
 ;------------------------------------------------------------------
@@ -62,14 +65,6 @@ boss_macbeth	incbinfile	snd\sgbgm3.bin
 boss_macbethlen	equ	*-boss_macbeth
 
 	bankend	17
-
-	bank	37
-	incshapes	SHAPES\shapes6.asm
-	bankend	37
-	
-	bank	38
-	incshapes	SHAPES\shapes7.asm
-	bankend	38
 
 
 	include	INC\tail.inc

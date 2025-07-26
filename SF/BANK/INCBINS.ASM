@@ -58,10 +58,10 @@ msprites3
 	inccru	bgbmccr,data\b-m.ccr
 	inccru	bgstpccr,data\st-p.ccr
 	inccru	bg23hpcr,data\2-3h.pcr
+	inccru	bgstppcr,data\st-p.pcr
 	bankend	20
 
 	bank	21
-	inccru	bgstppcr,data\st-p.pcr
 	inccru	bg22ccr,data\2-2.ccr
 	inccru	bg23ccr,data\2-3.ccr
 	inccru	bg23bccr,data\2-3b.ccr
@@ -82,13 +82,18 @@ msprites3
 	inccru	mapccr,data\map.ccr
 	ENDC
 	inccru	bg33ccr,data\3-3.ccr
-
+	
 	inccru	bgfsnipcr,data\fs-ni.pcr
-	inccru	bgtsspcr,data\t-ss.pcr
+	
 	inccru	bg34ccr,data\3-4.ccr
+
+; Crash handler GFX (BLINK.ASM)
+	inccru	oopsccr,data\oops.ccr
+	inccru	oopspcr,data\oops.pcr
 	bankend	21
 
 	bank	22
+	inccru	bgtsspcr,data\t-ss.pcr
 	inccru	bg22pcr,data\2-2.pcr
 	inccru	bglsbccr,data\lsb.ccr
 	inccru	bgf1ccr,data\f-1.ccr
@@ -112,6 +117,8 @@ msprites3
 	inccru	bgtsppcr,data\t-sp.pcr
 	inccru	bg24pcr,data\2-4.pcr
 	inccru	bgtstpcr,data\t-st.pcr
+
+	
 	bankend	22
 
 	bank	23
@@ -182,18 +189,9 @@ msprites3
 facedata	incbin	data\face.cgx
 	inccru	allcolscru,data\col\allcols.pac
 
-	bankend	23
-
-	bank	35
 	inccru	dogpcr,data\dog.pcr
 	inccru	bgmccr,data\m.ccr
-	bankend	35
-
-; Crash handler GFX (BLINK.ASM)
-	bank	41
-	inccru	oopsccr,data\oops.ccr
-	inccru	oopspcr,data\oops.pcr
-	bankend	41
+	bankend	23
 
 ;------------------------------------------------------------------
 

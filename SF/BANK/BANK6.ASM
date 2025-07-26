@@ -29,12 +29,8 @@
 	incfile	MARIO\mhofs.mc		;Kristers .mc files
 	mario	off
 
-
-	bankend	6
-
-	bank	33
 	incfile	STRAT\gstrats.asm
-	bankend	33
+	bankend	6
 
 	include	INC\tail.inc
 

@@ -12,7 +12,7 @@ MSUASM=SASMX -m30 -e__heap=14400 -e__notitle
 
 # Linker
 LINK=ARGLINK
-LOPTS=-b30 -h1024 -t7d -z
+LOPTS=-b30 -h1024 -t7d -z -l2048
 
 # ROM Extender
 EXTEND=EXTEND
@@ -248,15 +248,15 @@ clean:
 
 ## Banks to assemble
 
-## Banks 0, 32
+## Bank 0
 BANK0.SOB: \
 BANK\BANK0.ASM
 
-## Banks 1, 41
+## Bank 1
 BANK1.SOB: \
 BANK\BANK1.ASM
 
-## Banks 2, 3, 31, 36
+## Banks 2, 3, 31
 BANK2.SOB: \
 BANK\BANK2.ASM
 
@@ -264,11 +264,11 @@ BANK\BANK2.ASM
 BANK4.SOB: \
 BANK\BANK4.ASM
 
-## Banks 5, 13, 39
+## Banks 5, 13
 BANK5.SOB: \
 BANK\BANK5.ASM
 
-## Banks 6, 33
+## Bank 6
 BANK6.SOB: \
 BANK\BANK6.ASM
 
@@ -288,15 +288,15 @@ BANK\BANK9.ASM
 BANK10.SOB: \
 BANK\BANK10.ASM
 
-## Banks 11, 40
+## Banks 11
 BANK11.SOB: \
 BANK\BANK11.ASM
 
-## Banks 12, 14, 15, 16, 17, 37, 38
+## Banks 12, 14, 15, 16, 17
 SHBANKS.SOB: \
 BANK\SHBANKS.ASM
 
-## Banks 18, 19, 20, 21, 22, 23, 35 
+## Banks 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30 
 INCBINS.SOB: \
 BANK\INCBINS.ASM
 

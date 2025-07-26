@@ -84,9 +84,7 @@ break_vn
 abort_vn
 	rti
 
-	bankend	0
 
-	bank	32
 	public	bgandpcr
 	inccru	bgandpcr,data\and.pcr
 	incfile	STRAT\istrats.asm
@@ -94,7 +92,7 @@ abort_vn
 	IFNE	MSU1
 	include	ASM\MSUDRV.ASM ; MSU-1 music driver
 	ENDC
-	bankend	32
+	bankend	0
 
 	;; BEGIN ROM HEADER
 

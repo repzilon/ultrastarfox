@@ -85,6 +85,7 @@ xroutinesreport ; TAIL will report X routines free
 	incfile	ASM\main.asm
 	incfile	ASM\game.asm
 	incfile	ASM\windows.asm
+	inccru	bgf1pcr,data\f-1.pcr
 	bankend	2
 
 
@@ -100,6 +101,7 @@ planetdmapos2	dw	100
 	incfile	ASM\sprites.asm
 	incfile	ASM\continue.asm
 	incfile	ASM\world.asm
+	incfile	ASM\sound.asm
 	bankend	3
 
 
@@ -117,14 +119,9 @@ planetdmapos2	dw	100
 	incfile	ASM\nmi.asm
 	incfile	ASM\draw.asm
 	incfile	ASM\endseq.asm
+	incfile	ASM\cont.asm
 	bankend	31
 
-	bank	36
-	inccru	bgf1pcr,data\f-1.pcr
-	incfile	ASM\cont.asm
-	incfile	ASM\sound.asm
-
-	bankend	36
 ;------------------------------------------------------------------
 
 

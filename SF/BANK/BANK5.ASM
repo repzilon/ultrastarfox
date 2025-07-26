@@ -54,18 +54,12 @@ real_istrats =	0
 	public	bgandccr
 	inccru	bgandccr,data\and.ccr
 
-
 	bankend	5
 ;------------------------------------------------------------------
 	bank	13
 	incfile	maps\maplist2.asm
-
-	bankend	13
-;------------------------------------------------------------------
-
-	bank	39
 	incfile	maps\maplist3.asm
-	bankend	39
+	bankend	13
 
 
 	include	INC\tail.inc
