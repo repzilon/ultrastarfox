@@ -25,7 +25,7 @@ scoretxt	txt	14,<SCORE>
 totalscoretxt	txt	14,<POINTAGE TOTAL>		;french total score
 slashtxt	txt	14,</>
 percenttxt	txt	14,<POURCENTAGE>
-bonustxt	txt	14,<BONI UN CREDIT>
+bonustxt	txt	14,<BONI UN CRÉDIT>
 teamtxt	txt	14,<ÉTAT DES ÉQUIPIERS>
 percenttxt2	txt	14,<%>
 perfecttxt	txt	14,<PARFAIT//>
