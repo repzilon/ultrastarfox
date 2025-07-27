@@ -91,6 +91,16 @@ printt_l
 	beq	.finished
 	phy
 
+	cmp	#"-"
+	bne	.nothyphen
+	lda	#36
+	bra	.drawit
+.nothyphen
+	cmp	#"!"
+	bne	.notexclamation
+	lda	#43
+	bra	.drawit
+.notexclamation
 	cmp	#"_"
 	bne	.notunder
 	lda	#42

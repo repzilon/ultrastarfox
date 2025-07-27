@@ -86,7 +86,9 @@ perfecttxt	txt	14,<PERFECT//>
 slippytxt	txt	14,<SLIPPY>
 peppytxt	txt	14,<PEPPY>
 falcotxt	txt	14,<FALCO>
-deadtxt	txt	14,<IS DOWN>
+miyutxt		txt	14,<MIYU>
+faytxt		txt	14,<FAY>
+deadtxt	txt	14,<DOWN> ; SUNLITNOTE fix this if you get the teammate shield bars figured out
 stagetxt	txt	14,<STAGE>
 	ENDC
 	ENDC

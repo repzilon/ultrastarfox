@@ -55,7 +55,7 @@ gamename	equ	0
 ; field for a custom internal ROM name. the internal ROM name must be 21 ASCII CHARACTERS long. No more, no less.
 docustomname	MACRO
 ;		"---------------------"  line name up with these quotes
-	db	"ULTRASTARFOX         "
+	db	"PROJECT ARGONAUT     "
 	ENDM
 
 ; Custom credits name

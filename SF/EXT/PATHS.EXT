@@ -78,6 +78,7 @@
 	global	path_e_ufo
 	global	path_tomhaha
 	global	path_tes
+	global	path_cl_warpwait
 	global	path_astemsg
 	global	path_braymsg
 	global	path_dragonmsg
@@ -149,6 +150,8 @@
 	global	path_hentai_fal
 	global	path_hentai_fro
 	global	path_hentai_rab
+	global	path_hentai_miy
+	global	path_hentai_fay
 	global	path_mes_andross1
 	global	path_mes_andross2
 	global	path_e_flower

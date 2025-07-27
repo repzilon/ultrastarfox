@@ -195,7 +195,7 @@ map1_4
 	mapobj	1300,-900,0000,4000,gro_6,hard180yr_istrat
 	mapobj	1300,0900,0000,4000,gro_6,hard180yr_istrat
 	mapobj	1300,01000,0000,4000,gro_6,hard180yr_istrat
-	pathobj	0000,-100,-400,-150,friendship_4,chase7_1,10,10
+	pathobj	0000,-100,-400,-150,friendship_4,chase7_1,10,10 ; this is crashing, why??
 	pathcspecial	0000,-100,-400,-150,zaco_a,chase7_2,10,10
 	cspecial	0000,-100,0000,4000,tank_2,tank2_istrat
 	pathobj	0000,0300,-600,3000,heli,tmp_tank,10,10

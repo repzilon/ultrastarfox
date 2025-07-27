@@ -69,6 +69,60 @@ level1_1
 	mapobj	0500,1000,0000,8000,BU_6,HARD180YR_ISTRAT
 	mapobj	1000,-0800,0000,10000,BU_5,HARD180YR_ISTRAT
 	mapobj	1000,-1200,0000,12000,BU_4,HARD180YR_ISTRAT
+	ENDC
+
+	IFEQ	1 ; chase test
+
+	setrestart
+
+.chaseloop
+;	pathobj	0000,-750,-400,0000,friendship_4,chase6_1,10,10	
+;	pathcspecial	2000,-720,-400,0000,zaco_a,chase6_2,10,10	
+
+	mapwait	4000
+	mapwait	4000
+	mapwait	4000
+
+	pathobj	0000,900,-60,0000,friendship_4,chase4_1,200,10
+	pathcspecial	0000,900,-60,0000,zaco_b,chase4_2,200,10
+	pathcspecial	1000,900,-60,0000,zaco_b,chase4_3,200,10
+
+;	pathobj	0000,-750,-400,0000,friendship_4,chase6_1,10,10	
+;	pathcspecial	2000,-720,-400,0000,zaco_a,chase6_2,10,10	
+
+	pathobj	0000,900,-60,0000,friendship_4,chase4_1,200,10
+	pathcspecial	0000,900,-60,0000,zaco_b,chase4_2,200,10
+	pathcspecial	1000,900,-60,0000,zaco_b,chase4_3,200,10
+
+	mapwait	4000
+	mapwait	4000
+	mapwait	4000
+
+;	pathobj	0000,-750,-400,0000,friendship_4,chase6_1,10,10	
+;	pathcspecial	2000,-720,-400,0000,zaco_a,chase6_2,10,10	
+
+	pathobj	0000,900,-60,0000,friendship_4,chase4_1,200,10
+	pathcspecial	0000,900,-60,0000,zaco_b,chase4_2,200,10
+	pathcspecial	1000,900,-60,0000,zaco_b,chase4_3,200,10
+
+	mapwait	4000
+	mapwait	4000
+	mapwait	4000
+
+;	pathobj	0000,-750,-400,0000,friendship_4,chase6_1,10,10	
+;	pathcspecial	2000,-720,-400,0000,zaco_a,chase6_2,10,10	
+
+	pathobj	0000,900,-60,0000,friendship_4,chase4_1,200,10
+	pathcspecial	0000,900,-60,0000,zaco_b,chase4_2,200,10
+	pathcspecial	1000,900,-60,0000,zaco_b,chase4_3,200,10
+
+	mapwait	4000
+	mapwait	4000
+	mapwait	4000 ; remove when done 
+
+	mapgoto	.chaseloop
+
+	ENDC
 
 	mapjsr	cl_ground ; Clear type
 	mapend

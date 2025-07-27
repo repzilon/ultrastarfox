@@ -1,0 +1,42 @@
+@@ -1103,7 +1116,7 @@
+ 	jsl	transfer_l ; Go to transfer loop subroutine
+ 
+ 	ai16 ; Set A/X/Y to 16 bit
+-	clrmes	totalscoretxt,16,44	;total score
++	clrmes	totalscoretxt,16,44-4	;total score
+ 
+ 	a16 ; set A to 16 bit
+ 	jsr	calctotalscore ; Get total score
+@@ -1304,7 +1319,7 @@
+ 	and	#1
+ 	a16
+ 	bne	.oneframe
+-	lda	#facedata&WM+640*17
++	lda	#facedata&WM+640*24
+ 	bra	.writeit
+ .oneframe
+ 	lda	#facedata&WM+640*4
+@@ -1315,11 +1330,20 @@
+ 	beq	.bunny
+ 	cpx	#2
+ 	beq	.falco
+-	lda	#facedata&WM+640*11
++	cpx	#4
++	beq	.miyu
++	cpx	#6
++	beq	.fay
++	lda	#facedata&WM+640*15 ; slippy?
+ 	bra	.writeit
+-.bunny	lda	#facedata&WM+640*7
++.bunny	lda	#facedata&WM+640*7 ; peppy
+ 	bra	.writeit
+-.falco	lda	#facedata&WM+640*9
++.falco	lda	#facedata&WM+640*9 ; falco
++	bra	.writeit
++; no idea if this will work
++.miyu	lda	#facedata&WM+640*11 ; miyu?
++	bra	.writeit
++.fay	lda	#facedata&WM+640*13 ;fay?
+ .writeit
+ 	sta.l	m_faceptr
+ 

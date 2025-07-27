@@ -34,8 +34,10 @@
 frogwait	=	30
 bunnywait	=	60
 cockwait	=	90
+miyuwait	=	120
+faywait		=	150
 clgndwait	=	110
-cl_warp_btime	equ	430
+cl_warp_btime	equ	230+350 ;430 ;TODO: ADJUST THIS
 
 
 	shorta
@@ -134,6 +136,41 @@ clshipWARPc_strat
 	s_set_var		W,svar_word3,#-30	; Y
 	s_jmp			clshipWARP_cont	
 
+clshipWARPd_Istrat
+	s_start_strat
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clshipWARPd_strat
+	s_setnoremove_behind	x
+	s_set_alvar		W,x,al_sword1,#cl_warp_btime-faywait-40
+ 	s_set_alvar		B,x,al_sbyte2,#20  	; time until remove.
+	s_set_alvar		W,x,al_vx,#10 
+	s_set_alvar		B,x,al_rotz,#-deg90	
+clshipWARPd_strat
+	s_start_strat
+
+	jsr			flyinleft_srou
+
+	s_set_var		W,svar_word2,#100	; Z
+	s_set_var		W,svar_word3,#-40	; Y
+	s_jmp			clshipWARP_cont	
+
+clshipWARPe_Istrat
+	s_start_strat
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clshipWARPe_strat
+	s_setnoremove_behind	x
+	s_set_alvar		W,x,al_sword1,#cl_warp_btime-miyuwait
+ 	s_set_alvar		B,x,al_sbyte2,#20  	; time until remove.
+	s_set_alvar		W,x,al_vx,#-10 
+	s_set_alvar		B,x,al_rotz,#deg90	
+clshipWARPe_strat
+	s_start_strat
+
+	jsr			flyinright_srou
+
+	s_set_var		W,svar_word2,#200	; Z
+	s_set_var		W,svar_word3,#-40	; Y
+	s_jmp			clshipWARP_cont	
 
 
 clshipWARP_cont
@@ -200,6 +237,32 @@ clshipGNDc_Istrat
 clshipGNDc_strat
 	s_start_strat
 	s_achase_alvar		W,x,al_worldx,#0,4	  
+	s_set_var		W,svar_word2,#-300	; Z
+	s_set_var		W,svar_word3,#50	; Y
+	s_jmp			clshipGND_cont	
+
+clshipGNDd_Istrat
+	s_start_strat
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clshipGNDd_strat
+	s_setnoremove_behind	x
+	s_set_alvar		W,x,al_sword1,#clgndwait+100-miyuwait
+clshipGNDd_strat
+	s_start_strat
+	s_achase_alvar		W,x,al_worldx,#90,4	  
+	s_set_var		W,svar_word2,#-300	; Z
+	s_set_var		W,svar_word3,#50	; Y
+	s_jmp			clshipGND_cont	
+
+clshipGNDe_Istrat
+	s_start_strat
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clshipGNDe_strat
+	s_setnoremove_behind	x
+	s_set_alvar		W,x,al_sword1,#clgndwait+100-faywait
+clshipGNDe_strat
+	s_start_strat
+	s_achase_alvar		W,x,al_worldx,#-90,4	  
 	s_set_var		W,svar_word2,#-300	; Z
 	s_set_var		W,svar_word3,#50	; Y
 	s_jmp			clshipGND_cont	
@@ -314,6 +377,46 @@ clshipEARTHc_strat
 	jsl		floatCLship2_l
 	s_jmp			clship_cont	
 
+clshipEARTHd_Istrat
+	s_start_strat	
+	s_set_alsflag		x,sflag1
+	s_set_alvar		B,x,al_sbyte1,#20
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clshipEARTHd_strat
+	s_set_alvar		B,x,al_rotz,#deg90+deg45
+	s_setnoremove_behind	x
+	s_set_alvar2rnd	x,al_sbyte3,#15
+	s_set_alvar2rnd	x,al_sbyte4,#7
+
+clshipEARTHd_strat
+	s_start_strat
+	s_achase_alvar		W,x,al_worldx,#50,4	  
+	s_set_var		W,svar_word2,#300
+	s_set_var		W,svar_word3,#50
+	jsl		floatCLship2_l
+	s_jmp			clship_cont	
+
+clshipEARTHe_Istrat
+	s_start_strat	
+	s_set_alsflag		x,sflag1
+	s_set_alvar		B,x,al_sbyte1,#10
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clshipEARTHe_strat
+	s_set_alvar		B,x,al_rotz,#-deg90
+	s_setnoremove_behind	x
+	s_set_alvar2rnd	x,al_sbyte3,#15
+	s_set_alvar2rnd	x,al_sbyte4,#7
+
+
+clshipEARTHe_strat
+	s_start_strat
+	s_achase_alvar		W,x,al_worldx,#-50,4	  
+	s_set_var		W,svar_word2,#200
+	s_set_var		W,svar_word3,#20
+	jsl		floatCLship2_l
+	s_jmp			clship_cont	
+
+
 ;*****************************************************************************
 clshipSHIPa_Istrat
 	s_start_strat	
@@ -365,6 +468,40 @@ clship3_strat
 	s_achase_alvar		W,x,al_worldx,#0,4	  
 	s_set_var		W,svar_word2,#300
 	s_set_var		W,svar_word3,#50
+	s_jmp			clship_cont	
+
+clshipSHIPd_Istrat
+	s_start_strat	
+	s_set_alsflag		x,sflag1
+	s_set_alvar		B,x,al_sbyte1,#10
+clship4_Istrat
+	s_start_strat
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clship4_strat
+	s_set_alvar		B,x,al_rotz,#-deg90
+	s_setnoremove_behind	x
+clship4_strat
+	s_start_strat
+	s_achase_alvar		W,x,al_worldx,#-150,4	  
+	s_set_var		W,svar_word2,#100
+	s_set_var		W,svar_word3,#20
+	s_jmp			clship_cont	
+
+clshipSHIPe_Istrat
+	s_start_strat	
+	s_set_alsflag		x,sflag1
+	s_set_alvar		B,x,al_sbyte1,#20
+clship5_Istrat
+	s_start_strat
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clship5_strat
+	s_set_alvar		B,x,al_rotz,#deg90
+	s_setnoremove_behind	x
+clship5_strat
+	s_start_strat
+	s_achase_alvar		W,x,al_worldx,#150,4	  
+	s_set_var		W,svar_word2,#200
+	s_set_var		W,svar_word3,#40
 	s_jmp			clship_cont	
 
 
@@ -454,9 +591,6 @@ clshipTURNa_strat
 	s_set_var		W,svar_word3,#-20	; Y
 	s_jmp			clshipTURN_cont	
 
-	
-
-
 clshipTURNb_Istrat
 	s_start_strat
 	s_set_alsflag		x,shadow
@@ -483,7 +617,7 @@ clshipTURNc_Istrat
 	s_set_alsflag		x,shadow
 	s_set_strat		x,clshipTURNc_strat
 	s_setnoremove_behind	x
-	s_set_alvar		B,x,al_sword1,#100+100+10-cockwait	200
+	s_set_alvar		B,x,al_sword1,#100+100+10-cockwait
 	s_set_alvar		B,x,al_sbyte1,#(deg180+deg45+deg22)/4
 	s_set_alsflag		x,sflag2
 	s_set_alvar2rnd	x,al_sbyte3,#15
@@ -495,6 +629,48 @@ clshipTURNc_strat
 	s_set_var		W,svar_word3,#-30	; Y
 	s_jmp			clshipTURN_cont	
 
+clshipTURNd_Istrat
+	s_start_strat
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clshipTURNd_strat
+	s_setnoremove_behind	x
+	s_set_alvar		W,x,al_vx,#10 
+	s_set_alvar		B,x,al_rotz,#-deg90	
+	s_set_alvar		B,x,al_sword1,#100+130+10-faywait
+	s_set_alvar		B,x,al_sbyte1,#(deg180+deg45+deg22)/4
+	s_set_alsflag		x,sflag2
+	s_set_alvar2rnd	x,al_sbyte3,#15
+	s_set_alvar2rnd	x,al_sbyte4,#7
+
+clshipTURNd_strat
+	s_start_strat
+
+	jsr			flyinleft_srou
+
+	s_set_var		W,svar_word2,#100	; Z
+	s_set_var		W,svar_word3,#-20	; Y
+	s_jmp			clshipTURN_cont	
+
+clshipTURNe_Istrat
+	s_start_strat
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clshipTURNe_strat
+	s_setnoremove_behind	x
+	s_set_alvar		W,x,al_vx,#-10 
+	s_set_alvar		B,x,al_rotz,#deg90	
+	s_set_alvar		B,x,al_sword1,#100+120+10-miyuwait
+	s_set_alvar		B,x,al_sbyte1,#(deg180+deg45+deg22)/4
+	s_clr_alsflag		x,sflag2
+	s_set_alvar2rnd	x,al_sbyte3,#15
+	s_set_alvar2rnd	x,al_sbyte4,#7
+clshipTURNe_strat
+	s_start_strat
+
+	jsr			flyinright_srou
+
+	s_set_var		W,svar_word2,#200	; Z
+	s_set_var		W,svar_word3,#-20	; Y
+	s_jmp			clshipTURN_cont	
 
 
 clshipTURN_cont
@@ -568,7 +744,7 @@ clshipBRIDGEa_Istrat
 	s_setnoremove_behind	x
 	s_set_alvar		B,x,al_rotz,#-deg90	
 	s_set_alvar		B,x,al_roty,#deg45
-	s_set_alvar		W,x,al_sword1,#130-bunnywait
+	s_set_alvar		W,x,al_sword1,#230-bunnywait
 clshipBRIDGEa_strat
 	s_start_strat
 
@@ -578,9 +754,6 @@ clshipBRIDGEa_strat
 	s_set_var		W,svar_word3,#20	; Y
 	s_jmp			clshipBRIDGE_cont	
 
-	
-
-
 clshipBRIDGEb_Istrat
 	s_start_strat
 	s_set_alsflag		x,shadow
@@ -588,7 +761,7 @@ clshipBRIDGEb_Istrat
 	s_setnoremove_behind	x
 	s_set_alvar		B,x,al_rotz,#deg90	
 	s_set_alvar		B,x,al_roty,#-deg45
-	s_set_alvar		W,x,al_sword1,#140-frogwait
+	s_set_alvar		W,x,al_sword1,#240-frogwait
 clshipBRIDGEb_strat
 	s_start_strat
 
@@ -603,7 +776,7 @@ clshipBRIDGEc_Istrat
 	s_set_alsflag		x,shadow
 	s_set_strat		x,clshipBRIDGEc_strat
 	s_setnoremove_behind	x
-	s_set_alvar		W,x,al_sword1,#150-cockwait
+	s_set_alvar		W,x,al_sword1,#250-cockwait
 clshipBRIDGEc_strat
 	s_start_strat
 	s_achase_alvar		W,x,al_worldx,#0,4	  
@@ -611,6 +784,40 @@ clshipBRIDGEc_strat
 	s_set_var		W,svar_word3,#30	; Y
 	s_jmp			clshipBRIDGE_cont	
 
+
+clshipBRIDGEd_Istrat
+	s_start_strat
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clshipBRIDGEd_strat
+	s_setnoremove_behind	x
+	s_set_alvar		B,x,al_rotz,#-deg90	
+	s_set_alvar		B,x,al_roty,#deg45
+	s_set_alvar		W,x,al_sword1,#260-faywait
+clshipBRIDGEd_strat
+	s_start_strat
+
+	s_achase_alvar		W,x,al_worldx,#-70,4	  
+
+	s_set_var		W,svar_word2,#-300	; Z
+	s_set_var		W,svar_word3,#20	; Y
+	s_jmp			clshipBRIDGE_cont	
+
+clshipBRIDGEe_Istrat
+	s_start_strat
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clshipBRIDGEe_strat
+	s_setnoremove_behind	x
+	s_set_alvar		B,x,al_rotz,#deg90	
+	s_set_alvar		B,x,al_roty,#-deg45
+	s_set_alvar		W,x,al_sword1,#270-miyuwait
+clshipBRIDGEe_strat
+	s_start_strat
+
+	s_achase_alvar		W,x,al_worldx,#70,4	  
+
+	s_set_var		W,svar_word2,#-400	; Z
+	s_set_var		W,svar_word3,#20	; Y
+	s_jmp			clshipBRIDGE_cont	
 
 
 clshipBRIDGE_cont
@@ -673,7 +880,7 @@ clshipDIVEa_Istrat
 	s_start_strat
 	s_set_strat		x,clshipDIVEa_strat
 	s_setnoremove_behind	x
-	s_set_alvar		W,x,al_sword1,#180-bunnywait
+	s_set_alvar		W,x,al_sword1,#280-bunnywait
 	s_set_alvar		B,x,al_rotz,#-deg90	
 clshipDIVEa_strat
 	s_start_strat
@@ -710,7 +917,7 @@ clshipDIVEb_Istrat
 	s_start_strat
 	s_set_strat		x,clshipDIVEb_strat
 	s_setnoremove_behind	x
-	s_set_alvar		W,x,al_sword1,#190-frogwait
+	s_set_alvar		W,x,al_sword1,#290-frogwait
 	s_set_alvar		B,x,al_rotz,#deg90	
 clshipDIVEb_strat
 	s_start_strat
@@ -745,7 +952,7 @@ clshipDIVEc_Istrat
 	s_start_strat
 	s_set_strat		x,clshipDIVEc_strat
 	s_setnoremove_behind	x
-	s_set_alvar		W,x,al_sword1,#170-cockwait
+	s_set_alvar		W,x,al_sword1,#270-cockwait
  	s_set_alvar		B,x,al_sbyte2,#20
 clshipDIVEc_strat
 	s_start_strat
@@ -768,6 +975,82 @@ clshipDIVEc_strat
 	brl			clshipDIVE_cont2
 .nhigh
 	s_jmp			clshipDIVE_cont	
+
+
+
+clshipDIVEd_Istrat
+	s_start_strat
+	s_set_strat		x,clshipDIVEd_strat
+	s_setnoremove_behind	x
+	s_set_alvar		W,x,al_sword1,#280-faywait
+	s_set_alvar		B,x,al_rotz,#-deg90	
+clshipDIVEd_strat
+	s_start_strat
+
+	s_achase_alvar		W,x,al_worldx,#-50,4	  
+
+	s_set_var		W,svar_word2,#100	; Z
+	s_set_var		W,svar_word3,#-50	; Y    
+
+	s_jmp_alvarMORE		W,x,al_sword1,#60,.nhigh
+	s_jmp_alvarLESS		W,x,al_sword1,#30,.nvy
+	s_add_alvar		B,x,al_rotz,#2   
+	s_jmp_notdelay		2,.nvx
+	s_add_alvar		W,x,al_vx,#-1
+.nvx	s_jmp_notdelay		1,.nvy
+	s_add_alvar		W,x,al_vy,#-1
+.nvy	
+	s_add_vecs2pos		x
+	s_jmp_alvarNE		W,x,al_sword1,#1,.nb
+	s_set_objtobeplayer	y
+	s_copy_pos		x,y
+	s_add_alvar		W,x,al_worldy,#-200
+	s_add_alvar		W,x,al_worldx,#-50
+.nb
+
+	brl			clshipDIVE_cont2
+.nhigh
+	s_jmp			clshipDIVE_cont	
+
+	
+
+
+clshipDIVEe_Istrat
+	s_start_strat
+	s_set_strat		x,clshipDIVEe_strat
+	s_setnoremove_behind	x
+	s_set_alvar		W,x,al_sword1,#290-miyuwait
+	s_set_alvar		B,x,al_rotz,#deg90	
+clshipDIVEe_strat
+	s_start_strat
+
+	s_achase_alvar		W,x,al_worldx,#50,4	  
+
+	s_set_var		W,svar_word2,#100	; Z
+	s_set_var		W,svar_word3,#-50	; Y
+
+	s_jmp_alvarMORE		W,x,al_sword1,#60,.nhigh
+	s_jmp_alvarLESS		W,x,al_sword1,#30,.nvy
+	s_sub_alvar		B,x,al_rotz,#2    
+	s_jmp_notdelay		2,.nvx
+	s_add_alvar		W,x,al_vx,#1
+.nvx	s_jmp_notdelay		1,.nvy
+	s_add_alvar		W,x,al_vy,#-1
+.nvy	
+	s_add_vecs2pos		x
+	s_jmp_alvarNE		W,x,al_sword1,#1,.nb
+	s_set_objtobeplayer	y
+	s_copy_pos		x,y
+	s_add_alvar		W,x,al_worldy,#-200
+	s_add_alvar		W,x,al_worldx,#50
+.nb
+
+	brl			clshipDIVE_cont2
+.nhigh
+
+	s_jmp			clshipDIVE_cont	
+
+
 
 
 
@@ -827,9 +1110,6 @@ clshipCHASEa_strat
 	s_set_var		W,svar_word3,#20	; Y
 	s_jmp			clshipCHASE_cont	
 
-	
-
-
 clshipCHASEb_Istrat
 	s_start_strat
 	s_set_alsflag		x,shadow
@@ -858,6 +1138,40 @@ clshipCHASEc_strat
 	s_achase_alvar		W,x,al_worldx,#0,4	  
 	s_set_var		W,svar_word2,#-300	; Z
 	s_set_var		W,svar_word3,#30	; Y
+	s_jmp			clshipCHASE_cont	
+
+clshipCHASEd_Istrat
+	s_start_strat
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clshipCHASEd_strat
+	s_setnoremove_behind	x
+	s_set_alvar		B,x,al_rotz,#-deg90	
+	s_set_alvar		B,x,al_roty,#deg45
+	s_set_alvar		W,x,al_sword1,#246+5-miyuwait
+clshipCHASEd_strat
+	s_start_strat
+
+	s_achase_alvar		W,x,al_worldx,#-70,4	  
+
+	s_set_var		W,svar_word2,#-200	; Z
+	s_set_var		W,svar_word3,#40	; Y
+	s_jmp			clshipCHASE_cont	
+
+clshipCHASEe_Istrat
+	s_start_strat
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clshipCHASEe_strat
+	s_setnoremove_behind	x
+	s_set_alvar		B,x,al_rotz,#deg90	
+	s_set_alvar		B,x,al_roty,#-deg45
+	s_set_alvar		W,x,al_sword1,#246+10-faywait
+clshipCHASEe_strat
+	s_start_strat
+
+	s_achase_alvar		W,x,al_worldx,#70,4	  
+
+	s_set_var		W,svar_word2,#-300	; Z
+	s_set_var		W,svar_word3,#40	; Y
 	s_jmp			clshipCHASE_cont	
 
 
@@ -938,8 +1252,6 @@ clshipUNDERa_strat
 	s_set_var		W,svar_word3,#20	; Y
 	s_jmp			clshipUNDER_cont	
 
-	
-
 
 clshipUNDERb_Istrat
 	s_start_strat
@@ -972,6 +1284,44 @@ clshipUNDERc_strat
 	s_achase_alvar		W,x,al_worldx,#0,4	  
 	s_set_var		W,svar_word2,#-300	; Z
 	s_set_var		W,svar_word3,#30	; Y
+	s_jmp			clshipUNDER_cont	
+
+clshipUNDERd_Istrat
+	s_start_strat
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clshipUNDERd_strat
+	s_setnoremove_behind	x
+	s_set_alvar		B,x,al_rotz,#-deg90	
+	s_set_alvar		B,x,al_roty,#deg45
+	s_set_alvar		W,x,al_sword1,#140+20
+	s_set_alvar		B,x,al_sbyte1,#1
+	s_set_alsflag		x,sflag2
+clshipUNDERd_strat
+	s_start_strat
+
+	s_achase_alvar		W,x,al_worldx,#-70,4	  
+
+	s_set_var		W,svar_word2,#-100	; Z
+	s_set_var		W,svar_word3,#20	; Y
+	s_jmp			clshipUNDER_cont	
+
+clshipUNDERe_Istrat
+	s_start_strat
+	s_set_alsflag		x,shadow
+	s_set_strat		x,clshipUNDERe_strat
+	s_setnoremove_behind	x
+	s_set_alvar		B,x,al_rotz,#deg90	
+	s_set_alvar		B,x,al_roty,#-deg45
+	s_set_alvar		W,x,al_sword1,#140+25
+	s_set_alvar		B,x,al_sbyte1,#2
+	s_clr_alsflag		x,sflag2
+clshipUNDERe_strat
+	s_start_strat
+
+	s_achase_alvar		W,x,al_worldx,#70,4	  
+
+	s_set_var		W,svar_word2,#-200	; Z
+	s_set_var		W,svar_word3,#20	; Y
 	s_jmp			clshipUNDER_cont	
 
 
@@ -1326,17 +1676,46 @@ pshipOutofLB1_strat
 	s_set_strat		y,shiplb1_Istrat
 .bad2
 
-	s_jmp_varZERO		B,bunny,.bad3
-	s_make_obj		#my_demos,.bad3
+	s_jmp_varZERO		B,bunny,.bad2_1
+	s_make_obj		#my_demos,.bad2
 	s_copy_pos		y,x
 	s_copy_rots		y,x
 	s_copy_vecs		y,x
 	s_add_alvar		W,y,al_worldx,#450+600
 	s_add_alvar		W,y,al_worldy,#1000
 	s_set_alvar		W,y,al_sword1,#50
+	s_add_alvar		W,y,al_worldz,#450
+	s_set_alvar		B,y,al_sbyte1,#30+30+2
+	s_set_strat		y,shiplb1_Istrat
+
+.bad2_1
+
+	s_jmp_varZERO		B,miyu,.bad2_2
+	s_make_obj		#my_demos,.bad2_2
+	s_copy_pos		y,x
+	s_copy_rots		y,x
+	s_copy_vecs		y,x
+	s_add_alvar		W,y,al_worldx,#450+600+100
+	s_add_alvar		W,y,al_worldy,#1500
+	s_set_alvar		W,y,al_sword1,#50
 	s_add_alvar		W,y,al_worldz,#400
 	s_set_alvar		B,y,al_sbyte1,#30+30+2
 	s_set_strat		y,shiplb1_Istrat
+
+.bad2_2
+
+	s_jmp_varZERO		B,fay,.bad3
+	s_make_obj		#my_demos,.bad3
+	s_copy_pos		y,x
+	s_copy_rots		y,x
+	s_copy_vecs		y,x
+	s_add_alvar		W,y,al_worldx,#450+600+200
+	s_add_alvar		W,y,al_worldy,#2000
+	s_set_alvar		W,y,al_sword1,#50
+	s_add_alvar		W,y,al_worldz,#450
+	s_set_alvar		B,y,al_sbyte1,#30+30+2
+	s_set_strat		y,shiplb1_Istrat
+
 .bad3
 	s_next_state		x
 .ns3

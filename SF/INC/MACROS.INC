@@ -4,6 +4,11 @@ printerror	macro	[errormsg]
 	error+
 	ENDM
 ;------------------------------------------------------------------------
+printerror	macro	[errormsg]
+	printf	"%q%f%q (%l) %01%31Error: {errormsg}%00%n"
+	error+
+	ENDM
+;------------------------------------------------------------------------
 	IFD		_ARGSFX
 ; Rotates a string left by offset for ARGSFX
 rols	MACRO	[string,offset]
@@ -189,6 +194,65 @@ setuprng	MACRO
 	STA rand
 	LDA #$28
 	STA rand+1
+	returnmode
+	ELSEIF ; rngmode == 0 || 1
+	savemode
+	ai8
+	lda	#$3a
+	sta	rand
+	lda	#$a7
+	sta	rand+1
+	lda	#$55
+	sta	rand+2
+	lda	#$7f
+	sta	rand+3
+	returnmode
+	ENDC
+	ENDM
+
+xorshiftrng	MACRO
+	; Code taken from https://codebase64.org/doku.php?id=base:16bit_xorshift_random_generator
+	; should be run with A in 8-bit mode
+	; saves 2 bytes of zp vs the original routine
+	; in C, what this does is:
+	;	rand ^= rand << 7;
+	;	rand ^= rand >> 9;
+	;	rand ^= rand << 8;
+	;	return rand;
+	LDA rand+1
+	LSR a
+	LDA rand
+	ROR a
+	EOR rand+1
+	STA rand+1 ; high part of x ^= x << 7 done
+	ROR a	; A has now x >> 9 and high bit comes from low byte
+	EOR rand
+	STA rand  ; x ^= x >> 9 and the low part of x ^= x << 7 done
+	EOR rand+1 
+	STA rand+1 ; x ^= x << 8 done
+	ENDM
+
+;------------------------------------------------------------------------
+
+; Sets up RNG seed for random_l
+setuprng	MACRO
+	IFEQ	rngmode-2
+	savemode
+	ai16
+	; seeding
+	LDA #$026c ; seed, can be anything except 0
+	STA rand
+	LDY $1D0 ; get uninitialized startup ram garbage, ram is always random on power-on
+	TYA
+	EOR	rand	; XOR rand against said garbage
+	STA	rand
+	LDA	rand
+	beq	.zero ; check if Y and rand were equal (highly unlikely), seed can't be zero or the RNG routine will do nothing
+	bne	.randomseeddone
+.zero
+	LDA	#$026c ; backup seed
+	STA	rand
+.randomseeddone
 	returnmode
 	ELSEIF ; rngmode == 0 || 1
 	savemode

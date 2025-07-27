@@ -18,14 +18,21 @@ fudge	=	250
 
 	mapobj	0000,-40,0,-200,imyship_4,shipintro_istrat
 	setalvar.w	sword1,-70
-	setalvar	sbyte1,60
+	setalvar	sbyte1,40
 	mapobj	0000,40,0,-200,imyship_4,shipintro_istrat
 	setalvar.w	sword1,-70
+	setalvar	sbyte1,30
+	; Miyu n' Fay
+	mapobj	0000,-40,0,-300,imyship_4,shipintro_istrat
+	setalvar.w	sword1,-70
+	setalvar	sbyte1,60
+	mapobj	0000,40,0,-300,imyship_4,shipintro_istrat
+	setalvar.w	sword1,-70
 	setalvar	sbyte1,50
+	; Falco? idk
 	mapobj	0000,0000,0,-300,imyship_4,shipintro_istrat
 	setalvar.w	sword1,-100
-	setalvar	sbyte1,-1
-
+	setalvar	sbyte1,70
 
 .here2	
 	mapwait		(100<<3)-medpspeed

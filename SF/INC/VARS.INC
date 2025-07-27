@@ -180,17 +180,23 @@ friend_fox		equ	0
 friend_rabbit 	equ	1
 friend_falcon 	equ	2
 friend_frog		equ	3
-friend_pepper 	equ	4
-friend_andross 	equ	5
-friend_anyone 	equ	6
+friend_miyu		equ	4
+friend_fay		equ	5
+friend_robfx	equ	6
+friend_pepper 	equ	7
+friend_andross 	equ	8
+friend_anyone 	equ	9
 
 friend_fox3		equ	0+128
 friend_rabbit3 	equ	1+128
 friend_falcon3 	equ	2+128
 friend_frog3	equ	3+128
-friend_pepper3 	equ	4+128
-friend_andross3 equ	5+128
-friend_anyone3 	equ	6+128
+friend_miyu3	equ	4+128
+friend_fay3		equ	5+128
+friend_robfx3	equ	6+128
+friend_pepper3 	equ	7+128
+friend_andross3 equ	8+128
+friend_anyone3 	equ	9+128
 
 ; FACE.CGX Frame Index
 ; Comms window open animation

@@ -158,15 +158,19 @@
 	P_EXPORT		ebyte2,pbyte1
 	P_TRIGGER		.trn_ck_yn,always
 
-	P_MSG		118
+	P_MSG		118	;pepper
 	P_WAIT		60
-	P_MSG		119
+	P_MSG		119	;peppy
 	P_WAIT		60
-	P_MSG		124
+	P_MSG		124	;falco
 	P_WAIT		60
-	P_MSG		123
+	P_MSG		188	;fay
+	P_WAIT		60
+	P_MSG		197	;miyu
+	P_WAIT		60
+	P_MSG		123	;slippy
 	P_WAIT		100
-	P_MSG		120
+	P_MSG		120	;pepper
 
 .trn_ck_w
 	P_WAIT		1
@@ -4880,13 +4884,19 @@ eguchi1
 
 	P_WAIT		54
 
-	P_MSG		1
+	P_MSG		1	;FOX - All ships check in!!
 	P_WAIT		25
-	P_MSG		5
+	P_MSG		5	;FALCON - ready, fox!
 	P_WAIT		25
-	P_MSG		45
+	P_MSG		180	;MIYU - all systems go!
 	P_WAIT		25
-	P_MSG		25
+	P_MSG		45	;FROG - ok!!
+	P_WAIT		25
+	P_MSG		181	;FAY - we can do this!
+	P_WAIT		25
+	P_MSG		25	;RABBIT - yeah - let's go!
+
+
 
 	P_REMOVE
 ;-------------------------------------------------------------------
@@ -4905,9 +4915,15 @@ eguchi1
 	P_MSG		36
 	P_GOTO		.astms_2
 .astms_1
-	P_NOTFRIEND		frog,.astms_2
+	P_NOTFRIEND		frog,.astms_2_1
 	P_MSG		56
-
+	P_GOTO		.astms_2
+.astms_2_1
+	P_NOTFRIEND		miyu,.astms_2_2
+	P_MSG		193
+	P_GOTO		.astms_2
+.astms_2_2
+	P_MSG		194
 .astms_2
 	P_REMOVE
 
@@ -4927,15 +4943,22 @@ eguchi1
 
 	P_NOTFRIEND		falcon,.drams_0
 	P_MSG		17
-	P_GOTO		.drams_2
+	P_GOTO		.drams_end
 .drams_0
 	P_NOTFRIEND		rabbit,.drams_1
 	P_MSG		37
-	P_GOTO		.drams_2
+	P_GOTO		.drams_end
 .drams_1
 	P_NOTFRIEND		frog,.drams_2
 	P_MSG		57
+	P_GOTO		.drams_end
 .drams_2
+	P_NOTFRIEND		miyu,.drams_3
+	P_MSG		189
+	P_GOTO		.drams_end
+.drams_3
+	P_MSG		190
+.drams_end
 	P_REMOVE
 
 	P_END
@@ -4962,8 +4985,16 @@ eguchi1
 	P_MSG		38
 	P_GOTO		.hanms_2
 .hanms_1
-	P_NOTFRIEND		frog,.hanms_2
+	P_NOTFRIEND		frog,.hanms_2_1
 	P_MSG		58
+	P_GOTO		.hanms_2
+.hanms_2_1
+	P_NOTFRIEND		miyu,.hanms_2_2
+	P_MSG		191
+	P_GOTO		.hanms_2
+.hanms_2_2
+	P_NOTFRIEND		fay,.hanms_2
+	P_MSG		192
 .hanms_2
 	P_REMOVE
 
@@ -4978,17 +5009,25 @@ eguchi1
 
 	P_WAIT		150
 
-
+	; Inside Space Armada ship msg
 	P_NOTFRIEND		falcon,.kasms_0
-	P_MSG		19
+	P_MSG		19			;FALCON
 	P_GOTO		.kasms_2
 .kasms_0
 	P_NOTFRIEND		rabbit,.kasms_1
-	P_MSG		39
+	P_MSG		39			;RABBIT
 	P_GOTO		.kasms_2
 .kasms_1
-	P_NOTFRIEND		frog,.kasms_2
-	P_MSG		57
+	P_NOTFRIEND		frog,.kasms_1_1
+	P_MSG		57			;FROG
+	P_GOTO		.kasms_2
+.kasms_1_1
+	P_NOTFRIEND		miyu,.kasms_1_2
+	P_MSG		168			;MIYU
+	P_GOTO		.kasms_2
+.kasms_1_2
+	P_NOTFRIEND		fay,.kasms_2
+	P_MSG		169			;FAY
 .kasms_2
 	P_REMOVE
 
@@ -5000,16 +5039,23 @@ eguchi1
 	P_RELTOPLAYER	ON
 	P_INVISIBLE		ON
 
+	; Inside Space Armada ship msg
 	P_NOTFRIEND		falcon,.2kasms_0
-	P_MSG		19
+	P_MSG		19			;FALCON
 	P_IGOTO		.2kasms_2
 .2kasms_0
 	P_NOTFRIEND		rabbit,.2kasms_1
-	P_MSG		39
+	P_MSG		39			;RABBIT
 	P_IGOTO		.2kasms_2
 .2kasms_1
-	P_NOTFRIEND		frog,.2kasms_2
-	P_MSG		57
+	P_NOTFRIEND		frog,.2kasms_1_1
+	P_MSG		57			;FROG
+.2kasms_1_1
+	P_NOTFRIEND		miyu,.2kasms_1_2
+	P_MSG		168			;MIYU
+.2kasms_1_2
+	P_NOTFRIEND		fay,.2kasms_2
+	P_MSG		169			;FAY
 .2kasms_2
 	P_REMOVE
 
@@ -5024,6 +5070,7 @@ eguchi1
 
 	P_WAIT		80
 
+	;beware of the big stingray!
 	P_NOTFRIEND		falcon,.rayms_0
 	P_MSG		140
 	P_GOTO		.rayms_2
@@ -5032,8 +5079,16 @@ eguchi1
 	P_MSG		141
 	P_GOTO		.rayms_2
 .rayms_1
-	P_NOTFRIEND		frog,.rayms_2
+	P_NOTFRIEND		frog,.rayms_1_0
 	P_MSG		142
+	P_GOTO		.rayms_2
+.rayms_1_0
+	P_NOTFRIEND		miyu,.rayms_1_1
+	P_MSG		182
+	P_GOTO		.rayms_2
+.rayms_1_1
+	P_NOTFRIEND		fay,.rayms_2
+	P_MSG		183
 .rayms_2
 	P_REMOVE
 
@@ -5055,8 +5110,16 @@ eguchi1
 	P_MSG		40
 	P_GOTO		.amems_2
 .amems_1
-	P_NOTFRIEND		frog,.amems_2
+	P_NOTFRIEND		frog,.amems_2_1
 	P_MSG		59
+	P_GOTO		.amems_2
+.amems_2_1
+	P_NOTFRIEND		miyu,.amems_2_2
+	P_MSG		195
+	P_GOTO		.amems_2
+.amems_2_2
+	P_NOTFRIEND		fay,.amems_2
+	P_MSG		196
 .amems_2
 	P_REMOVE
 
@@ -5088,16 +5151,25 @@ eguchi1
 
 	P_WAIT		40
 
+	;Should we go in?
 	P_NOTFRIEND		falcon,.totms_0
-	P_MSG		66
+	P_MSG		66			;FALCON
 	P_GOTO		.totms_2
 .totms_0
 	P_NOTFRIEND		rabbit,.totms_1
-	P_MSG		67
+	P_MSG		67			;RABBIT
 	P_GOTO		.totms_2
 .totms_1
-	P_NOTFRIEND		frog,.totms_2
-	P_MSG		68
+	P_NOTFRIEND		frog,.totms_1_1
+	P_MSG		68			;FROG
+	P_GOTO		.totms_2
+.totms_1_1
+	P_NOTFRIEND		miyu,.totms_1_2
+	P_MSG		166			;MIYU
+	P_GOTO		.totms_2
+.totms_1_2
+	P_NOTFRIEND		fay,.totms_2
+	P_MSG		167			;FAY
 .totms_2
 	P_REMOVE
 
@@ -5555,19 +5627,28 @@ eguchi2
 	P_SET		roty,DEG90
 
 	P_SETVEL		30
-
+;***** FRIEND BEING CHASED *****
 	P_NOTFRIEND		falcon,.c1_1_m2
-	P_MSG		7,meter		;FALCON SAYS
+	P_MSG		7,meter		;FALCON SAYS HELP!
 	P_GOTO		.c1_1_4
 
 .c1_1_m2
 	P_NOTFRIEND		rabbit,.c1_1_m3
-	P_MSG		27,meter		;RABBIT SAYS
+	P_MSG		27,meter		;RABBIT SAYS HELP!
 	P_GOTO		.c1_1_4
 
 .c1_1_m3
-	P_MSG		47,meter		;FROG SAYS
+	P_NOTFRIEND		frog,.c1_1_m4
+	P_MSG		47,meter		;FROG SAYS HELP!
+	P_GOTO		.c1_1_4
 
+.c1_1_m4
+	P_NOTFRIEND		miyu,.c1_1_m5
+	P_MSG		154,meter		;MIYU SAYS HELP!
+	P_GOTO		.c1_1_4
+
+.c1_1_m5
+	P_MSG		157,meter		;FAY SAYS HELP!
 
 .c1_1_4
 	P_WAIT		35
@@ -5592,17 +5673,25 @@ eguchi2
 
 
 	P_NOTFRIEND		falcon,.c1_1_2a
-	P_MSG		15,meter
+	P_MSG		15,meter		;FALCON SAYS HIT!
 	P_IGOTO		.c1_a_3
 .c1_1_2a
 	P_NOTFRIEND		rabbit,.c1_1_2b
-	P_MSG		35,meter
+	P_MSG		35,meter		;RABBIT SAYS HIT!
 	P_IGOTO		.c1_a_3
 .c1_1_2b
-	P_MSG		55,meter
+	P_NOTFRIEND		frog,.c1_1_2c
+	P_MSG		55,meter		;FROG SAYS HIT!
+	P_IGOTO		.c1_a_3
+.c1_1_2c
+	P_NOTFRIEND		miyu,.c1_1_2d
+	P_MSG		160,meter		;MIYU SAYS HIT!
+	P_IGOTO		.c1_a_3
+.c1_1_2d
+	P_MSG		161,meter		;FAY SAYS HIT!
 ;--------------------------------
 .c1_a_3
-	P_DAMAGE				;FRIEND GETS DAMAGE
+	P_DAMAGE	;FRIEND GETS DAMAGE
 .c1_a_30
 	P_ADD		rotz,4
 	P_LOOP		7,.c1_a_30
@@ -5633,16 +5722,24 @@ eguchi2
 	P_ACCEL		10,1
 
 	P_NOTFRIEND		falcon,.c1_1_m6
-	P_MSG		9,meter		;FALCON SAYS
+	P_MSG		9,meter		;FALCON SAYS DEAD!
 	P_GOTO		.c1_1_d
 
 .c1_1_m6
 	P_NOTFRIEND		rabbit,.c1_1_m7
-	P_MSG		29,meter		;RABBIT SAYS
+	P_MSG		29,meter		;RABBIT SAYS DEAD!
 	P_GOTO		.c1_1_d
 
 .c1_1_m7
-	P_MSG		49,meter		;FROG SAYS
+	P_NOTFRIEND		frog,.c1_1_m8
+	P_MSG		49,meter		;FROG SAYS DEAD!
+	P_GOTO		.c1_1_d
+.c1_1_m8
+	P_NOTFRIEND		miyu,.c1_1_m9
+	P_MSG		156,meter		;MIYU SAYS DEAD!
+	P_GOTO		.c1_1_d
+.c1_1_m9
+	P_MSG		159,meter		;FAY SAYS DEAD!
 
 .c1_1_d
 
@@ -5783,16 +5880,26 @@ eguchi2
 
 
 	P_NOTFRIEND		falcon,.c2_1_m1
-	P_MSG		7,meter		;FALCON SAYS
+	P_MSG		7,meter		;FALCON SAYS HELP!
 	P_GOTO		.c2_1_1
 
 .c2_1_m1
 	P_NOTFRIEND		rabbit,.c2_1_m2
-	P_MSG		27,meter		;RABBIT SAYS
+	P_MSG		27,meter		;RABBIT SAYS HELP!
 	P_GOTO		.c2_1_1
 
 .c2_1_m2
-	P_MSG		47,meter		;FROG SAYS
+	P_NOTFRIEND		frog,.c2_1_m3
+	P_MSG		47,meter		;FROG SAYS HELP!
+	P_GOTO		.c2_1_1
+
+.c2_1_m3
+	P_NOTFRIEND		miyu,.c2_1_m4
+	P_MSG		154,meter		;MIYU SAYS HELP!
+	P_GOTO		.c2_1_1
+
+.c2_1_m4
+	P_MSG		157,meter		;FAY SAYS HELP!
 
 .c2_1_1
 	P_SOUND		1
@@ -5831,14 +5938,22 @@ eguchi2
 
 
 	P_NOTFRIEND		falcon,.c2_1_tm1
-	P_MSG		69,meter
+	P_MSG		69,meter		;FALCON SAYS HURRY!
 	P_IGOTO		.c2_1_tm3
 .c2_1_tm1
 	P_NOTFRIEND		rabbit,.c2_1_tm2
-	P_MSG		70,meter
+	P_MSG		70,meter		;RABBIT SAYS HURRY!
 	P_IGOTO		.c2_1_tm3
 .c2_1_tm2
-	P_MSG		71,meter
+	P_NOTFRIEND		frog,.c2_1_tm2_2
+	P_MSG		71,meter		;FROG SAYS HURRY!
+	P_IGOTO		.c2_1_tm3
+.c2_1_tm2_2
+	P_NOTFRIEND		miyu,.c2_1_tm2_3
+	P_MSG		164,meter		;MIYU SAYS HURRY!
+	P_IGOTO		.c2_1_tm3
+.c2_1_tm2_3
+	P_MSG		165,meter		;FAY SAYS HURRY!
 
 ;;;;;;
 .c2_1_tm3
@@ -5878,14 +5993,24 @@ eguchi2
 
 
 	P_NOTFRIEND		falcon,.c2_1_8a
-	P_MSG		15,meter
+	P_MSG		15,meter		;FALCON SAYS HIT!
 	P_GOTO		.c2_1_8c
 .c2_1_8a
 	P_NOTFRIEND		rabbit,.c2_1_8b
-	P_MSG		35,meter
+	P_MSG		35,meter		;RABBIT SAYS HIT!
 	P_GOTO		.c2_1_8c
 .c2_1_8b
-	P_MSG		55,meter
+	P_NOTFRIEND		frog,.c2_1_8b_2
+	P_MSG		55,meter		;FROG SAYS HIT!
+	P_GOTO		.c2_1_8c
+
+.c2_1_8b_2
+	P_NOTFRIEND		miyu,.c2_1_8b_3
+	P_MSG		160,meter		;MIYU SAYS HIT!
+	P_GOTO		.c2_1_8c
+
+.c2_1_8b_3
+	P_MSG		161,meter		;FAY SAYS HIT!
 
 .c2_1_8c
 	P_DAMAGE
@@ -5910,16 +6035,26 @@ eguchi2
 	P_SETVEL		10
 
 	P_NOTFRIEND		falcon,.c2_1_tm5
-	P_MSG		9,meter		;FALCON SAYS
+	P_MSG		9,meter		;FALCON SAYS DEAD!
 	P_GOTO		.c2_1_tj
 
 .c2_1_tm5
 	P_NOTFRIEND		rabbit,.c2_1_tm6
-	P_MSG		29,meter		;RABBIT SAYS
+	P_MSG		29,meter		;RABBIT SAYS DEAD!
 	P_GOTO		.c2_1_tj
 
 .c2_1_tm6
-	P_MSG		49,meter		;FROG SAYS
+	P_NOTFRIEND		frog,.c2_1_tm7
+	P_MSG		49,meter		;FROG SAYS DEAD!
+	P_GOTO		.c2_1_tj
+
+.c2_1_tm7
+	P_NOTFRIEND		miyu,.c2_1_tm8
+	P_MSG		156,meter		;MIYU SAYS DEAD!
+	P_GOTO		.c2_1_tj
+
+.c2_1_tm8
+	P_MSG		159,meter		;FAY SAYS DEAD!
 
 .c2_1_tj
 	P_DAMAGE
@@ -5959,16 +6094,26 @@ eguchi2
 	P_LOOP		15,.c2_1_g
 
 	P_NOTFRIEND		falcon,.c2_1_m5
-	P_MSG		9,meter		;FALCON SAYS
+	P_MSG		9,meter		;FALCON SAYS DEAD!
 	P_GOTO		.c2_1_j
 
 .c2_1_m5
 	P_NOTFRIEND		rabbit,.c2_1_m6
-	P_MSG		29,meter		;RABBIT SAYS
+	P_MSG		29,meter		;RABBIT SAYS DEAD!
 	P_GOTO		.c2_1_j
 
 .c2_1_m6
-	P_MSG		49,meter		;FROG SAYS
+	P_NOTFRIEND		frog,.c2_1_m7
+	P_MSG		49,meter		;FROG SAYS DEAD!
+	P_GOTO		.c2_1_j
+
+.c2_1_m7
+	P_NOTFRIEND		miyu,.c2_1_m8
+	P_MSG		156,meter		;MIYU SAYS DEAD!
+	P_GOTO		.c2_1_j
+
+.c2_1_m8
+	P_MSG		159,meter		;FAY SAYS DEAD!
 	P_WAIT		2
 
 .c2_1_j
@@ -6171,19 +6316,28 @@ eguchi2
 
 	P_NOTFRIEND		anyone,.c3_1_z
 
+;**** FRIEND BEING CHASED ****
 .c3_1_0
 	P_ADD		rotx,-32
 	P_SETVEL		30
 
 	P_NOTFRIEND		falcon,.c3_1_m1
-	P_MSG		7,meter		;FALCON SAYS HELP!
+	P_MSG		7,meter			;FALCON SAYS HELP!
 	P_GOTO		.c3_1_1
 .c3_1_m1
 	P_NOTFRIEND		rabbit,.c3_1_m2
 	P_MSG		27,meter		;RABBIT SAYS HELP!
 	P_GOTO		.c3_1_1
 .c3_1_m2
+	P_NOTFRIEND		frog,.c3_1_m3
 	P_MSG		47,meter		;FROG SAYS HELP!
+	P_GOTO		.c3_1_1
+.c3_1_m3
+	P_NOTFRIEND		miyu,.c3_1_m4
+	P_MSG		154,meter		;MIYU SAYS HELP!
+	P_GOTO		.c3_1_1
+.c3_1_m4
+	P_MSG		157,meter		;FAY SAYS HELP!
 
 .c3_1_1
 	P_CHASE		rotx,0
@@ -6356,14 +6510,22 @@ eguchi2
 	P_WAIT		10
 
 	P_NOTFRIEND		falcon,.c3_1_2a
-	P_MSG		15,meter
+	P_MSG		15,meter		;FALCON SAYS HIT!
 	P_GOTO		.c3_1_2c
 .c3_1_2a
 	P_NOTFRIEND		rabbit,.c3_1_2b
-	P_MSG		35,meter
+	P_MSG		35,meter		;RABBIT SAYS HIT!
 	P_GOTO		.c3_1_2c
 .c3_1_2b
-	P_MSG		55,meter
+	P_NOTFRIEND		frog,.c3_1_2b_1
+	P_MSG		55,meter		;FROG SAYS HIT!
+	P_GOTO		.c3_1_2c
+.c3_1_2b_1
+	P_NOTFRIEND		miyu,.c3_1_2b_2
+	P_MSG		160,meter		;MIYU SAYS HIT!
+	P_GOTO		.c3_1_2c
+.c3_1_2b_2
+	P_MSG		161,meter		;FAY SAYS HIT!
 .c3_1_2c
 	P_DAMAGE
 	P_GOTO		.c3_1_y
@@ -6380,17 +6542,26 @@ eguchi2
 	P_SPACESHIP		OFF
 
 	P_NOTFRIEND		falcon,.c3_1_m5
-	P_MSG		9,meter		;FALCON SAYS
+	P_MSG		9,meter		;FALCON SAYS DEAD!
 	P_GOTO		.c3_1_8
 
 .c3_1_m5
 	P_NOTFRIEND		rabbit,.c3_1_m6
-	P_MSG		29,meter		;RABBIT SAYS
+	P_MSG		29,meter		;RABBIT SAYS DEAD!
 	P_GOTO		.c3_1_8
 
 .c3_1_m6
-	P_MSG		49,meter		;FROG SAYS
+	P_NOTFRIEND		frog,.c3_1_m7
+	P_MSG		49,meter		;FROG SAYS DEAD!
+	P_GOTO		.c3_1_8
 
+.c3_1_m7
+	P_NOTFRIEND		miyu,.c3_1_m8
+	P_MSG		156,meter		;MIYU SAYS DEAD!
+	P_GOTO		.c3_1_8
+
+.c3_1_m8
+	P_MSG		159,meter		;FAY SAYS DEAD!
 
 .c3_1_8
 	P_DAMAGE
@@ -6417,14 +6588,24 @@ eguchi2
 
 .c3_tyame
 	P_NOTFRIEND		falcon,.c3_m_t1
-	P_MSG		69,meter
+	P_MSG		69,meter		;FALCON SAYS HURRY!
 	P_RETURN
 .c3_m_t1
 	P_NOTFRIEND		rabbit,.c3_m_t2
-	P_MSG		70,meter
+	P_MSG		70,meter		;RABBIT SAYS HURRY!
 	P_RETURN
 .c3_m_t2
-	P_MSG		71,meter
+	P_NOTFRIEND		frog,.c3_m_t3
+	P_MSG		71,meter		;FROG SAYS HURRY!
+	P_RETURN
+
+.c3_m_t3
+	P_NOTFRIEND		miyu,.c3_m_t4
+	P_MSG		164,meter		;MIYU SAYS HURRY!
+	P_RETURN
+
+.c3_m_t4
+	P_MSG		165,meter		;FAY SAYS HURRY!
 	P_RETURN
 
 .c3_1_td
@@ -6437,16 +6618,26 @@ eguchi2
 	P_SMOKE		ON
 
 	P_NOTFRIEND		falcon,.c3_1_tm5
-	P_MSG		9,meter		;FALCON SAYS
+	P_MSG		9,meter		;FALCON SAYS DEAD!
 	P_IGOTO		.c3_1_td1
 
 .c3_1_tm5
 	P_NOTFRIEND		rabbit,.c3_1_tm6
-	P_MSG		29,meter		;RABBIT SAYS
+	P_MSG		29,meter		;RABBIT SAYS DEAD!
 	P_IGOTO		.c3_1_td1
 
 .c3_1_tm6
-	P_MSG		49,meter		;FROG SAYS
+	P_NOTFRIEND		frog,.c3_1_tm7
+	P_MSG		49,meter		;FROG SAYS DEAD!
+	P_IGOTO		.c3_1_td1
+
+.c3_1_tm7
+	P_NOTFRIEND		miyu,.c3_1_tm8
+	P_MSG		156,meter		;MIYU SAYS DEAD!
+	P_IGOTO		.c3_1_td1
+
+.c3_1_tm8
+	P_MSG		159,meter		;FAY SAYS DEAD!
 
 .c3_1_td1
 	P_DAMAGE
@@ -6705,14 +6896,22 @@ eguchi2
 	P_LOOP		20,.c4_1_0
 
 	P_NOTFRIEND		falcon,.c4_1_a1
-	P_MSG		13
+	P_MSG		13	;FALCON SAYS
 	P_IGOTO		.c4_1_a3
 .c4_1_a1
 	P_NOTFRIEND		rabbit,.c4_1_a2
-	P_MSG		33
+	P_MSG		33	;RABBIT SAYS
 	P_IGOTO		.c4_1_a3
 .c4_1_a2
-	P_MSG		50
+	P_NOTFRIEND		frog,.c4_1_a2_a
+	P_MSG		50	;FROG SAYS
+	P_IGOTO		.c4_1_a3
+.c4_1_a2_a
+	P_NOTFRIEND		miyu,.c4_1_a2_b
+	P_MSG		172	;MIYU SAYS
+	P_IGOTO		.c4_1_a3
+.c4_1_a2_b
+	P_MSG		176	;FAY SAYS
 .c4_1_a3
 	P_WAIT		20
 	P_SOUND		1
@@ -6722,14 +6921,22 @@ eguchi2
 	P_ZREMOVE	ON
 
 	P_NOTFRIEND		falcon,.c4_1_a
-	P_GOSUB		.c4_fal_ms
+	P_GOSUB		.c4_fal_ms	;FALCON
 	P_GOTO		.c4_1_1
 .c4_1_a
 	P_NOTFRIEND		rabbit,.c4_1_b
-	P_GOSUB		.c4_rab_ms
+	P_GOSUB		.c4_rab_ms	;RABBIT
 	P_GOTO		.c4_1_1
 .c4_1_b
-	P_GOSUB		.c4_fro_ms
+	P_NOTFRIEND		frog,.c4_1_c
+	P_GOSUB		.c4_fro_ms	;FROG
+	P_GOTO		.c4_1_1
+.c4_1_c
+	P_NOTFRIEND		miyu,.c4_1_d
+	P_GOSUB		.c4_miy_ms	;MIYU
+	P_GOTO		.c4_1_1
+.c4_1_d
+	P_GOSUB		.c4_fay_ms	;FAY
 .c4_1_1
 	P_CHASE		roty,0
 	P_CHASE		rotz,0
@@ -6756,27 +6963,44 @@ eguchi2
 	P_SHAPEDEAD		.c4_1_6
 
 	P_NOTFRIEND		falcon,.c4_1_m1
-	P_GOSUB		.c4_fal_ms
+	P_GOSUB		.c4_fal_ms	;FALCON
 	P_IGOTO		.c4_1_4
 .c4_1_m1
 	P_NOTFRIEND		rabbit,.c4_1_m3
-	P_GOSUB		.c4_rab_ms
+	P_GOSUB		.c4_rab_ms	;RABBIT
 	P_IGOTO		.c4_1_4
 .c4_1_m3
-	P_GOSUB		.c4_fro_ms
+	P_NOTFRIEND		frog,.c4_1_m4
+	P_GOSUB		.c4_fro_ms	;FROG
+	P_IGOTO		.c4_1_4
+.c4_1_m4
+	P_NOTFRIEND		miyu,.c4_1_m5_a
+	P_GOSUB		.c4_miy_ms	;MIYU
+	P_IGOTO		.c4_1_4
+.c4_1_m5_a
+	P_GOSUB		.c4_fay_ms	;FAY
 
 	P_IGOTO		.c4_1_4
 ;------ shape dead ---------
+; player kills friend chase target
 .c4_1_6
-	P_NOTFRIEND		falcon,.c4_1_m5
+	P_NOTFRIEND		falcon,.c4_1_m5_b
 	P_MSG		22		;FALCON 1
 	P_GOTO		.c4_1_8
-.c4_1_m5
+.c4_1_m5_b
 	P_NOTFRIEND		rabbit,.c4_1_m7
 	P_MSG		42		;RABBIT 1
 	P_GOTO		.c4_1_8
 .c4_1_m7
-	P_MSG		61		;FROG
+	P_NOTFRIEND		frog,.c4_1_m8
+	P_MSG		61		;FROG 1
+	P_GOTO		.c4_1_8
+.c4_1_m8
+	P_NOTFRIEND		miyu,.c4_1_m9
+	P_MSG		170		;MIYU 1
+	P_GOTO		.c4_1_8
+.c4_1_m9
+	P_MSG		171		;FAY 1
 .c4_1_8
 	P_WAIT		12
 
@@ -6802,78 +7026,128 @@ eguchi2
 
 	P_END
 ;---------------------------------
-.c4_fal_ms	LOCAL
+.c4_fal_ms	LOCAL		;FALCON SAYS
 	P_RANDOMGOTO	.c4_fal_1
 	P_RANDOMGOTO	.c4_fal_2
 .c4_fal_4
 	P_IFSAME		pbyte1,23,.c4_fal_2
-	P_MSG		23
+	P_MSG		23		;FALCON
 	P_SET		pbyte1,23
 	P_RETURN
 .c4_fal_2
 	P_IFSAME		pbyte1,12,.c4_fal_1
-	P_MSG		12
+	P_MSG		12		;FALCON
 	P_SET		pbyte1,12
 	P_RETURN
 .c4_fal_1
 	P_RANDOMGOTO	.c4_fal_3
 	P_IFSAME		pbyte1,11,.c4_fal_3
-	P_MSG		11
+	P_MSG		11		;FALCON
 	P_SET		pbyte1,11
 	P_RETURN
 .c4_fal_3
 	P_IFSAME		pbyte1,10,.c4_fal_4
-	P_MSG		10
+	P_MSG		10		;FALCON
 	P_SET		pbyte1,10
 	P_RETURN
 ;---------------------------------
-.c4_rab_ms	LOCAL
+.c4_rab_ms	LOCAL		;RABBIT SAYS
 	P_RANDOMGOTO	.c4_rab_1
 	P_RANDOMGOTO	.c4_rab_2
 .c4_rab_4
 	P_IFSAME		pbyte1,43,.c4_rab_2
-	P_MSG		43
+	P_MSG		43		;RABBIT
 	P_SET		pbyte1,43
 	P_RETURN
 .c4_rab_2
 	P_IFSAME		pbyte1,32,.c4_rab_1
-	P_MSG		32
+	P_MSG		32		;RABBIT
 	P_SET		pbyte1,32
 	P_RETURN
 .c4_rab_1
 	P_RANDOMGOTO	.c4_rab_3
 	P_IFSAME		pbyte1,31,.c4_rab_3
-	P_MSG		31
+	P_MSG		31		;RABBIT
 	P_SET		pbyte1,31
 	P_RETURN
 .c4_rab_3
 	P_IFSAME		pbyte1,30,.c4_rab_4
-	P_MSG		30
+	P_MSG		30		;RABBIT
 	P_SET		pbyte1,30
 	P_RETURN
 ;---------------------------------
-.c4_fro_ms	LOCAL
+.c4_fro_ms	LOCAL		;FROG SAYS
 	P_RANDOMGOTO	.c4_fro_1
 	P_RANDOMGOTO	.c4_fro_2
 .c4_fro_4
 	P_IFSAME		pbyte1,62,.c4_fro_2
-	P_MSG		62
+	P_MSG		62		;FROG
 	P_SET		pbyte1,62
 	P_RETURN
 .c4_fro_2
 	P_IFSAME		pbyte1,53,.c4_fro_1
-	P_MSG		53
+	P_MSG		53		;FROG
 	P_SET		pbyte1,53
 	P_RETURN
 .c4_fro_1
 	P_RANDOMGOTO	.c4_fro_3
 	P_IFSAME		pbyte1,52,.c4_fro_3
-	P_MSG		52
+	P_MSG		52		;FROG
 	P_SET		pbyte1,52
 	P_RETURN
 .c4_fro_3
 	P_IFSAME		pbyte1,51,.c4_fro_4
-	P_MSG		51
+	P_MSG		51		;FROG
+	P_SET		pbyte1,51
+	P_RETURN
+;------------------------------------------------------------------
+.c4_miy_ms	LOCAL		;MIYU SAYS
+	P_RANDOMGOTO	.c4_miy_1
+	P_RANDOMGOTO	.c4_miy_2
+.c4_miy_4
+	P_IFSAME		pbyte1,172,.c4_miy_2
+	P_MSG		172		;MIYU
+	P_SET		pbyte1,62
+	P_RETURN
+.c4_miy_2
+	P_IFSAME		pbyte1,173,.c4_miy_1
+	P_MSG		173		;MIYU
+	P_SET		pbyte1,53
+	P_RETURN
+.c4_miy_1
+	P_RANDOMGOTO	.c4_miy_3
+	P_IFSAME		pbyte1,174,.c4_miy_3
+	P_MSG		174		;MIYU
+	P_SET		pbyte1,52
+	P_RETURN
+.c4_miy_3
+	P_IFSAME		pbyte1,175,.c4_miy_4
+	P_MSG		175		;MIYU
+	P_SET		pbyte1,51
+	P_RETURN
+;------------------------------------------------------------------
+.c4_fay_ms	LOCAL		;FAY SAYS
+	P_RANDOMGOTO	.c4_fay_1
+	P_RANDOMGOTO	.c4_fay_2
+.c4_fay_4
+	P_IFSAME		pbyte1,176,.c4_fay_2
+	P_MSG		176		;FAY
+	P_SET		pbyte1,62
+	P_RETURN
+.c4_fay_2
+	P_IFSAME		pbyte1,177,.c4_fay_1
+	P_MSG		177		;FAY
+	P_SET		pbyte1,53
+	P_RETURN
+.c4_fay_1
+	P_RANDOMGOTO	.c4_fay_3
+	P_IFSAME		pbyte1,178,.c4_fay_3
+	P_MSG		178		;FAY
+	P_SET		pbyte1,52
+	P_RETURN
+.c4_fay_3
+	P_IFSAME		pbyte1,179,.c4_fay_4
+	P_MSG		179		;FAY
 	P_SET		pbyte1,51
 	P_RETURN
 ;------------------------------------------------------------------
@@ -7063,14 +7337,22 @@ eguchi2
 	P_ACCEL		40,1
 
 	P_NOTFRIEND		falcon,.c5_1_a
-	P_MSG		13
+	P_MSG		13	;FALCON SAYS
 	P_GOTO		.c5_1_01
 .c5_1_a
 	P_NOTFRIEND		rabbit,.c5_1_b
-	P_MSG		33
+	P_MSG		33	;RABBIT SAYS
 	P_GOTO		.c5_1_01
 .c5_1_b
-	P_MSG		50
+	P_NOTFRIEND		frog,.c5_1_c
+	P_MSG		50	;FROG SAYS
+	P_GOTO		.c5_1_01
+.c5_1_c
+	P_NOTFRIEND		miyu,.c5_1_d
+	P_MSG		172	;MIYU SAYS
+	P_GOTO		.c5_1_01
+.c5_1_d
+	P_MSG		176	;FAY SAYS
 .c5_1_01
 	P_WAIT		35
 
@@ -7093,7 +7375,15 @@ eguchi2
 	P_GOSUB		pchase4_1.c4_rab_ms
 	P_GOTO		.c5_1_1
 .c5_1_m2
+	P_NOTFRIEND		frog,.c5_1_m3_a
 	P_GOSUB		pchase4_1.c4_fro_ms
+	P_GOTO		.c5_1_1
+.c5_1_m3_a
+	P_NOTFRIEND		miyu,.c5_1_m4_a
+	P_GOSUB		pchase4_1.c4_miy_ms
+	P_GOTO		.c5_1_1
+.c5_1_m4_a
+	P_GOSUB		pchase4_1.c4_fay_ms
 .c5_1_1
 	P_ADD		rotx,-4
 	P_LOOP		15,.c5_1_1
@@ -7123,31 +7413,48 @@ eguchi2
 	P_SHAPEDEAD		.c5_1_5
 
 ;-------- shape alive --------
-	P_NOTFRIEND		falcon,.c5_1_m3
+	P_NOTFRIEND		falcon,.c5_1_m3_b
 	P_GOSUB		pchase4_1.c4_fal_ms
 	P_GOTO		.c5_1_4
-.c5_1_m3
+.c5_1_m3_b
 	P_NOTFRIEND		rabbit,.c5_1_m4
 	P_GOSUB		pchase4_1.c4_rab_ms
 	P_GOTO		.c5_1_4
 .c5_1_m4
+	P_NOTFRIEND		frog,.c5_1_m5_a
 	P_GOSUB		pchase4_1.c4_fro_ms
+	P_GOTO		.c5_1_4
+.c5_1_m5_a
+	P_NOTFRIEND		miyu,.c5_1_m6_a
+	P_GOSUB		pchase4_1.c4_miy_ms
+	P_GOTO		.c5_1_4
+.c5_1_m6_a
+	P_GOSUB		pchase4_1.c4_fay_ms
 
 .c5_1_4
 	P_FIRE		canhit
 
 	P_GOTO		.c5_1_6
 ;-------- shape dead ---------
+; player kills friend chase target
 .c5_1_5
 	P_NOTFRIEND		falcon,.c5_1_m5
-	P_MSG		22
+	P_MSG		22		;FALCON 1
 	P_GOTO		.c5_1_6
 .c5_1_m5
 	P_NOTFRIEND		rabbit,.c5_1_m6
-	P_MSG		42
+	P_MSG		42		;RABBIT 1
 	P_GOTO		.c5_1_6
 .c5_1_m6
-	P_MSG		61
+	P_NOTFRIEND		frog,.c5_1_m7
+	P_MSG		61		;FROG 1
+	P_GOTO		.c5_1_6
+.c5_1_m7
+	P_NOTFRIEND		miyu,.c5_1_m8
+	P_MSG		170		;MIYU 1
+	P_GOTO		.c5_1_6
+.c5_1_m8
+	P_MSG		171		;FAY 1
 ;-----------------------------
 
 .c5_1_6
@@ -7351,14 +7658,24 @@ eguchi2
 
 
 	P_NOTFRIEND		falcon,.c6_1_m1
-	P_MSG		7,meter
+	P_MSG		7,meter			;FALCON SAYS HELP!
 	P_GOTO		.c6_1_6
 .c6_1_m1
 	P_NOTFRIEND		rabbit,.c6_1_m2
-	P_MSG		27,meter
+	P_MSG		27,meter		;RABBIT SAYS HELP!
 	P_GOTO		.c6_1_6
 .c6_1_m2
-	P_MSG		47,meter
+	P_NOTFRIEND		frog,.c6_1_m_3
+	P_MSG		47,meter		;FROG SAYS HELP!
+	P_GOTO		.c6_1_6
+
+.c6_1_m_3
+	P_NOTFRIEND		miyu,.c6_1_m_4
+	P_MSG		154,meter		;MIYU SAYS HELP!
+	P_GOTO		.c6_1_6
+
+.c6_1_m_4
+	P_MSG		157,meter		;FAY SAYS HELP!
 
 .c6_1_6
 	P_SOUND		1
@@ -7416,14 +7733,22 @@ eguchi2
 	P_ALMOSTDEAD	.c6_1_8
 
 	P_NOTFRIEND		falcon,.c6_1_4a
-	P_MSG		15,meter
+	P_MSG		15,meter		;FALCON SAYS HIT!
 	P_GOTO		.c6_1_4c
 .c6_1_4a
 	P_NOTFRIEND		rabbit,.c6_1_4b
-	P_MSG		35,meter
+	P_MSG		35,meter		;RABBIT SAYS HIT!
 	P_GOTO		.c6_1_4c
 .c6_1_4b
-	P_MSG		55,meter
+	P_NOTFRIEND		frog,.c6_1_4b_1
+	P_MSG		55,meter		;FROG SAYS HIT!
+	P_GOTO		.c6_1_4c
+.c6_1_4b_1
+	P_NOTFRIEND		miyu,.c6_1_4b_2
+	P_MSG		160,meter		;MIYU SAYS HIT
+	P_GOTO		.c6_1_4c
+.c6_1_4b_2
+	P_MSG		161,meter		;FAY SAYS HIT!
 .c6_1_4c
 	P_DAMAGE
 	P_WAIT		5
@@ -7446,14 +7771,22 @@ eguchi2
 	P_TRIGGER		yamete,OFF
 	P_WAIT		8
 	P_NOTFRIEND		falcon,.c6_1_m3
-	P_MSG		9,meter
+	P_MSG		9,meter		;FALCON SAYS DEAD!
 	P_GOTO		.c6_1_e
 .c6_1_m3
 	P_NOTFRIEND		rabbit,.c6_1_m4
-	P_MSG		29,meter
+	P_MSG		29,meter		;RABBIT SAYS DEAD!
 	P_GOTO		.c6_1_e
 .c6_1_m4
-	P_MSG		49,meter
+	P_NOTFRIEND		frog,.c6_1_m5
+	P_MSG		49,meter		;FROG SAYS DEAD!
+	P_GOTO		.c6_1_e
+.c6_1_m5
+	P_NOTFRIEND		miyu,.c6_1_m6
+	P_MSG		156,meter		;MIYU SAYS DEAD!
+	P_GOTO		.c6_1_e
+.c6_1_m6
+	P_MSG		159,meter		;FAY SAYS DEAD!
 
 .c6_1_e
 	P_ACCEL		0,1
@@ -7502,14 +7835,24 @@ eguchi2
 
 .c6_tyame
 	P_NOTFRIEND		falcon,.c6_m_t1
-	P_MSG		69,meter
+	P_MSG		69,meter		;FALCON SAYS HURRY!
 	P_RETURN
 .c6_m_t1
 	P_NOTFRIEND		rabbit,.c6_m_t2
-	P_MSG		70,meter
+	P_MSG		70,meter		;RABBIT SAYS HURRY!
 	P_RETURN
 .c6_m_t2
-	P_MSG		71,meter
+	P_NOTFRIEND		frog,.c6_m_t3
+	P_MSG		71,meter		;FROG SAYS HURRY!
+	P_RETURN
+
+.c6_m_t3
+	P_NOTFRIEND		miyu,.c6_m_t4
+	P_MSG		164,meter		;MIYU SAYS HURRY!
+	P_RETURN
+
+.c6_m_t4
+	P_MSG		165,meter		;FAY SAYS HURRY!
 	P_RETURN
 
 .c6_td
@@ -7519,16 +7862,26 @@ eguchi2
 	P_SMOKE		ON
 
 	P_NOTFRIEND		falcon,.c6_1_tm5
-	P_MSG		9,meter		;FALCON SAYS
+	P_MSG		9,meter		;FALCON SAYS DEAD!
 	P_IGOTO		.c6_1_td1
 
 .c6_1_tm5
 	P_NOTFRIEND		rabbit,.c6_1_tm6
-	P_MSG		29,meter		;RABBIT SAYS
+	P_MSG		29,meter		;RABBIT SAYS DEAD!
 	P_IGOTO		.c6_1_td1
 
 .c6_1_tm6
-	P_MSG		49,meter		;FROG SAYS
+	P_NOTFRIEND		frog,.c6_1_tm7
+	P_MSG		49,meter		;FROG SAYS DEAD!
+	P_IGOTO		.c6_1_td1
+
+.c6_1_tm7
+	P_NOTFRIEND		miyu,.c6_1_tm8
+	P_MSG		156,meter		;MIYU SAYS DEAD!
+	P_IGOTO		.c6_1_td1
+
+.c6_1_tm8
+	P_MSG		159,meter		;FAY SAYS DEAD!
 
 .c6_1_td1
 	P_DAMAGE
@@ -7674,14 +8027,24 @@ eguchi2
 
 .c7_1_0
 	P_NOTFRIEND		falcon,.c7_1_m1
-	P_MSG		7,meter
+	P_MSG		7,meter			;FALCON SAYS HELP!
 	P_IGOTO		.c7_1_1
 .c7_1_m1
 	P_NOTFRIEND		rabbit,.c7_1_m2
-	P_MSG		27,meter
+	P_MSG		27,meter		;RABBIT SAYS HELP!
 	P_IGOTO		.c7_1_1
 .c7_1_m2
-	P_MSG		47,meter
+	P_NOTFRIEND		frog,.c7_1_m3
+	P_MSG		47,meter		;FROG SAYS HELP!
+	P_IGOTO		.c7_1_1
+
+.c7_1_m3
+	P_NOTFRIEND		miyu,.c7_1_m4
+	P_MSG		154,meter		;MIYU SAYS HELP!
+	P_IGOTO		.c7_1_1
+
+.c7_1_m4
+	P_MSG		157,meter		;FAY SAYS HELP!
 
 .c7_1_1
 	P_SOUND		1
@@ -7756,14 +8119,22 @@ eguchi2
 
 
 	P_NOTFRIEND		falcon,.c7_1_6a
-	P_MSG		15,meter
+	P_MSG		15,meter		;FALCON SAYS HIT!
 	P_GOTO		.c7_1_6c
 .c7_1_6a
 	P_NOTFRIEND		rabbit,.c7_1_6b
-	P_MSG		35,meter
+	P_MSG		35,meter		;RABBIT SAYS HIT!
 	P_GOTO		.c7_1_6c
 .c7_1_6b
-	P_MSG		55,meter
+	P_NOTFRIEND		frog,.c7_1_6b_1
+	P_MSG		55,meter		;FROG SAYS HIT!
+	P_GOTO		.c7_1_6c
+.c7_1_6b_1
+	P_NOTFRIEND		miyu,.c7_1_6b_2
+	P_MSG		160,meter		;MIYU SAYS HIT!
+	P_GOTO		.c7_1_6c
+.c7_1_6b_2
+	P_MSG		161,meter		;FAY SAYS HIT!
 .c7_1_6c
 	P_DAMAGE
 	P_WAITCHASE		rotz,240
@@ -7781,14 +8152,22 @@ eguchi2
 	P_WAIT		8
 
 	P_NOTFRIEND		falcon,.c7_1_m5
-	P_MSG		9,meter
+	P_MSG		9,meter		;FALCON SAYS DEAD!
 	P_GOTO		.c7_1_h
 .c7_1_m5
 	P_NOTFRIEND		rabbit,.c7_1_m6
-	P_MSG		29,meter
+	P_MSG		29,meter		;RABBIT SAYS DEAD!
 	P_GOTO		.c7_1_h
 .c7_1_m6
-	P_MSG		49,meter
+	P_NOTFRIEND		frog,.c7_1_m7
+	P_MSG		49,meter		;FROG SAYS DEAD!
+	P_GOTO		.c7_1_h
+.c7_1_m7
+	P_NOTFRIEND		miyu,.c7_1_m8
+	P_MSG		156,meter		;MIYU SAYS DEAD!
+	P_GOTO		.c7_1_h
+.c7_1_m8
+	P_MSG		159,meter		;FAY SAYS DEAD!
 
 .c7_1_h
 	P_DAMAGE
@@ -7837,15 +8216,24 @@ eguchi2
 
 .c7_tyame
 	P_NOTFRIEND		falcon,.c7_m_t1
-	P_MSG		69,meter
+	P_MSG		69,meter		;FALCON SAYS HURRY!
 	P_RETURN
 .c7_m_t1
 	P_NOTFRIEND		rabbit,.c7_m_t2
-	P_MSG		70,meter
+	P_MSG		70,meter		;RABBIT SAYS HURRY!
 	P_RETURN
 .c7_m_t2
-	P_MSG		71,meter
+	P_NOTFRIEND		frog,.c7_m_t3
+	P_MSG		71,meter		;FROG SAYS HURRY!
 	P_RETURN
+.c7_m_t3
+	P_NOTFRIEND		miyu,.c7_m_t4
+	P_MSG		164,meter		;MIYU SAYS HURRY!
+	P_RETURN
+.c7_m_t4
+	P_MSG		165,meter		;FAY SAYS HURRY!
+	P_RETURN
+
 
 .c7_td
 	P_TRIGGER		save,OFF
@@ -7854,16 +8242,26 @@ eguchi2
 	P_SMOKE		ON
 
 	P_NOTFRIEND		falcon,.c7_1_tm5
-	P_MSG		9,meter		;FALCON SAYS
+	P_MSG		9,meter		;FALCON SAYS DEAD!
 	P_IGOTO		.c7_1_td1
 
 .c7_1_tm5
 	P_NOTFRIEND		rabbit,.c7_1_tm6
-	P_MSG		29,meter		;RABBIT SAYS
+	P_MSG		29,meter		;RABBIT SAYS DEAD!
 	P_IGOTO		.c7_1_td1
 
 .c7_1_tm6
-	P_MSG		49,meter		;FROG SAYS
+	P_NOTFRIEND		frog,.c7_1_tm7
+	P_MSG		49,meter		;FROG SAYS DEAD!
+	P_IGOTO		.c7_1_td1
+
+.c7_1_tm7
+	P_NOTFRIEND		miyu,.c7_1_tm8
+	P_MSG		156,meter		;MIYU SAYS DEAD!
+	P_IGOTO		.c7_1_td1
+
+.c7_1_tm8
+	P_MSG		159,meter		;FAY SAYS DEAD!
 
 .c7_1_td1
 	P_DAMAGE
@@ -8028,14 +8426,22 @@ eguchi2
 	P_SETVEL		40
 
 	P_NOTFRIEND		falcon,.c8_1_a
-	P_MSG		13
+	P_MSG		13	;FALCON SAYS
 	P_IGOTO		.c8_1_01
 .c8_1_a
 	P_NOTFRIEND		rabbit,.c8_1_b
-	P_MSG		33
+	P_MSG		33	;RABBIT SAYS
 	P_IGOTO		.c8_1_01
 .c8_1_b
-	P_MSG		50
+	P_NOTFRIEND		frog,.c8_1_c
+	P_MSG		50	;FROG SAYS
+	P_IGOTO		.c8_1_01
+.c8_1_c
+	P_NOTFRIEND		miyu,.c8_1_d
+	P_MSG		172	;MIYU SAYS
+	P_IGOTO		.c8_1_01
+.c8_1_d
+	P_MSG		176	;FAY SAYS
 .c8_1_01
 	P_WAIT		25
 	P_ZREMOVE	ON
@@ -8058,7 +8464,18 @@ eguchi2
 	P_GOSUB		pchase4_1.c4_rab_ms
 	P_IGOTO		.c8_1_1
 .c8_1_m2
+	P_NOTFRIEND		frog,.c8_1_m3_a
+	P_ADD		rotz,-5
 	P_GOSUB		pchase4_1.c4_fro_ms
+	P_IGOTO		.c8_1_1
+.c8_1_m3_a
+	P_NOTFRIEND		miyu,.c8_1_m4_a
+	P_ADD		rotz,-5
+	P_GOSUB		pchase4_1.c4_miy_ms
+	P_IGOTO		.c8_1_1
+.c8_1_m4_a
+	P_ADD		rotz,-5
+	P_GOSUB		pchase4_1.c4_fay_ms
 
 .c8_1_1
 	P_WAITCHASE		rotz,0
@@ -8094,7 +8511,15 @@ eguchi2
 	P_GOSUB		pchase4_1.c4_rab_ms
 	P_IGOTO		.c8_1_5
 .c8_1_m4
+	P_NOTFRIEND		frog,.c8_1_m5
 	P_GOSUB		pchase4_1.c4_fro_ms
+	P_IGOTO		.c8_1_5
+.c8_1_m5
+	P_NOTFRIEND		miyu,.c8_1_m6
+	P_GOSUB		pchase4_1.c4_miy_ms
+	P_IGOTO		.c8_1_5
+.c8_1_m6
+	P_GOSUB		pchase4_1.c4_fay_ms
 .c8_1_5
 	P_FIRE		canhit
 	P_SET		pbyte1,1
@@ -8114,6 +8539,7 @@ eguchi2
 
 	P_END
 ;---------------------------
+; player kills friend chase target
 .c8_toru
 	P_IFSAME		pbyte1,0,.c8_toru1
 	P_RETURN
@@ -8121,15 +8547,24 @@ eguchi2
 	P_SET		pbyte1,1
 
 	P_NOTFRIEND		falcon,.c8_toru2
-	P_MSG		22
+	P_MSG		22		;FALCON 1
 	P_RETURN
 .c8_toru2
 	P_NOTFRIEND		rabbit,.c8_toru3
-	P_MSG		42
+	P_MSG		42		;RABBIT 1
 	P_RETURN
 .c8_toru3
-	P_MSG		61
+	P_NOTFRIEND		frog,.c8_toru4
+	P_MSG		61		;FROG 1
 	P_RETURN
+.c8_toru4
+	P_NOTFRIEND		miyu,.c8_toru5
+	P_MSG		170		;MIYU 1
+	P_RETURN
+.c8_toru5
+	P_MSG		171		;FAY 1
+	P_RETURN
+
 
 ;---------------------------------
 ;---------------------------------------------------------------------------
@@ -8770,18 +9205,31 @@ eguchi2
 	P_IMPORT		pbyte1,ebyte2
 	P_IFNOTSAME		pbyte1,0,.sept_bye
 	P_NOTFRIEND		falcon,.sept_a
-	P_MSG		72
+	P_MSG		72	;FALCON SAYS I SAVED YOU!
 	P_SET		pbyte1,1
 	P_EXPORT		ebyte2,pbyte1
 	P_IGOTO		.sept_bye
 .sept_a
 	P_NOTFRIEND		rabbit,.sept_b
-	P_MSG		73
+	P_MSG		73	;RABBIT SAYS I SAVED YOU!
 	P_SET		pbyte1,1
 	P_EXPORT		ebyte2,pbyte1
 	P_IGOTO		.sept_bye
 .sept_b
-	P_MSG		74
+	P_NOTFRIEND		frog,.sept_c
+	P_MSG		74	;FROG SAYS I SAVED YOU!
+	P_SET		pbyte1,1
+	P_EXPORT		ebyte2,pbyte1
+	P_IGOTO		.sept_bye
+.sept_c
+	P_NOTFRIEND		miyu,.sept_d
+	P_MSG		186	;MIYU SAYS I SAVED YOU!
+	P_SET		pbyte1,1
+	P_EXPORT		ebyte2,pbyte1
+	P_IGOTO		.sept_bye
+.sept_d
+	;fay
+	P_MSG		187	;FAY SAYS I SAVED YOU!
 	P_SET		pbyte1,1
 	P_EXPORT		ebyte2,pbyte1
 .sept_bye
@@ -9031,16 +9479,26 @@ yamete
 .yame_ck
 	P_SET		pbyte2,1
 	P_NOTFRIEND		falcon,.yame_a
-	P_MSG		14
+	P_MSG		14		;FALCON SAYS WATCH IT!
 	P_SET		hp,110
 	P_RETURN
 .yame_a
 	P_NOTFRIEND		rabbit,.yame_b
-	P_MSG		34
+	P_MSG		34		;RABBIT SAYS WATCH IT!
 	P_SET		hp,110
 	P_RETURN
 .yame_b
-	P_MSG		54
+	P_NOTFRIEND		frog,.yame_c
+	P_MSG		54		;FROG SAYS WATCH IT!
+	P_SET		hp,110
+	P_RETURN
+.yame_c
+	P_NOTFRIEND		miyu,.yame_d
+	P_MSG		162		;MIYU SAYS WATCH IT!
+	P_SET		hp,110
+	P_RETURN
+.yame_d
+	P_MSG		163		;FAY SAYS WATCH IT!
 	P_SET		hp,110
 	P_RETURN
 
@@ -9052,17 +9510,27 @@ save
 	P_FORCE		.fit_0
 
 	P_NOTFRIEND		falcon,.save_0
-	P_MSG		8,meter		;FALCON SAYS
-	P_IGOTO		.save_2
+	P_MSG		8,meter		;FALCON SAYS THANKS!
+	P_IGOTO		.save_4
 
 .save_0
 	P_NOTFRIEND		rabbit,.save_1
-	P_MSG		28,meter		;RABBIT SAYS
-	P_IGOTO		.save_2
+	P_MSG		28,meter		;RABBIT SAYS THANKS!
+	P_IGOTO		.save_4
 
 .save_1
-	P_MSG		48,meter		;FROG SAYS
+	P_NOTFRIEND		frog,.save_2
+	P_MSG		48,meter		;FROG SAYS THANKS!
+	P_IGOTO		.save_4
+
 .save_2
+	P_NOTFRIEND		miyu,.save_3
+	P_MSG		155,meter		;MIYU SAYS THANKS!
+	P_IGOTO		.save_4
+
+.save_3
+	P_MSG		158,meter		;FAY SAYS THANKS!
+.save_4
 	P_RETURN
 
 ;--------------------------------
@@ -9080,7 +9548,17 @@ save
 	P_REMOVE
 ;	P_END
 .fit_sf
+	P_NOTFRIEND		frog,.fit_sm
 	P_QSPAWN		friendship_4,e_frog,100,1
+	P_REMOVE
+;	P_END
+.fit_sm
+	P_NOTFRIEND		miyu,.fit_sfay
+	P_QSPAWN		friendship_4,e_miyu,100,1
+	P_REMOVE
+;	P_END
+.fit_sfay
+	P_QSPAWN		friendship_4,e_fay,100,1
 	P_REMOVE
 ;	P_END
 ;--------------------------------
@@ -9091,7 +9569,6 @@ save
 	P_IGOTO		pe_falcon.fit_start_0
 
 ;---------------------------------------------------------------------------
-
 	START_PATH	e_frog
 
 	P_FRIEND		frog
@@ -9099,6 +9576,21 @@ save
 	P_IGOTO		pe_falcon.fit_start_0
 
 ;---------------------------------------------------------------------------
+	START_PATH	e_miyu
+
+	P_FRIEND		miyu
+
+	P_IGOTO		pe_falcon.fit_start_0
+
+;---------------------------------------------------------------------------
+	START_PATH	e_fay
+
+	P_FRIEND		fay
+
+	P_IGOTO		pe_falcon.fit_start_0
+
+;---------------------------------------------------------------------------
+
 	START_PATH	e_falcon
 
 	P_FRIEND		falcon
@@ -9255,6 +9747,22 @@ save
 	START_PATH	hentai_rab
 
 	P_FRIEND		rabbit
+
+	P_IGOTO		phentai_fal.hentai_init
+
+;---------------------------------------------------------------------------
+
+	START_PATH	hentai_miy
+
+	P_FRIEND		miyu
+
+	P_IGOTO		phentai_fal.hentai_init
+
+;---------------------------------------------------------------------------
+
+	START_PATH	hentai_fay
+
+	P_FRIEND		fay
 
 	P_IGOTO		phentai_fal.hentai_init
 
@@ -9592,6 +10100,11 @@ save
 	P_END
 
 
+	START_PATH	cl_warpwait
+
+	P_WAIT	20*3 ; ~3 seconds at max fps
+
+	P_END
 
 
 ;---------------------------------------------------------------------

@@ -139,7 +139,7 @@ mrndtab
 debugchars
 
 ; How many tiles are in the font file (should always be divisible by 2)
-numdebugchars	equ	44
+numdebugchars	equ	46
 
 	IFEQ	debugfont
 	inccgx2	DATA\FONT\DEBUGFON.CGX,numdebugchars ; Vanilla font

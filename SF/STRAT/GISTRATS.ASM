@@ -241,7 +241,7 @@ friendstart2_Istrat
 friendstart2go_init
 	s_start_strat	
 	s_set_strat		x,friendstart2go_strat
-	s_set_lifecnt		x,#50
+	s_set_lifecnt		x,#70
 	s_set_speed		x,#70
 	s_set_alvar		B,x,al_rotx,#deg11
 	s_set_alvar		B,x,al_rotz,#deg90
@@ -261,8 +261,8 @@ friendstart2go_strat
 	s_achase_alvar		B,x,al_rotz,#0,4
 	s_jmp_notdelay		1,.nch
 	s_achase_alvar		B,x,al_rotx,#0,4
-	s_achase_alvar		W,x,al_worldx,#0,4
-	s_achase_alvar		W,x,al_worldy,viewcy,3
+;	s_achase_alvar		W,x,al_worldx,#0,4
+;	s_achase_alvar		W,x,al_worldy,viewcy,3
 .nch	s_gen_3dvecs		x,al_roty,al_rotx,al_vel
 	s_add_vecs2pos		x
 	s_dec_lifecnt		x
@@ -271,6 +271,67 @@ friendstart2go_strat
 
 	endc
 
+friendstart1_Istrat
+	s_start_strat
+	s_setnoremove_behind	x
+	s_set_alsflag		x,colldisable
+	s_set_strat		x,friendstart1go_strat
+	s_set_lifecnt		x,#70
+	s_set_speed		x,#30
+;	s_set_alvar		B,x,al_rotz,#deg45
+friendstart1go_strat
+	s_start_strat
+
+	s_set_objtobeplayer	y
+	s_jmp_objinfront	y,x,.nch
+	s_jmp_alsflag		x,sflag1,.nb
+	s_set_alsflag		x,sflag1
+;	s_set_vartobeobj	boostobj,x
+;	boost_sprite
+;	trigse			$32
+.nb
+	s_achase_alvar		B,x,al_rotz,#0,4
+	s_jmp_notdelay		2,.nch
+	s_achase_alvar		B,x,al_rotx,#-deg90,4
+.nch	
+
+
+	s_gen_3dvecs		x,al_roty,al_rotx,al_vel
+	s_add_vecs2pos		x
+	s_add_playerZ		x
+	s_dec_lifecnt		x
+	s_end_strat
+
+friendstart2_Istrat
+	s_start_strat
+	s_setnoremove_behind	x
+	s_set_alsflag		x,colldisable
+	s_set_strat		x,friendstart2go_strat
+	s_set_lifecnt		x,#70
+	s_set_speed		x,#30
+	s_set_alvar		B,x,al_rotz,#-deg45
+friendstart2go_strat
+	s_start_strat
+
+	s_set_objtobeplayer	y
+	s_jmp_objinfront	y,x,.nch
+	s_jmp_alsflag		x,sflag1,.nb
+	s_set_alsflag		x,sflag1
+;	s_set_vartobeobj	boostobj,x
+;	boost_sprite
+;	trigse			$32
+.nb
+	s_achase_alvar		B,x,al_rotz,#0,4
+	s_jmp_notdelay		2,.nch
+	s_achase_alvar		B,x,al_rotx,#-deg45,4
+.nch	
+
+
+	s_gen_3dvecs		x,al_roty,al_rotx,al_vel
+	s_add_vecs2pos		x
+	s_add_playerZ		x
+	s_dec_lifecnt		x
+	s_end_strat
 
 friendstart3_Istrat
 	s_start_strat
@@ -289,6 +350,9 @@ friendstart3go_strat
 	s_set_alsflag		x,sflag1
 	s_set_vartobeobj	boostobj,x
 	boost_sprite
+	IFNE	RUMBLE
+	s_queue_rumble_table		partyboost
+	ENDC
 	trigse			$32
 .nb
 	s_achase_alvar		B,x,al_rotz,#0,4
@@ -751,6 +815,12 @@ playerdownintro_cont
 	s_add_playerZ	x
 	s_end_strat
 
+	IFNE	RUMBLE
+idlerumble1
+	db	$44,$00,$44,$00,$00,$00,$00,$00,$91
+idlerumble2
+	db	$11,$00,$11,$00,$00,$00,$00,$00,$91
+	ENDC
 
 ;***********************************************************************************
 playerdown2intro_Istrat

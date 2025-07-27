@@ -70,7 +70,20 @@ fdeadmes_frog	=	60
 	mapgoto	.dc
 .nc1
 .dc
+	mapjmpfrienddead	miyu,.nm1
+	mapwait	friendwait
+	mapmsg	184
+	mapgoto	.dm
+.nm1
+.dm
+	mapjmpfrienddead	fay,.nfay1
+	mapwait	friendwait
+	mapmsg	185
+	mapgoto	.dfay
+.nfay1
+.dfay
 
+	mapwait	4000
 
 .endwait
 	mapif	chkstratdone1,.endcont
@@ -94,39 +107,56 @@ fdeadmes_frog	=	60
 
 
 	mapobj	0000,0000,space_viewcy,0000,my_demo,pshipoutofLB3_Istrat
-	setalvar	sbyte2,45	; 50
+	setalvar	sbyte2,60 ;45	; 50
 	mapobj	0000,0000,space_viewcy,5000,nullshape,viewoutofLB3_Istrat
 
 	mapjmpfrienddead	cock,.nc,nowait
 	mapobj	0000,0000,space_viewcy-100,0000,my_demo,shipoutofLB3_Istrat
-	setalvar.w	sword1,0
-	setalvar.w	sword2,-100
+	setalvar.w	sword1,0	; x
+	setalvar.w	sword2,-100	; y
 	setalvar.w	ptr,600
-	setalvar	sbyte2,10
+	setalvar	sbyte2,10	; wait time
 .nc
 	mapjmpfrienddead	frog,.nf,nowait
 	mapobj	0000,70,space_viewcy+70,200,my_demo,shipoutofLB3_Istrat
 	setalvar	rotz,deg45
-	setalvar.w	sword1,-100
-	setalvar.w	sword2,50
+	setalvar.w	sword1,-100	; x
+	setalvar.w	sword2,50	; y
 	setalvar.w	ptr,400
-	setalvar	sbyte2,20
+	setalvar	sbyte2,20	; wait time
 .nf
 	mapjmpfrienddead	bunny,.nb,nowait
 	mapobj	0000,-70,space_viewcy+70,400,my_demo,shipoutofLB3_Istrat
 	setalvar	rotz,-deg45
-	setalvar.w	sword1,100
-	setalvar.w	sword2,75
+	setalvar.w	sword1,100	; x
+	setalvar.w	sword2,75	; y
 	setalvar.w	ptr,200
-	setalvar	sbyte2,30
+	setalvar	sbyte2,30	; wait time
 .nb
+	mapjmpfrienddead	miyu,.nm,nowait
+	mapobj	0000,70,space_viewcy+70,600,my_demo,shipoutofLB3_Istrat
+	setalvar	rotz,deg45
+	setalvar.w	sword1,-100	; x
+	setalvar.w	sword2,100	; y
+	setalvar.w	ptr,200
+	setalvar	sbyte2,40	; wait time
+.nm
+	mapjmpfrienddead	fay,.nfay,nowait
+	mapobj	0000,-70,space_viewcy+70,800,my_demo,shipoutofLB3_Istrat
+	setalvar	rotz,-deg45
+	setalvar.w	sword1,100	; x
+	setalvar.w	sword2,-100	; y
+	setalvar.w	ptr,100
+	setalvar	sbyte2,50	; wait time
+.nfay
+
 	mapwait	1000
 
 	setfadeup
 	mapwaitfade
 
 
-.endwait1	mapif	chkstratdone1,.endcont1
+.endwait1	mapif	chkstratdone1,.endcont1	;done1 or done2?
 	mapwait	1
    	mapgoto	.endwait1
 .endcont1

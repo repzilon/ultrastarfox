@@ -539,15 +539,18 @@ mshowteammate
 	sub	r0
 	cmode
 
-	ibt	r0,#14
+	ibt	r0,#14 ; outer box colour
 	lms	r1,[m_x1]
 	lms	r2,[m_y1]
-	iwt	r3,#40+4
+	iwt	r3,#24
 	iwt	r4,#8+4
+	from	r3
+;	to	r3 ;test
+;	div2
 	mcall	mdrawbox
 	nop
 
-	ibt	r0,#2
+	ibt	r0,#2 ; bar colour
 	lms	r1,[m_x1]
 	inc	r1
 	inc	r1
@@ -555,6 +558,12 @@ mshowteammate
 	inc	r2
 	inc	r2
 	lms	r3,[m_z1]
+;	REPT	12	; \
+;	dec	r3		;  | this is a stupid way of doing things
+;	ENDR		; /
+	from	r3
+	to	r3 ;test
+	div2
 	iwt	r4,#8
 	mcall	mdrawsolidbox
 	nop

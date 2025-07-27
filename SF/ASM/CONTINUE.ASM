@@ -878,6 +878,18 @@ friends_messages_l
 	db	$7f	; frog down
 	db	$63	; frog other
 	db	$63	; frog
+	db	$7c	; miyu help
+	db	$7d	; miyu down
+	db	$62	; miyu other
+	db	$62	; miyu
+	db	$7c	; fay help
+	db	$7d	; fay down
+	db	$62	; fay other
+	db	$62	; fay
+	db	$2D	; rob help
+	db	$2D	; rob down
+	db	$2D	; rob other
+	db	$2D	; rob
 	db	$5f	; pepper
 	db	$5f	; pepper
 	db	$5f	; pepper
@@ -886,6 +898,7 @@ friends_messages_l
 	db	$8c	; andross
 	db	$8c	; andross
 	db	$8c	; andross
+
 
 .displayface
 ; a is frame to show

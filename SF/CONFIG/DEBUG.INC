@@ -21,7 +21,7 @@ mario_stats3d		equ	0
 messagetest			equ	0
 
 ; total number of messages to run through (must match the number in the message file)
-totalmsgs			equ	142
+totalmsgs			equ	197
 
 ; Allows you to enable planet select cheat on the map
 ; before you have selected a level. Press X to activate.
@@ -30,7 +30,7 @@ planetcheaton 		equ 0
 ; Debug mode font to use
 ; 2BPP 8x8 tiles (2BPP GB in YY-CHR)
 ; [0 = vanilla, 1 = SFEX, 2 = Star Glider/SNESGlider]
-debugfont			equ	0
+debugfont			equ	1
 
 ; print "printroulen" lines during assembly
 ; [0 = off, 1 = on]

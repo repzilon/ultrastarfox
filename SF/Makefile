@@ -41,6 +41,9 @@ MAPDEC=MAPDEC
 # ALLCOLS palette stripper
 MC=MAKECOL
 
+# Argonaut .MAP File Decoder
+MAPDEC=MAPDEC
+
 #!! If you add/remove a cgx/scr in these two lists, make sure to add/remove the corresponding file.
 
 # Crunched tilesets

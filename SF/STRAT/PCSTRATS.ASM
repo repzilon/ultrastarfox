@@ -59,12 +59,12 @@ playerclearbridge_Istrat
 	s_set_var		W,psvar_word1,#0
 	s_set_var		W,psvar_word2,#0
 					     
-	s_set_var		B,psvar_byte1,#125+38
+	s_set_var		W,psvar_word1,#280
 
 playerclearbridge_strat
 	s_start_strat
 	jsr			centoutrots
-	s_beqdec_var		B,psvar_byte1,playerclearbridge2_init
+	s_beqdec_var		W,psvar_word1,playerclearbridge2_init
 	s_achase_alvar.w	W,x,al_worldy,ViewCY,4
 	s_achase_alvar.w	W,x,al_worldx,#0,4
 	s_set_var		B,player_tospeed,#maxpspeed
@@ -625,7 +625,7 @@ playerDIVE_Istrat
 	s_playerctrl		off
 
 	s_or_var		B,pstratflags,#pstf_novdistC
-	s_set_var		W,psvar_word1,#210+56+20
+	s_set_var		W,psvar_word1,#350 ;286+100 ; time to wait before dive
 
 	lda	playerflymode
 	ora	#pfm_wobble
@@ -815,7 +815,7 @@ playerwarp_Istrat
 	s_or_var		B,gameflags,#gf_noZremove
 	s_AND_var		B,gameflags,#~gf_viewrot
 
-	s_set_var		W,psvar_word1,#200
+	s_set_var		W,psvar_word1,#350 ;200 ; wait time
 
 	lda	playerflymode
 	ora	#pfm_wobble

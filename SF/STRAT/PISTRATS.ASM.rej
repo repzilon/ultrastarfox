@@ -1,0 +1,30 @@
+@@ -169,6 +173,9 @@
+ playeropeningboost_init
+ 	s_set_strat		x,playeropeningboost_strat
+ 	s_set_vartobeobj	boostobj,x
++	IFNE	RUMBLE
++	s_queue_rumble_table		partyboost2
++	ENDC
+ 	boost_sprite
+ 	trigse			$32
+ 	s_and_var		B,pshipflags3,#~psf3_enginesnd
+@@ -446,6 +453,9 @@
+ 
+ 	s_make_obj		#nullshape,.badobj
+ 	s_set_strat		y,hyperspaceout_Istrat
++	IFNE	RUMBLE
++	s_queue_rumble_table	hyperspacerumbletab
++	ENDC
+ .badobj
+ 	s_set_speed		x,#120
+ 	s_set_var		B,player_tospeed,#120
+@@ -494,6 +504,9 @@
+ 	plx
+ 
+ 	startbgm		4
++	IFNE	RUMBLE
++	s_end_rumble_table
++	ENDC
+ 	s_jmp			playerinspace_strat
+ 
+ ;*****************************************************************************

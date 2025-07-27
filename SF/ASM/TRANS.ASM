@@ -221,6 +221,29 @@ stratsfrozen
 	sta	framecount
 .noreset
 
+	IFEQ	1
+	;teammate hp debug
+	marioprintdec	8,12,bunny
+	marioprint		32,12+1,peppytxt
+	marioprintdec	8,24,cock
+	marioprint		32,24+1,falcotxt
+	marioprintdec	8,36,frog
+	marioprint		32,36+1,slippytxt
+	marioprintdec	8,48,miyu
+	marioprint		32,48+1,miyutxt
+	marioprintdec	8,60,fay
+	marioprint		32,60+1,faytxt
+	ENDC
+
+	IFNE	MSU
+	lda	msupresent
+	beq	.msuchkfail
+	bne	.msuchkpass
+.msuchkfail
+	kandoprint	4,15,nomsutxt
+.msuchkpass
+	ENDC
+
 	ifne	mario_stats3d
 
 	lda	framesb ; framerate

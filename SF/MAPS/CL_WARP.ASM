@@ -26,6 +26,14 @@ friendwait	=	medpspeed*30
 	mapobj	friendwait,00000,space_viewcy-40,-3000,myship_4,clshipWARPc_Istrat
 	clfriendmsg	cock
 .nc
+	mapjmpfrienddead	miyu,.nm
+	mapobj	friendwait,0300,space_viewcy,100,myship_4,clshipWARPe_Istrat
+	clfriendmsg	miyu
+.nm
+	mapjmpfrienddead	fay,.nfay
+	mapobj	friendwait,-300,space_viewcy,100,myship_4,clshipWARPd_Istrat
+	clfriendmsg	fay
+.nfay
 
 	mapwait	500
 	mapmother	10000,0000,0,4000,mother1,mother1_istrat,mother_1

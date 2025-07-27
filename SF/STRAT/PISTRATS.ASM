@@ -112,6 +112,10 @@ playeropeningboost_strat
 	s_end_strat
 
 
+	IFNE	RUMBLE
+partyboost2
+	db	$11,$11,$22,$22,$33,$33,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$19
+	ENDC
 ;*****************************************************************************
 playerspaceflyin_Istrat
 	s_start_strat
@@ -727,6 +731,38 @@ playerExitBaseFollow_strat
 	clc
 	adc		#-200
 	sta.w		al_worldz,y
+
+	ifne	0
+
+	s_make_obj		#myship_4,.badobj
+	s_set_strat		y,friendstart2_Istrat
+	s_set_alsflag		y,colldisable
+	s_copy_pos		y,x
+	a16
+	lda		#50
+	sta.w		al_worldx,y
+	lda		#-100
+	sta.w		al_worldy,y
+	lda.w		al_worldz,y
+	clc
+	adc		#-300
+	sta.w		al_worldz,y
+
+	s_make_obj		#myship_4,.badobj
+	s_set_strat		y,friendstart1_Istrat
+	s_set_alsflag		y,colldisable
+	s_copy_pos		y,x
+	a16
+	lda		#0
+	sta.w		al_worldx,y
+	lda		#-150
+	sta.w		al_worldy,y
+	lda.w		al_worldz,y
+	clc
+	adc		#-200
+	sta.w		al_worldz,y
+	endc
+
 ;	s_add_alvar		W,y,al_worldx,#-50
 ;	s_add_alvar		W,y,al_worldy,#-50
 ;	s_add_alvar		W,y,al_worldz,#-200

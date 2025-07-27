@@ -1158,21 +1158,33 @@ waitfadefin	MACRO
 
 ;------------------------------------------------------------------
 CLfriendmsg	MACRO
+; shield low
 fmes10_frog	=	87
 fmes10_cock	=	85
 fmes10_bunny	=	86
+fmes10_miyu	=	146
+fmes10_fay	=	150
 
+; shield med
 fmes20_frog	=	84
 fmes20_cock	=	82
 fmes20_bunny	=	83
+fmes20_miyu	=	147
+fmes20_fay	=	151
 
+;shield 3/4
 fmes30_frog	=	81
 fmes30_cock	=	79
 fmes30_bunny	=	80
+fmes30_miyu	=	148
+fmes30_fay	=	152
 
+; shield full
 fmes40_frog	=	77
 fmes40_cock	=	75
 fmes40_bunny	=	76
+fmes40_miyu	=	149
+fmes40_fay	=	153
 
 
 	start_65816

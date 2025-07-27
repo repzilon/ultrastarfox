@@ -30,6 +30,8 @@ initialise_l ; Initialize game
 	sta	frog
 	sta	bunny
 	sta	cock
+	sta	miyu
+	sta	fay
 	sta	pepper
 	sta	andorf
 
@@ -1021,12 +1023,15 @@ makeendobj2	sta	kval1
 
 
 ;----------------------------------------------------------------------------------------------
-nametxt	dw	peppytxt&WM,falcotxt&WM,slippytxt&WM ; Name text for Peppy, Falco, and Slippy
-namepos	dw	15,96,173 ; Screen positions for names
-deadnamepos	dw	11,91,170 ; Screen positions for "IS DOWN" text if teammate(s) are down
-namegfxpos	db	2,11*8 ; Position for Peppy name gfx
-	db	12,11*8 ; Position for Falco name gfx
-	db	22,11*8 ; Position for Slippy name gfx
+nametxt	dw	peppytxt&WM,falcotxt&WM,slippytxt&WM,miyutxt&WM,faytxt&WM ; Name text for Peppy, Falco, and Slippy
+namepos	dw	0,48,92,147,199 ; Screen positions for names
+deadnamepos	dw	0,48,97,147,190 ; Screen positions for "IS DOWN" text if teammate(s) are down
+namegfxpos
+	db	0,11*8 ; Position for Peppy name gfx
+	db	6,11*8 ; Position for Falco name gfx
+	db	12,11*8 ; Position for Slippy name gfx
+	db	18,11*8 ; Position for Miyu name gfx
+	db	24,11*8 ; Position for Fay name gfx
 
 calcstageperc	php ; Push processor status to stack
 	; take 7% of total killed for every teammate alive and add to total killed
@@ -1045,7 +1050,15 @@ calcstageperc	php ; Push processor status to stack
 	beq	.deadfalco ; Branch to .deadfalco sublabel if Falco's HP is 0
 	clc ; Clear carry flag
 	adc	#5 ; add 5 to A
-.deadfalco	ai16 ; set A/X/Y to 16 bit ; NICE
+.deadfalco	ldx	miyu ; NICE
+	beq	.deadmiyu ; Branch to .deadmiyu sublabel if Miyu's HP is 0
+	clc ; Clear carry flag
+	adc	#5 ; add 5 to A
+.deadmiyu	ldx fay
+	beq	.deadfay ; Branch to .deadfay sublabel if Fay's HP is 0
+	clc ; Clear carry flag
+	adc	#5 ; add 5 to A
+.deadfay	ai16 ; set A/X/Y to 16 bit
 	and	#$ff ; AND A with $FF
 	sta	tpa ; store A to tpa var
 
@@ -1238,12 +1251,12 @@ printspeclp
 
 	ldx	#0
 	ldy	#0
-	lda	#11			;position
+	lda	#5 ;9 ;0 ;11			;x position
 	sta.l	m_x1
 	sta	ktpx
 .lp
 	longa
-	lda	#136
+	lda	#136 ;150 ;136	; y pos
 	sta.l	m_y1
 	lda.w	friends_hp,y
 	and	#$ff
@@ -1252,6 +1265,8 @@ printspeclp
 	a8
 	lda	#mshowteammate>>16
 	ldx	#mshowteammate&WM
+;	lda	#mprtdecstop>>16
+;	ldx	#mprtdecstop&WM
 	jsl	runmario_l
 	plx
 
@@ -1341,10 +1356,10 @@ printspeclp
 	iny
 	lda.l	ktpx
 	clc
-	adc	#80
+	adc	#48 ;  x pos additive for bars again, 11+48
 	sta	ktpx
 	sta.l	m_x1
-	cpy	#3
+	cpy	#5 ; number of iterations to draw teammate faces
 	lbne	.lp
 
 

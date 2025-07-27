@@ -33,7 +33,7 @@ friendmessagesinintro	equ	0
 numlives	equ	3
 
 ; Input window for barrel rolls (in frames). (stock = 3)
-barrelrolldelay	equ	3
+barrelrolldelay	equ	6
 
 ; Enables a timer. when the defined time runs out, the game returns to the controls screen.
 ; [0 = off, 1 = on]
@@ -69,6 +69,12 @@ randomselectmode	equ	0
 ; Chance of teammate selection for randomselectmode 1
 teammateselectchance	equ	3
 
+; Random Number Generation Behavior
+; 0 = RNG reset at map screen (vanilla)
+; 1 = RNG set at boot and never reset
+; 2 = 789 xorshift RNG, seed set at boot and never reset (Saves 2 bytes of zeropage)
+rngmode	equ	2
+
 ; Random Vertices
 
 ; randomize the vertices slightly
@@ -81,7 +87,10 @@ randvertandbit	equ	15
 
 ; randomize the vertices a lot, Both will not activate at once
 ; [0 = off, 1 = on]
-randverts2	equ	0		
+randverts2	equ	0
+
+; Chance of teammates being selected for chases, etc.
+teammateselectchance	equ	10
 
 ;####################################################################################################################
 

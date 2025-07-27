@@ -9,7 +9,7 @@ cl_bridge
 	mapwait	2900
 
 
-friendwait	=	medpspeed*30
+friendwait	=	medpspeed	;was *30
 
 	setvar.n	stageclear,1
 	mapmsg	1
@@ -25,12 +25,20 @@ friendwait	=	medpspeed*30
 	mapobj	friendwait,1000,-300,50,myship_4,clshipBRIDGEa_Istrat
 	clfriendmsg	bunny
 .nb
-
 	mapjmpfrienddead	cock,.nc
 	mapobj	friendwait,00000,0,-2000,myship_4,clshipBRIDGEc_Istrat
 	clfriendmsg	cock
 .nc
+	mapjmpfrienddead	miyu,.nm
+	mapobj	friendwait,-1000,-300,50,myship_4,clshipBRIDGEe_Istrat
+	clfriendmsg	miyu
 
+.nm
+	mapjmpfrienddead	fay,.nfay
+	mapobj	friendwait,1000,-300,50,myship_4,clshipBRIDGEd_Istrat
+	clfriendmsg	fay
+
+.nfay
 
 	mapwait	5000
 	setvar.b	clb2,0
