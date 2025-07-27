@@ -100,7 +100,7 @@ friendmugshoty	equ	152-((friendmsgyadd/8)*8)
 ; use 24 instead of 22 for Japanese
 scoretextypos	equ	22
 ; default is 44 for all regions
-scoretotalypos	equ	44
+scoretotalypos	equ	40
 
 ;; Palettes
 

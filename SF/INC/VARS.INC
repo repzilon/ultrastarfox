@@ -221,7 +221,7 @@ face_andross1	equ	15
 face_andross2	equ	16
 
 ;Comms Static
-face_anyone		equ	17
+face_anyone		equ	24	; vanilla: 17
 
 ; sprites.asm
 spradd	equ	128	;((24*28)-512+2)

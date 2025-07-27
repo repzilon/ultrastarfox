@@ -1339,11 +1339,20 @@ printspeclp
 	beq	.bunny
 	cpx	#2
 	beq	.falco
-	lda	#facedata&WM+640*face_slippy1
-	bra	.writeit
+	cpx	#4
+	beq	.miyu
+	cpx	#6
+	beq	.fay
+	lda	#facedata&WM+640*15 ; slippy?
+ 	bra	.writeit
 .bunny	lda	#facedata&WM+640*face_peppy1
-	bra	.writeit
+ 	bra	.writeit
 .falco	lda	#facedata&WM+640*face_falco1
+	bra	.writeit
+; no idea if this will work
+.miyu	lda	#facedata&WM+640*11 ; miyu?
+	bra	.writeit
+.fay	lda	#facedata&WM+640*13 ; fay?
 .writeit
 	sta.l	m_faceptr
 
