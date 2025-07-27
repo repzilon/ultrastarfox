@@ -30,7 +30,7 @@ FASTROM		equ 0
 ; This has no effect on the original MARIO Chip, as it is locked to 10.7mhz.
 ; This also enables fast multiplication mode (MS1).
 ; [0 = off, 1 = on]
-fast		equ 1
+;fast	equ 1	; set on command line
 
 ; Enable/disable Super FX instruction cache [0 = off, 1 = on]
 ; you should have no good reason to ever switch this off, as it makes performance much, much worse.
