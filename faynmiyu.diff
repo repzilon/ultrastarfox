@@ -1,0 +1,5533 @@
+diff -Nurp ./ultrastarfox/SF/ASM/BGS.ASM ./miyu-and-fay-in-star-fox/SF/ASM/BGS.ASM
+--- ./ultrastarfox/SF/ASM/BGS.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/BGS.ASM	2025-07-26 10:47:33
+@@ -665,6 +665,18 @@ bg_intro_1	init_bg	mode2
+ 	bg2Yscroll	24
+ 	space	night
+ 
++bg_msu1_1	init_bg	mode2
++	bg2chr	msubg
++	bg2scr	msubg
++	palette	msubg
++	set_bg
++	info	voff,zoff,hoff,nodots
++	pstrat	playercred,b,abc
++	hofmode	nograd
++	bg2Yscroll	24
++	bg2Xscroll	32
++	space	night
++
+ bg_gameover_1	init_bg	mode1
+ 	bg2chr	and
+ 	bg2scr	and
+@@ -942,6 +954,7 @@ bglists	dw	0
+ 
+ 	defbg	hole
+ 	defbg	intro
++	defbg	msu1
+ 	defbg	title
+ 	defbg	cont
+ 	defbg	gameover
+diff -Nurp ./ultrastarfox/SF/ASM/BOOTNMI.ASM ./miyu-and-fay-in-star-fox/SF/ASM/BOOTNMI.ASM
+--- ./ultrastarfox/SF/ASM/BOOTNMI.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/BOOTNMI.ASM	2025-07-26 10:47:33
+@@ -37,6 +37,10 @@ startboot	disable ; Disable Interrupts
+ 
+ 	jsr	initialise_ram ; Clear RAM
+ 
++	IFNE	rngmode ; start conditional: if rngmode !=0 (=1)
++	setuprng ; Setup RNG seed at boot
++	ENDC ; end conditional
++
+ 	i16 ; set X/Y to 16 bit
+ 	ldx	#$2ff ; Load $2FF into X
+ 	txs ; Transfer X to SP (set stack to $2FF, resets the stack)
+@@ -55,6 +59,9 @@ startboot	disable ; Disable Interrupts
+ 	ENDC ; End conditional
+ 
+ 	IFEQ	nointroseq ; start conditional: if nointroseq = 0
++	IFNE	newmsu1
++	jsl	msu1screen_l	; Jump to MSU-1 logo screen / chip existence check
++	ENDC
+ 	jsl	intro_l ; Jump to Intro Sequence
+ 	ENDC ; End conditional
+ 
+@@ -102,7 +109,22 @@ restart	ai16 ; set A/X/Y to 16 bit
+ 	pha
+ 	ENDC
+ 
++	IFNE	rngmode	; if rngmode is xorshift/set at boot
++	lda	rand
++	pha
++	lda	rand+1
++	pha
++	ENDC
++
+ 	jsr	initialise_ram ; Clear RAM
++
++	a8
++	IFNE	rngmode	; if rngmode is xorshift/set at boot
++	pla
++	sta	rand+1
++	pla
++	sta	rand
++	ENDC
+ 
+ 	IFNE	MSU
+ 	pla
+diff -Nurp ./ultrastarfox/SF/ASM/CONT.ASM ./miyu-and-fay-in-star-fox/SF/ASM/CONT.ASM
+--- ./ultrastarfox/SF/ASM/CONT.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/CONT.ASM	2025-07-26 10:47:33
+@@ -85,6 +85,9 @@ contcancel	a8
+ 	a8
+ 	testjoypad	select
+ 	beq	.nosel
++	IFNE	RUMBLE
++	s_queue_rumble	2,2,4
++	ENDC
+ 	lda	c_type
+ 	inc	a
+ 	and	#3
+@@ -101,6 +104,9 @@ contcancel	a8
+ 	testjoypad	start
+ 	lbeq	.self
+ .autoexit
++	IFNE	RUMBLE
++	s_queue_rumble	4,4,6
++	ENDC
+ 	trigse	$10
+ conttraining
+ 
+@@ -115,6 +121,9 @@ conttraining
+ 
+ 	testjoypad	select
+ 	beq	.nosel
++	IFNE	RUMBLE
++	s_queue_rumble	2,2,4
++	ENDC
+ 	lda.l	contexit
+ 	eor	#1
+ 	sta.l	contexit
+@@ -124,6 +133,9 @@ conttraining
+ 	beq	.noup
+ 	testjoypad	up
+ 	beq	.noup
++	IFNE	RUMBLE
++	s_queue_rumble	2,2,4
++	ENDC
+ 	lda	#0
+ 	sta.l	contexit
+ 	trigse	011h
+@@ -132,6 +144,9 @@ conttraining
+ 	bne	.nodown
+ 	testjoypad	down
+ 	beq	.nodown
++	IFNE	RUMBLE
++	s_queue_rumble	2,2,4
++	ENDC
+ 	lda	#1
+ 	sta.l	contexit
+ 	trigse	011h
+@@ -148,6 +163,9 @@ conttraining
+ 
+ 	testjoypad start
+ 	lbeq	.lp
++	IFNE	RUMBLE
++	s_queue_rumble	4,4,6
++	ENDC
+ .xit
+ 	a8
+ 
+@@ -199,6 +217,9 @@ conttraining
+ 	bne	.lp3
+ .tstst	testjoypad start
+ 	beq	.lp3
++	IFNE	RUMBLE
++	s_queue_rumble	4,4,6
++	ENDC
+ .fade
+ 	a8
+ 	startbgm $f1
+diff -Nurp ./ultrastarfox/SF/ASM/CONTINUE.ASM ./miyu-and-fay-in-star-fox/SF/ASM/CONTINUE.ASM
+--- ./ultrastarfox/SF/ASM/CONTINUE.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/CONTINUE.ASM	2025-07-26 10:47:33
+@@ -878,6 +878,18 @@ friends_messages_l
+ 	db	$7f	; frog down
+ 	db	$63	; frog other
+ 	db	$63	; frog
++	db	$7c	; miyu help
++	db	$7d	; miyu down
++	db	$62	; miyu other
++	db	$62	; miyu
++	db	$7c	; fay help
++	db	$7d	; fay down
++	db	$62	; fay other
++	db	$62	; fay
++	db	$2D	; rob help
++	db	$2D	; rob down
++	db	$2D	; rob other
++	db	$2D	; rob
+ 	db	$5f	; pepper
+ 	db	$5f	; pepper
+ 	db	$5f	; pepper
+@@ -886,6 +898,7 @@ friends_messages_l
+ 	db	$8c	; andross
+ 	db	$8c	; andross
+ 	db	$8c	; andross
++
+ 
+ .displayface
+ ; a is frame to show
+diff -Nurp ./ultrastarfox/SF/ASM/DRAW.ASM ./miyu-and-fay-in-star-fox/SF/ASM/DRAW.ASM
+--- ./ultrastarfox/SF/ASM/DRAW.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/DRAW.ASM	2025-07-26 10:47:33
+@@ -91,6 +91,16 @@ printt_l
+ 	beq	.finished
+ 	phy
+ 
++	cmp	#"-"
++	bne	.nothyphen
++	lda	#36
++	bra	.drawit
++.nothyphen
++	cmp	#"!"
++	bne	.notexclamation
++	lda	#43
++	bra	.drawit
++.notexclamation
+ 	cmp	#"_"
+ 	bne	.notunder
+ 	lda	#42
+diff -Nurp ./ultrastarfox/SF/ASM/ENDSEQ.ASM ./miyu-and-fay-in-star-fox/SF/ASM/ENDSEQ.ASM
+--- ./ultrastarfox/SF/ASM/ENDSEQ.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/ENDSEQ.ASM	2025-07-26 10:47:33
+@@ -1647,6 +1647,10 @@ titleredo	a8i16
+ titleredo	a8i16
+ 	disable
+ 
++	IFNE	RUMBLE
++	s_end_rumble_table	; kill intro sequenced rumble if it wasn't already for some reason
++	ENDC
++
+ 	lda	#1
+ 	sta.l	oncewipe
+ 	lda	#titlemap>>16
+@@ -1686,7 +1690,9 @@ titleredo	a8i16
+ 	lda	cont0
+ 	bit	#key_start
+ 	beq	.lp
+-
++	IFNE	RUMBLE
++	s_queue_rumble	4,4,6
++	ENDC
+ 	a16
+ 	pla
+ 	a8
+@@ -1724,17 +1730,99 @@ titleredo	a8i16
+ 	jmp	titleredo
+ 
+ 
+-
+ ;-------------------------------------------------------------------
+-; INTRO SEQUENCE
++; MSU-1 LOGO SEQUENCE
+ 
+-intro_l
++msu1screen_l
+ 	a8i16
+ 
+ 	IFNE	msu
+ 	jsl CheckForMSU ; check for the MSU-1
+ 	ENDC
+ 
++	; don't need bgm
++
++;	bgm	init
++;	ldx	#0
++;.ll2	dex
++;	bne	.ll2
++
++	disable
++
++	lda	#1
++	sta.l	oncewipe
++	lda	#msu1map>>16
++	ldx	#msu1map&$7fff
++	sta	mapbank
++	stx	mapptr
++	jsl	initgame_l
++	s_and_var		B,pshipflags3,#~psf3_enginesnd
++
++	jsl	setcharmapfox_l
++
++	lda	#0
++	sta.l	m_meters
++	sta	exitintro
++;	sta.l	oncewipe
++	stz	gameframe
++
++	lda	#25
++	sta sunlittemp1 ; store wait time to auto-continue
++
++.lp32	jsl	setblack_l
++	jsl	transfer_l
++	a8
++	lda	gameframe
++	cmp	#30
++	bcc	.lp32
++
++	lda	exitintro
++	bne	.waitup2
++
++	IFNE	MSU
++	lda	msupresent
++	bne	.msuchk2pass
++	beq	.msuchk2fail
++.msuchk2pass
++	ENDC
++	dec	sunlittemp1 ; dec wait timer
++	lda	sunlittemp1
++;	cmp	#0
++	beq	.waitup2
++; look for any controller input to skip
++	lda	cont0
++	ora	contl0
++	beq	.lp32
++	beq	.waitup2
++	bne	.lp32
++.msuchk2fail
++
++;	IFNE	MSU
++;	lda	msupresent
++;	bne	.msuchk3pass
++;	beq	.msuchk3fail
++;.msuchk3fail	bra	.msuchk2fail
++;.msuchk3pass
++;	ENDC
++.waitup2
++	lda	#-2
++	sta	fadedir
++	lda	#11
++	sta	fade
++.finishlp
++	jsl	setblack_l
++	jsl	transfer_l
++	a8
++	lda	fadedir
++	bne	.finishlp
++	rtl
++
++;-------------------------------------------------------------------
++; INTRO SEQUENCE
++
++intro_l
++	a8i16
++
+ 	bgm	init
+ 	ldx	#0
+ .ll	dex
+@@ -1771,6 +1859,9 @@ intro_l
+ 	ora	contl0
+ 	beq	.lp3
+ .waitup
++	IFNE	RUMBLE
++	s_end_rumble_table
++	ENDC
+ 	lda	#-2
+ 	sta	fadedir
+ 	lda	#11
+diff -Nurp ./ultrastarfox/SF/ASM/GAME.ASM ./miyu-and-fay-in-star-fox/SF/ASM/GAME.ASM
+--- ./ultrastarfox/SF/ASM/GAME.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/GAME.ASM	2025-07-26 10:47:33
+@@ -456,7 +456,10 @@ random
+ ;	sta	rand+1
+ ;	adc	#4
+ ;	sta	rand
+-	
++
++	IFEQ	rngmode-2
++	xorshiftrng
++	ELSEIF
+ 	lda rand
+ 	clc
+ 	sbc rand+1
+@@ -467,7 +470,9 @@ random
+ 	sta rand+3
+ 	sbc rand
+ 	sta rand
++	ENDC
+ 	rts
++
+ 
+ 
+ 	IFEQ	1
+diff -Nurp ./ultrastarfox/SF/ASM/GAMETEXT.ASM ./miyu-and-fay-in-star-fox/SF/ASM/GAMETEXT.ASM
+--- ./ultrastarfox/SF/ASM/GAMETEXT.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/GAMETEXT.ASM	2025-07-26 10:47:33
+@@ -85,7 +85,9 @@ falcotxt	txt	14,<FALCO>
+ slippytxt	txt	14,<SLIPPY>
+ peppytxt	txt	14,<PEPPY>
+ falcotxt	txt	14,<FALCO>
+-deadtxt	txt	14,<IS DOWN>
++miyutxt		txt	14,<MIYU>
++faytxt		txt	14,<FAY>
++deadtxt	txt	14,<DOWN> ; SUNLITNOTE fix this if you get the teammate shield bars figured out
+ stagetxt	txt	14,<STAGE>
+ 	ENDC
+ 	ENDC
+diff -Nurp ./ultrastarfox/SF/ASM/IRQ.ASM ./miyu-and-fay-in-star-fox/SF/ASM/IRQ.ASM
+--- ./ultrastarfox/SF/ASM/IRQ.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/IRQ.ASM	2025-07-26 10:47:33
+@@ -1093,17 +1093,28 @@ irqbit3	lda	noirqbit3
+ 
+ 	lda	flashtunnelon
+ 	beq	.skip
++	IFEQ	rngmode-2
++	lda	rand
++	ELSEIF
+ 	jsr	irqrand
++	ENDC
+ 	cmp	#((20)*255)/100		;20% chance of a flash
+ 	bcs	.skip
+ 	dmacgram	0,0,redtunnel,64
+ .skip
+ 	lda	flashbg
+ 	beq	.skipt
++	IFEQ	rngmode-2
++	lda	rand
++	ELSEIF
+ 	jsr	irqrand
++	ENDC
+ 	cmp	#((2)*255)/100		;2% chance of a flash
+ 	bcs	.skipt
+ 	dmacgram	0,5*16,thundercol,32
++	IFNE	RUMBLE
++	queue_rumble	4,4,3
++	ENDC
+ .skipt
+ 	lda	#2*16+4
+ 	sta	cgadd
+@@ -1629,6 +1640,9 @@ startmus	php
+ 
+ 
+ ;-----------------------------------------------------------------------
++	IFEQ	rngmode-2
++
++	ELSEIF
+ irqrand	lda	rand
+ 	clc
+ 	sbc	rand+1
+@@ -1640,7 +1654,7 @@ irqrand	lda	rand
+ 	sbc	rand
+ 	sta	rand
+ 	rts
+-
++	ENDC
+ ;-----------------------------------------------------------------------
+ 	shorta
+ 	longi
+diff -Nurp ./ultrastarfox/SF/ASM/MAIN.ASM ./miyu-and-fay-in-star-fox/SF/ASM/MAIN.ASM
+--- ./ultrastarfox/SF/ASM/MAIN.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/MAIN.ASM	2025-07-26 10:47:33
+@@ -30,6 +30,8 @@ initialise_l ; Initialize game
+ 	sta	frog
+ 	sta	bunny
+ 	sta	cock
++	sta	miyu
++	sta	fay
+ 	sta	pepper
+ 	sta	andorf
+ 
+@@ -1023,12 +1025,15 @@ makeendobj2	sta	kval1
+ 
+ 
+ ;----------------------------------------------------------------------------------------------
+-nametxt	dw	peppytxt&WM,falcotxt&WM,slippytxt&WM ; Name text for Peppy, Falco, and Slippy
+-namepos	dw	15,96,173 ; Screen positions for names
+-deadnamepos	dw	11,91,170 ; Screen positions for "IS DOWN" text if teammate(s) are down
+-namegfxpos	db	2,11*8 ; Position for Peppy name gfx
+-	db	12,11*8 ; Position for Falco name gfx
+-	db	22,11*8 ; Position for Slippy name gfx
++nametxt	dw	peppytxt&WM,falcotxt&WM,slippytxt&WM,miyutxt&WM,faytxt&WM ; Name text for Peppy, Falco, and Slippy
++namepos	dw	0,48,92,147,199 ; Screen positions for names
++deadnamepos	dw	0,48,97,147,190 ; Screen positions for "IS DOWN" text if teammate(s) are down
++namegfxpos
++	db	0,11*8 ; Position for Peppy name gfx
++	db	6,11*8 ; Position for Falco name gfx
++	db	12,11*8 ; Position for Slippy name gfx
++	db	18,11*8 ; Position for Miyu name gfx
++	db	24,11*8 ; Position for Fay name gfx
+ 
+ calcstageperc	php ; Push processor status to stack
+ 	; take 7% of total killed for every teammate alive and add to total killed
+@@ -1047,7 +1052,15 @@ calcstageperc	php ; Push processor status to stack
+ 	beq	.deadfalco ; Branch to .deadfalco sublabel if Falco's HP is 0
+ 	clc ; Clear carry flag
+ 	adc	#5 ; add 5 to A
+-.deadfalco	ai16 ; set A/X/Y to 16 bit ; NICE
++.deadfalco	ldx	miyu ; NICE
++	beq	.deadmiyu ; Branch to .deadmiyu sublabel if Miyu's HP is 0
++	clc ; Clear carry flag
++	adc	#5 ; add 5 to A
++.deadmiyu	ldx fay
++	beq	.deadfay ; Branch to .deadfay sublabel if Fay's HP is 0
++	clc ; Clear carry flag
++	adc	#5 ; add 5 to A
++.deadfay	ai16 ; set A/X/Y to 16 bit
+ 	and	#$ff ; AND A with $FF
+ 	sta	tpa ; store A to tpa var
+ 
+@@ -1105,7 +1118,7 @@ printspeclp
+ 	jsl	transfer_l ; Go to transfer loop subroutine
+ 
+ 	ai16 ; Set A/X/Y to 16 bit
+-	clrmes	totalscoretxt,16,44	;total score
++	clrmes	totalscoretxt,16,44-4	;total score
+ 
+ 	a16 ; set A to 16 bit
+ 	jsr	calctotalscore ; Get total score
+@@ -1231,12 +1244,12 @@ printspeclp
+ 
+ 	ldx	#0
+ 	ldy	#0
+-	lda	#11			;position
++	lda	#5 ;9 ;0 ;11			;x position
+ 	sta.l	m_x1
+ 	sta	ktpx
+ .lp
+ 	longa
+-	lda	#136
++	lda	#136 ;150 ;136	; y pos
+ 	sta.l	m_y1
+ 	lda.w	friends_hp,y
+ 	and	#$ff
+@@ -1245,6 +1258,8 @@ printspeclp
+ 	a8
+ 	lda	#mshowteammate>>16
+ 	ldx	#mshowteammate&WM
++;	lda	#mprtdecstop>>16
++;	ldx	#mprtdecstop&WM
+ 	jsl	runmario_l
+ 	plx
+ 
+@@ -1306,7 +1321,7 @@ printspeclp
+ 	and	#1
+ 	a16
+ 	bne	.oneframe
+-	lda	#facedata&WM+640*17
++	lda	#facedata&WM+640*24
+ 	bra	.writeit
+ .oneframe
+ 	lda	#facedata&WM+640*4
+@@ -1317,11 +1332,20 @@ printspeclp
+ 	beq	.bunny
+ 	cpx	#2
+ 	beq	.falco
+-	lda	#facedata&WM+640*11
++	cpx	#4
++	beq	.miyu
++	cpx	#6
++	beq	.fay
++	lda	#facedata&WM+640*15 ; slippy?
+ 	bra	.writeit
+-.bunny	lda	#facedata&WM+640*7
++.bunny	lda	#facedata&WM+640*7 ; peppy
+ 	bra	.writeit
+-.falco	lda	#facedata&WM+640*9
++.falco	lda	#facedata&WM+640*9 ; falco
++	bra	.writeit
++; no idea if this will work
++.miyu	lda	#facedata&WM+640*11 ; miyu?
++	bra	.writeit
++.fay	lda	#facedata&WM+640*13 ;fay?
+ .writeit
+ 	sta.l	m_faceptr
+ 
+@@ -1334,10 +1358,10 @@ printspeclp
+ 	iny
+ 	lda.l	ktpx
+ 	clc
+-	adc	#80
++	adc	#48 ;  x pos additive for bars again, 11+48
+ 	sta	ktpx
+ 	sta.l	m_x1
+-	cpy	#3
++	cpy	#5 ; number of iterations to draw teammate faces
+ 	lbne	.lp
+ 
+ 
+diff -Nurp ./ultrastarfox/SF/ASM/NMI.ASM ./miyu-and-fay-in-star-fox/SF/ASM/NMI.ASM
+--- ./ultrastarfox/SF/ASM/NMI.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/NMI.ASM	2025-07-26 10:47:33
+@@ -6,27 +6,52 @@
+ ;*                           SuperNES version.                             *
+ ;*                                                                         *
+ ;*                                                                         *
+-;*                           Argonaut Software.      		               *
++;*                           Argonaut Software.                            *
+ ;*                                                                         *
+ ;*_________________________________________________________________________*
+ ;*                                                                         *
+ ;*   File: NMI.ASM                                                         *
+ ;*_________________________________________________________________________*
+ ;*                                                                         *
+-;*  Descr: NMI handler.                                                    *
++;*  Descr: NMI/IRQ handler.                                                *
+ ;*                                                                         *
+ ;***************************************************************************
+ 
+-; Copies NMI handler to RAM at addr $0101
++; Copies NMI/IRQ handler to RAM at addr $0101
+ copy_to_0101_l
+ 	php ; Push Processor status to stack
++
++	ai16
++	ldx	#nmihan&WM ; src data addr
++	ldy	#$0101 ; dest data addr
++	lda	#nmihanend-nmihan-1 ; len of data to copy
++	IFNE	FASTROM
++	sasm_mvn	$9f,$80
++	ELSEIF
++	sasm_mvn	$1f,$00
++	ENDC
++
++	IFNE	MSU
++; Copy MSU fade handler to $0162 (right after the NMI/IRQ handler in RAM)
++	ai16
++	ldx	#msufadehan&WM ; src data addr
++	ldy	#$0162 ; dest data addr
++	lda	#msufadehanend-msufadehan-1 ; len of data to copy
++	IFNE	FASTROM
++	sasm_mvn	$9f,$80
++	ELSEIF
++	sasm_mvn	$1f,$00
++	ENDC
++	ENDC
++
+ 	a8i16 ; set A to 8 bit and X/Y to 16 bit
+ 
+-	ldx	#nmihanend-nmihan-1 ; Load size of NMI handler routine into X(?)
+-.codeloop2	lda.l	nmihan,x ; Load (Long) NMIHAN + size of NMIHAN into A(?)
+-	sta.l	$0101,x ; Store A (Long) at $0101 + size of NMIHAN(?)
+-	dex ; Decrement X
+-	bpl	.codeloop2 ; repeat until x = 0
++; old NMIHAN uploader code, retained for future reference
++;	ldx	#nmihanend-nmihan-1 ; Load size of NMI handler routine into X(?)
++;.codeloop2	lda.l	nmihan,x ; Load (Long) NMIHAN + size of NMIHAN into A(?)
++;	sta.l	$0101,x ; Store A (Long) at $0101 + size of NMIHAN(?)
++;	dex ; Decrement X
++;	bpl	.codeloop2 ; repeat until x = 0
+ 
+ 	; xlen = 22*1024+450
+ 	ldx	#xlen-1 ; Load xlen-1 (22977) into X
+@@ -52,12 +77,23 @@ nmihan ; Start of NMI handler
+ 	nop		;$010b ; No Operation
+ .irq	ai16		;$010c	irq
+ 	pha	; Push A to stack
+-	IFNE	msu
+-	jsl	$7ED1C0 ; MSU-1 fade routine
++
++	IFNE	MSU
++	jsl	$000162 ; Legacy MSU-1 fade routine (unstable!!)
+ 	ELSEIF
++
+ 	lda.l	m_sfr ; Load m_sfr into A (MARIO chip flags?)
+ 	ENDC
++
++	IFEQ	RUMBLE
+ 	bmi	.qexit ; branch if a = 1
++	ELSEIF
++	bpl	.irqq
++.qexit	pla ; Pull A from stack
++	rti ; Return from interrupt
++	ENDC
++
++.irqq
+ 	phb ; Push data bank to stack
+ 	disable ; disable interrupts
+ 	phx ; Push X to stack
+@@ -73,15 +109,164 @@ nmihan ; Start of NMI handler
+ 	plb ; Pull data bank from stack
+ 	ENDC ; End conditional
+ 
++	IFNE	RUMBLE
++; Randy's rumble controller fix for hardware
++; HACK: Force re-read of controller bits to get timing right for rumble handler
++
++	lda	slhvr				; Latch Raster Position
++	lda	stat78r				; Update H/V Counters
++	lda	opvctr				; Get Low 8Bits VPos
++	xba
++	lda	opvctr				; Get High 8Bits VPos
++	xba
++	cmp	#40
++	bcc	.to_skip_rumble
++	cmp	#220
++	bcc	.readjoy
++.to_skip_rumble
++	brl	.skip_rumble
++
++.readjoy
++	lda	#$01
++	sta	JOYSER0				; Reset Data Counter
++	nop
++	nop
++	stz	JOYSER0
++	nop
++	nop
++
++	ldy	#16-1				; Read 16 Controller Bits
++.readjoy2
++	lda	JOYSER0				; Controller I
++	dey
++	bpl	.readjoy2
++
++	ldx	#$40
++
++; Handle rumble controller commands
++
++; Send magic number 01110010 (rumble sentry)
++; send a bit, clock controller port 1
++	stz	WRIO				; %0
++	bit	JOYSER0
++
++	stx	WRIO				; %1
++	bit	JOYSER0
++
++;							; %1
++	bit	JOYSER0
++
++;							; %1
++	bit	JOYSER0
++
++	stz	WRIO				; %0
++	bit	JOYSER0
++
++;							; %0
++	bit	JOYSER0
++
++	stx	WRIO				; %1
++	bit	JOYSER0
++
++	stz	WRIO				; %0
++	bit	JOYSER0
++.rumblehan_recheck
++; Handle sequenced rumbles
++	lda	rumble_index
++	beq	.notable	; If rumble_index == 0, handle timed rumbles
++	ldx	rumble_index
++	lda.l	rumble_table,x - 1
++	inx
++	stx	rumble_index
++	cmp #0
++	beq	.rumblehan_turnoffmotors
++	cmp #$19	; So I don't have to pull X twice - Kando
++	bne	.rumblehan_donerumblecmd2	; If you hit a $19, end it all. Otherwise, run it.
++	stz	rumble_index
++	bra	.rumblehan_turnoffmotors
++
++.notable
++; Check rumble timer
++; Only send a nonzero rumble command if the timer is nonzero
++	lda	rumble_time
++	beq	.rumblehan_turnoffmotors	; if 0, turn off motors!
++	lda	rumble_cmd		; get rumble cmd bits
++	bra	.rumblehan_donerumblecmd
++	
++.rumblehan_donerumblecmd2
++	cmp	#$91	; Is the current table value == $91?
++	bne	.rumblehan_donerumblecmd
++	lda	#1	; Yes! Loop rumble sequence.
++	sta	rumble_index
++	bra .rumblehan_recheck
++
++.rumblehan_turnoffmotors
++	lda	#0	; 0 = no rumble!
++.rumblehan_donerumblecmd
++
++; send rumble command bits out to controller port 1
++; read in a bit, send it, clock controller port 1
++
++	lsr	a				; .7 -> .6 / .0 -> .C
++	sta	WRIO
++	bit	JOYSER0
++
++	rol	a				; .6 / .C -> .0
++	sta	WRIO
++	bit	JOYSER0
++
++	asl	a				; .5
++	sta	WRIO
++	bit	JOYSER0
++
++	asl	a				; .4
++	sta	WRIO
++	bit	JOYSER0
++
++	asl	a				; .3
++	sta	WRIO
++	bit	JOYSER0
++
++	asl	a				; .2
++	sta	WRIO
++	bit	JOYSER0
++
++	asl	a				; .1
++	sta	WRIO
++	bit	JOYSER0
++
++	asl	a				; .0
++	sta	WRIO
++	bit	JOYSER0
++
++	lda	#$ff				; Restore WRIO
++	sta	WRIO
++
++; Check rumble timer
++	lda	rumble_time
++	beq	.rumblehan_dontdectime	; If 0, don't decrement or we'll overflow!!
++	dec	rumble_time
++.rumblehan_dontdectime
++
++.skip_rumble
++	ENDC
++
+ 	nastyon ; Turn MARIO nasty mode on
+ 	jsl	irqcode_l ; Jump to irqcode_l
+ 	a8 ; Set A to 8 bit
+ 	inc	framec ; increment frame count?
+ 	lda	timeupr ; Load TIMEUPR register into A
++	IFEQ	RUMBLE
+ 	bra	.exit ; branch to .exit sublabel
++	ELSEIF
++	brl	.exit ; branch to .exit sublabel
++	ENDC
+ 	longa
++
++	IFEQ	RUMBLE
+ .qexit	pla ; Pull A from stack
+ 	rti ; Return from interrupt
++	ENDC
+ .brk
+ .nmi
+ 	ai16 ; Set A/X/Y to 16 bit
+@@ -115,4 +300,31 @@ nmihanend ; End of NMI Handler
+ 
+ nmihanend ; End of NMI Handler
+ 
++	IFNE	MSU
++msufadehan
++	lda.l msu_017f
++	and	#$00ff
++	cmp	#$00f1
++	beq	.k1
++	bra	.skipfade
++	rtl
++.k1
++	a8
++	lda.l msu_017e
++	beq .endslow
++	dec a
++	dec a
++	cmp #$10
++	bcs .k2
++.endslow
++	lda #$00
++	sta.l	msu_017f ;erase fade flag
++.k2	sta.l	msu_017e
++	sta	msu_volume
++.skipfade
++	ai16
++	lda.l m_sfr
++	rtl
++msufadehanend
++	ENDC
+ 
+diff -Nurp ./ultrastarfox/SF/ASM/OBJ.ASM ./miyu-and-fay-in-star-fox/SF/ASM/OBJ.ASM
+--- ./ultrastarfox/SF/ASM/OBJ.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/OBJ.ASM	2025-07-26 10:47:33
+@@ -29,14 +29,10 @@ init3d1
+ 	ai8
+ 
+ init3d1
+-	lda	#$3a
+-	sta	rand
+-	lda	#$a7
+-	sta	rand+1
+-	lda	#$55
+-	sta	rand+2
+-	lda	#$7f
+-	sta	rand+3
++
++	IFEQ	rngmode
++	setuprng	; Setup RNG seed
++	ENDC
+ 
+ 	stz	pauseflag
+ 	stz	expcnt
+diff -Nurp ./ultrastarfox/SF/ASM/PLANETS.ASM ./miyu-and-fay-in-star-fox/SF/ASM/PLANETS.ASM
+--- ./ultrastarfox/SF/ASM/PLANETS.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/PLANETS.ASM	2025-07-26 10:47:33
+@@ -236,6 +236,18 @@ planetseq_l
+ planetseq_l
+ 
+ 	a8i16
++	IFNE	RUMBLE
++; clear any timed rumbles that did not complete before we got here
++	stz	rumble_cmd
++; clear any sequenced rumbles as well
++	stz	rumble_index
++
++; make sure NMI gets processed before interrupts are switched off
++; so we know the timed rumble is done
++.waitforrumbletoend
++	lda	rumble_time
++	bne	.waitforrumbletoend
++	ENDC
+ 	jsr	convertroute
+ 
+ 	stz	sdpck3
+diff -Nurp ./ultrastarfox/SF/ASM/SGDATA.ASM ./miyu-and-fay-in-star-fox/SF/ASM/SGDATA.ASM
+--- ./ultrastarfox/SF/ASM/SGDATA.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/SGDATA.ASM	2025-07-26 10:47:33
+@@ -139,7 +139,7 @@ debugchars
+ debugchars
+ 
+ ; How many tiles are in the font file (should always be divisible by 2)
+-numdebugchars	equ	44
++numdebugchars	equ	46
+ 
+ 	IFEQ	debugfont
+ 	inccgx2	DATA\FONT\DEBUGFON.CGX,numdebugchars ; Vanilla font
+diff -Nurp ./ultrastarfox/SF/ASM/STRINGS.ASM ./miyu-and-fay-in-star-fox/SF/ASM/STRINGS.ASM
+--- ./ultrastarfox/SF/ASM/STRINGS.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/STRINGS.ASM	2025-07-26 10:47:33
+@@ -34,4 +34,8 @@ strats_start
+ 	definestring	ceszerotxt,<0>
+ 	ENDC
+ 
++	IFNE	MSU
++	definestring	nomsutxt,<NO MSU-1 DETECTED!>
++	ENDC
++
+ 	strats_end
+\ No newline at end of file
+diff -Nurp ./ultrastarfox/SF/ASM/TRANS.ASM ./miyu-and-fay-in-star-fox/SF/ASM/TRANS.ASM
+--- ./ultrastarfox/SF/ASM/TRANS.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/ASM/TRANS.ASM	2025-07-26 10:47:33
+@@ -221,6 +221,29 @@ stratsfrozen
+ 	sta	framecount
+ .noreset
+ 
++	IFEQ	1
++	;teammate hp debug
++	marioprintdec	8,12,bunny
++	marioprint		32,12+1,peppytxt
++	marioprintdec	8,24,cock
++	marioprint		32,24+1,falcotxt
++	marioprintdec	8,36,frog
++	marioprint		32,36+1,slippytxt
++	marioprintdec	8,48,miyu
++	marioprint		32,48+1,miyutxt
++	marioprintdec	8,60,fay
++	marioprint		32,60+1,faytxt
++	ENDC
++
++	IFNE	MSU
++	lda	msupresent
++	beq	.msuchkfail
++	bne	.msuchkpass
++.msuchkfail
++	kandoprint	4,15,nomsutxt
++.msuchkpass
++	ENDC
++
+ 	ifne	mario_stats3d
+ 
+ 	lda	framesb ; framerate
+diff -Nurp ./ultrastarfox/SF/BANK/BANK1.ASM ./miyu-and-fay-in-star-fox/SF/BANK/BANK1.ASM
+--- ./ultrastarfox/SF/BANK/BANK1.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/BANK/BANK1.ASM	2025-07-26 10:47:33
+@@ -45,12 +45,13 @@ yyy	mario	on
+ 	incfile	MARIO\mhud.mc
+ 	mario	off
+ 
+-
+-	incfile	ASM\fontdata.asm
+-
+ mariocodelen	=	*-mariobegin
+ 
+ 	bankend	1
++
++	bank	47
++	incfile	ASM\fontdata.asm
++	bankend	47
+ 
+ 	include	INC\tail.inc
+ 
+diff -Nurp ./ultrastarfox/SF/BANK/BANK11.ASM ./miyu-and-fay-in-star-fox/SF/BANK/BANK11.ASM
+--- ./ultrastarfox/SF/BANK/BANK11.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/BANK/BANK11.ASM	2025-07-26 10:47:33
+@@ -9,8 +9,14 @@
+ 	include	EXT\ga2strats.ext
+ 	include	EXT\dstrats.ext
+ 	include	EXT\bootnmi.ext
++	include	EXT\paths.ext
+ 
+ 	bank	11
++	IFNE	RUMBLE
++	; used by both PCSTRATS and PISTRATS
++hyperspacerumbletab
++	db	$FF,$7F,$91
++	ENDC
+ 	incfile	STRAT\pistrats.asm
+ 	incfile	STRAT\pcstrats.asm
+ 	incfile	STRAT\pstrats.asm
+diff -Nurp ./ultrastarfox/SF/BANK/BANK4.ASM ./miyu-and-fay-in-star-fox/SF/BANK/BANK4.ASM
+--- ./ultrastarfox/SF/BANK/BANK4.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/BANK/BANK4.ASM	2025-07-26 10:47:33
+@@ -25,9 +25,11 @@
+ 
+ ;------------------------------------------------------------------
+ 	bank	4
+-	incfile	PATH\paths.asm
+ 	incfile	STRAT\d2strats.asm
+ 	bankend	4
++	bank	48
++	incfile	PATH\paths.asm
++	bankend	48
+ ;------------------------------------------------------------------
+ 
+ 
+diff -Nurp ./ultrastarfox/SF/BANK/INCBINS.ASM ./miyu-and-fay-in-star-fox/SF/BANK/INCBINS.ASM
+--- ./ultrastarfox/SF/BANK/INCBINS.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/BANK/INCBINS.ASM	2025-07-26 10:47:33
+@@ -154,14 +154,16 @@ msprites3
+ 	inccru	bgcpccr,data\cp-p.ccr
+ 	ENDC
+ 
+-facedata	inccolfile	data\face.cgx,0,360 ; size (in bytes) divided by 32
+ 	inccru	allcolscru,data\col\allcols.pac
+ 
+ 	bankend	23
+ 
+ 	bank	35
++facedata	inccolfile	data\face.cgx,0,500 ; size (in bytes) divided by 32
+ 	inccru	dogpcr,data\dog.pcr
+ 	inccru	bgmccr,data\m.ccr
++	inccru	bgmsubgpcr,data\msubg.pcr
++	inccru	bgmsubgccr,data\msubg.ccr
+ 	bankend	35
+ 
+ ; Crash handler GFX (BLINK.ASM)
+diff -Nurp ./ultrastarfox/SF/CONFIG/DEBUG.INC ./miyu-and-fay-in-star-fox/SF/CONFIG/DEBUG.INC
+--- ./ultrastarfox/SF/CONFIG/DEBUG.INC	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/CONFIG/DEBUG.INC	2025-07-26 10:47:33
+@@ -22,7 +22,7 @@ messagetest			equ	0
+ messagetest			equ	0
+ 
+ ; total number of messages to run through (must match the number in the message file)
+-totalmsgs			equ	142
++totalmsgs			equ	197
+ 
+ ; Allows you to enable planet select cheat on the map
+ ; before you have selected a level. Press X to activate.
+@@ -31,7 +31,7 @@ planetcheaton 		equ 0
+ ; Debug mode font to use
+ ; 2BPP 8x8 tiles (2BPP GB in YY-CHR)
+ ; [0 = vanilla, 1 = SFEX, 2 = Star Glider/SNESGlider]
+-debugfont			equ	0
++debugfont			equ	1
+ 
+ ; print "printroulen" lines during assembly
+ ; [0 = off, 1 = on]
+diff -Nurp ./ultrastarfox/SF/CONFIG/GAME.INC ./miyu-and-fay-in-star-fox/SF/CONFIG/GAME.INC
+--- ./ultrastarfox/SF/CONFIG/GAME.INC	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/CONFIG/GAME.INC	2025-07-26 10:47:33
+@@ -32,7 +32,7 @@ numlives	equ	3
+ numlives	equ	3
+ 
+ ; Input window for barrel rolls (in frames). (stock = 3)
+-barrelrolldelay	equ	3
++barrelrolldelay	equ	6
+ 
+ ; Enables a timer. when the defined time runs out, the game returns to the controls screen.
+ ; [0 = off, 1 = on]
+@@ -46,6 +46,12 @@ timery = 2 ; Row (from top of screen) 0 - 24
+ timerx = 20 ; Column (from left of screen) 0 - 28
+ timery = 2 ; Row (from top of screen) 0 - 24
+ 
++; Random Number Generation Behavior
++; 0 = RNG reset at map screen (vanilla)
++; 1 = RNG set at boot and never reset
++; 2 = 789 xorshift RNG, seed set at boot and never reset (Saves 2 bytes of zeropage)
++rngmode	equ	2
++
+ ; Random Vertices
+ 
+ ; randomize the vertices slightly
+@@ -58,6 +64,9 @@ randvertandbit	equ	15
+ 
+ ; randomize the vertices a lot, Both will not activate at once
+ ; [0 = off, 1 = on]
+-randverts2	equ	0		
++randverts2	equ	0
++
++; Chance of teammates being selected for chases, etc.
++teammateselectchance	equ	10
+ 
+ ;####################################################################################################################
+\ No newline at end of file
+diff -Nurp ./ultrastarfox/SF/CONFIG/ROM.INC ./miyu-and-fay-in-star-fox/SF/CONFIG/ROM.INC
+--- ./ultrastarfox/SF/CONFIG/ROM.INC	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/CONFIG/ROM.INC	2025-07-26 10:47:33
+@@ -11,18 +11,23 @@ msu			equ 0
+ ; If the MSU-1 is not present, the game falls back to SPC700 audio.
+ msu			equ 0
+ 
++; New MSU-1 Driver (WIP)
++; Also enables msu-1 logo splash screen on boot.
++newmsu1		equ	0
++
+ ; MSU-1 video player (not yet implemented)
+ ; requires that MSU-1 support be enabled
+ ; [0 = off, 1 = on]
+ msuvideo	equ	0
+ 
+ ; enable/disable FastROM [1 = on, 0=off]
+-FASTROM	equ 1
++FASTROM	equ 0
+ 
+ ; Disables the SuperFX clock divider, 
+ ; doubling the clock speed from 10.7mhz to 21.4mhz.
++; Also enables fast multiply mode.
+ ; [0 = off, 1 = on]
+-fast	equ 1
++;fast	equ 1	; set on command line
+ 
+ ; Enable/disable SuperFX instruction cache [0 = off, 1 = on]
+ ; you should have no good reason to ever switch this off, as it makes performance much, much worse.
+@@ -44,7 +49,7 @@ docustomname	MACRO
+ ; field for a custom name. the internal ROM name must be 21 CHARACTERS long. No more, no less.
+ docustomname	MACRO
+ ;		"---------------------"  line name up with these quotes
+-	db	"ULTRASTARFOX         "
++	db	"PROJECT ARGONAUT     "
+ 	ENDM
+ 
+ 
+diff -Nurp ./ultrastarfox/SF/CONFIG/XCESSORY.INC ./miyu-and-fay-in-star-fox/SF/CONFIG/XCESSORY.INC
+--- ./ultrastarfox/SF/CONFIG/XCESSORY.INC	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/CONFIG/XCESSORY.INC	2025-07-26 10:47:33
+@@ -13,6 +13,10 @@ analogstick	equ	0
+ ; Up and down on the mouse may need to be manually inverted dependent on preference.
+ analogstick	equ	0
+ 
++; Enable rumble support on controller port 1.
++; [0 = off, 1 = on]
++rumble	equ	1
++
+ ;####################################################################################################################
+ 
+ ; Sanity checks (do not touch)
+Binary files ./ultrastarfox/SF/DATA/COL/MSUBG.col and ./miyu-and-fay-in-star-fox/SF/DATA/COL/MSUBG.col differ
+diff -Nurp ./ultrastarfox/SF/DATA/COL/PC.BAT ./miyu-and-fay-in-star-fox/SF/DATA/COL/PC.BAT
+--- ./ultrastarfox/SF/DATA/COL/PC.BAT	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/DATA/COL/PC.BAT	2025-07-26 10:47:33
+@@ -32,6 +32,7 @@ rem @call mc (file prefix) (start) (end)
+ @call mc e-test 0 7
+ @call mc obj-1 8 13
+ @call mc bg2-e-p 0 9
++@call mc msubg 0 7
+ rem add new palettes before this line
+ rem the order of this file must match the list in INC\KALCS.INC!
+ cru allcols.col allcols.pac
+Binary files ./ultrastarfox/SF/DATA/CP.CGX and ./miyu-and-fay-in-star-fox/SF/DATA/CP.CGX differ
+Binary files ./ultrastarfox/SF/DATA/CP.SCR and ./miyu-and-fay-in-star-fox/SF/DATA/CP.SCR differ
+Binary files ./ultrastarfox/SF/DATA/FACE.CGX and ./miyu-and-fay-in-star-fox/SF/DATA/FACE.CGX differ
+Binary files ./ultrastarfox/SF/DATA/FONT/DBGFONEX.CGX and ./miyu-and-fay-in-star-fox/SF/DATA/FONT/DBGFONEX.CGX differ
+Binary files ./ultrastarfox/SF/DATA/msubg.cgx and ./miyu-and-fay-in-star-fox/SF/DATA/msubg.cgx differ
+Binary files ./ultrastarfox/SF/DATA/msubg.scr and ./miyu-and-fay-in-star-fox/SF/DATA/msubg.scr differ
+diff -Nurp ./ultrastarfox/SF/EXT/BGS.EXT ./miyu-and-fay-in-star-fox/SF/EXT/BGS.EXT
+--- ./ultrastarfox/SF/EXT/BGS.EXT	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/EXT/BGS.EXT	2025-07-26 10:47:33
+@@ -39,6 +39,7 @@
+ 
+ 	global	bg_hole
+ 	global	bg_intro
++	global	bg_msu1
+ 	global	bg_title
+ 	global	bg_cont
+ 	global	bg_gameover
+diff -Nurp ./ultrastarfox/SF/EXT/FONTDATA.EXT ./miyu-and-fay-in-star-fox/SF/EXT/FONTDATA.EXT
+--- ./ultrastarfox/SF/EXT/FONTDATA.EXT	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/EXT/FONTDATA.EXT	2025-07-26 10:47:33
+@@ -1,6 +1,7 @@
+ 	global	font0wid,font0fon,font0trn
+ 	global	fontdata
+ 	global	perfecttxt,teamtxt,deadtxt,slippytxt,peppytxt,falcotxt
++	global	miyutxt,faytxt
+ 	global	pausetxt,messages,totalscoretxt,scoretxt,slashtxt,percenttxt,percenttxt2,stagetxt
+ 	global	bonustxt
+ 
+diff -Nurp ./ultrastarfox/SF/EXT/GCSTRATS.EXT ./miyu-and-fay-in-star-fox/SF/EXT/GCSTRATS.EXT
+--- ./ultrastarfox/SF/EXT/GCSTRATS.EXT	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/EXT/GCSTRATS.EXT	2025-07-26 10:47:33
+@@ -12,30 +12,48 @@
+ 	global	CLSHIPGNDA_ISTRAT	
+ 	global	CLSHIPGNDB_ISTRAT	
+ 	global	CLSHIPGNDC_ISTRAT	
++	global	CLSHIPGNDD_ISTRAT	
++	global	CLSHIPGNDE_ISTRAT	
+ 	global	CLSHIPWARPA_ISTRAT	
+ 	global	CLSHIPWARPB_ISTRAT	
+ 	global	CLSHIPWARPC_ISTRAT	
++	global	CLSHIPWARPD_ISTRAT	
++	global	CLSHIPWARPE_ISTRAT	
+ 	global	CLSHIPSHIPA_ISTRAT	
+ 	global	CLSHIPSHIPB_ISTRAT	
+ 	global	CLSHIPSHIPC_ISTRAT	
++	global	CLSHIPSHIPD_ISTRAT	
++	global	CLSHIPSHIPE_ISTRAT	
+ 	global	CLSHIPEARTHA_ISTRAT	
+ 	global	CLSHIPEARTHB_ISTRAT	
+ 	global	CLSHIPEARTHC_ISTRAT	
++	global	CLSHIPEARTHD_ISTRAT	
++	global	CLSHIPEARTHE_ISTRAT	
+ 	global	CLSHIPTURNA_ISTRAT	
+ 	global	CLSHIPTURNB_ISTRAT	
+ 	global	CLSHIPTURNC_ISTRAT	
++	global	CLSHIPTURND_ISTRAT	
++	global	CLSHIPTURNE_ISTRAT	
+ 	global	CLSHIPBRIDGEA_ISTRAT	
+ 	global	CLSHIPBRIDGEB_ISTRAT	
+ 	global	CLSHIPBRIDGEC_ISTRAT	
++	global	CLSHIPBRIDGED_ISTRAT	
++	global	CLSHIPBRIDGEE_ISTRAT	
+ 	global	CLSHIPCHASEA_ISTRAT	
+ 	global	CLSHIPCHASEB_ISTRAT	
+ 	global	CLSHIPCHASEC_ISTRAT	
++	global	CLSHIPCHASED_ISTRAT	
++	global	CLSHIPCHASEE_ISTRAT	
+ 	global	CLSHIPDIVEA_ISTRAT	
+ 	global	CLSHIPDIVEB_ISTRAT	
+ 	global	CLSHIPDIVEC_ISTRAT	
++	global	CLSHIPDIVED_ISTRAT	
++	global	CLSHIPDIVEE_ISTRAT	
+ 	global	CLSHIPUNDERA_ISTRAT	
+ 	global	CLSHIPUNDERB_ISTRAT	
+ 	global	CLSHIPUNDERC_ISTRAT	
++	global	CLSHIPUNDERD_ISTRAT	
++	global	CLSHIPUNDERE_ISTRAT	
+ 	global	CLSHIP1_ISTRAT	
+ 	global	CLSHIP2_ISTRAT	
+ 	global	CLSHIP3_ISTRAT	
+diff -Nurp ./ultrastarfox/SF/EXT/GISTRATS.EXT ./miyu-and-fay-in-star-fox/SF/EXT/GISTRATS.EXT
+--- ./ultrastarfox/SF/EXT/GISTRATS.EXT	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/EXT/GISTRATS.EXT	2025-07-26 10:47:33
+@@ -1,11 +1,11 @@
++	global	FRIENDSTART1_ISTRAT	
++	global	FRIENDSTART2_ISTRAT	
+   	GLOBAL	FRIENDSTART3_ISTRAT
+ ;	global	startiYtab,startiZtab	
+-;	global	FRIENDSTART1_ISTRAT	
+ ;	global	FRIENDF1_ISTRAT	
+ ;	global	FRIENDF2_ISTRAT	
+ ;	global	TSUMAMI_ISTRAT	
+ 	global	FRIENDEXITBASE_ISTRAT	
+-;	global	FRIENDSTART2_ISTRAT	
+ 	global	intro1pfall_Istrat
+ 	global	pshipintolb1_Istrat
+ 	global	viewintolb1_Istrat
+diff -Nurp ./ultrastarfox/SF/EXT/INCBINS.EXT ./miyu-and-fay-in-star-fox/SF/EXT/INCBINS.EXT
+--- ./ultrastarfox/SF/EXT/INCBINS.EXT	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/EXT/INCBINS.EXT	2025-07-26 10:47:33
+@@ -118,5 +118,7 @@
+ 	global	oopsccr,oopspcr
+ 	global	bgbpcr,bgbccr
+ 	global	obj2ccr
++	global	bgmsubgccr
++	global	bgmsubgpcr
+ 
+ 
+diff -Nurp ./ultrastarfox/SF/EXT/MAPLIST.EXT ./miyu-and-fay-in-star-fox/SF/EXT/MAPLIST.EXT
+--- ./ultrastarfox/SF/EXT/MAPLIST.EXT	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/EXT/MAPLIST.EXT	2025-07-26 10:47:33
+@@ -3,6 +3,6 @@
+ 	global	level2_1,level2_2,level2_3,level2_4,level2_5,level2_6
+ 	global	level3_1,level3_2,level3_3,level3_4,level3_5,level3_6,level3_7
+ 	global	level_blackhole,level_special,creditsmap
+-	global	intromap,titlemap,contmap,waitmap,trainingmap
++	global	intromap,titlemap,contmap,waitmap,trainingmap,msu1map
+ 
+ 
+diff -Nurp ./ultrastarfox/SF/EXT/PATHS.EXT ./miyu-and-fay-in-star-fox/SF/EXT/PATHS.EXT
+--- ./ultrastarfox/SF/EXT/PATHS.EXT	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/EXT/PATHS.EXT	2025-07-26 10:47:33
+@@ -78,6 +78,7 @@
+ 	global	path_e_ufo
+ 	global	path_tomhaha
+ 	global	path_tes
++	global	path_cl_warpwait
+ 	global	path_astemsg
+ 	global	path_braymsg
+ 	global	path_dragonmsg
+@@ -149,6 +150,8 @@
+ 	global	path_hentai_fal
+ 	global	path_hentai_fro
+ 	global	path_hentai_rab
++	global	path_hentai_miy
++	global	path_hentai_fay
+ 	global	path_mes_andross1
+ 	global	path_mes_andross2
+ 	global	path_e_flower
+diff -Nurp ./ultrastarfox/SF/EXT/STRINGS.EXT ./miyu-and-fay-in-star-fox/SF/EXT/STRINGS.EXT
+--- ./ultrastarfox/SF/EXT/STRINGS.EXT	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/EXT/STRINGS.EXT	2025-07-26 10:47:33
+@@ -1,3 +1,6 @@
+ 	IFNE	cestimeron
+ 	global	cestimetext,cesmintext,cessectext,ceszerotxt
++	ENDC
++	IFNE	MSU
++	global	nomsutxt
+ 	ENDC
+\ No newline at end of file
+diff -Nurp ./ultrastarfox/SF/INC/ALCS.INC ./miyu-and-fay-in-star-fox/SF/INC/ALCS.INC
+--- ./ultrastarfox/SF/INC/ALCS.INC	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/INC/ALCS.INC	2025-07-26 10:47:33
+@@ -308,8 +308,11 @@ xlen	=	22*1024+450
+ 
+ 
+ ; Vars kept between levels
++	IFEQ	rngmode-2
++	zalc	rand,2
++	ELSEIF
+ 	zalc	rand,4
+-
++	ENDC
+ ;
+ ; Workspace Vars
+ ;
+@@ -661,6 +664,11 @@ xlen	=	22*1024+450
+ 	alc	bunny,1
+ 	alc	cock,1
+ 	alc	frog,1
++
++; new friend alcs
++	alc	miyu,1
++	alc	fay,1
++
+ 	alc	pepper,1
+ 	alc	andorf,1
+ 	alc	hdmacirclebuf1,2
+@@ -718,9 +726,15 @@ xlen	=	22*1024+450
+ 	ENDC
+ 	alc	open_text,2
+ 	alc	msupresent,1
++	alc	sunlittemp1,2
+ 
++	IFNE	RUMBLE
++; zeropage alcs for rumble
++	zalc	rumble_cmd,1	; command byte
++	zalc	rumble_time,1	; time (in frames, 0-255) to rumble
++	zalc	rumble_index,1	; index into rumble_table for sequenced rumbles (0-255)
++	ENDC
+ 
+-
+ ;---------------------------------------------------
+ 	alc	numshapes,2
+ 	alc	dlptr,2
+@@ -729,6 +743,9 @@ xlen	=	22*1024+450
+ 	alc	palnum,2
+ 	alc	palcnt,2
+ 	alc	fadepal,1
++	IFNE	RUMBLE
++	alc	rumble_table,40	; cache for sequenced rumble commands (unfortunately it must be done this way)
++	ENDC
+ 
+ ; stratrou
+ 
+diff -Nurp ./ultrastarfox/SF/INC/HEADER.INC ./miyu-and-fay-in-star-fox/SF/INC/HEADER.INC
+--- ./ultrastarfox/SF/INC/HEADER.INC	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/INC/HEADER.INC	2025-07-26 10:47:33
+@@ -40,6 +40,11 @@ totaltime	=	0
+ ; Constants
+ 	include	INC\vars.inc
+ 
++; Rumble controller macros
++	IFNE	RUMBLE
++	include	INC\RMBLMACS.INC
++	ENDC
++
+ ; System defines
+ 	include	INC\sfcregs.inc	; SNES registers
+ 	include INC\mregs.inc	; MARIO chip registers
+diff -Nurp ./ultrastarfox/SF/INC/KALCS.INC ./miyu-and-fay-in-star-fox/SF/INC/KALCS.INC
+--- ./ultrastarfox/SF/INC/KALCS.INC	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/INC/KALCS.INC	2025-07-26 10:47:33
+@@ -160,6 +160,7 @@ __totpallines	=	0
+ 	defpac	bgetestpac,7
+ 	defpac	spritepal,5
+ 	defpac	bg2eppac,9
++	defpac	bgmsubgpac,7
+ ; add new palettes before this line
+ ; the order of this list must match DATA\COL\PC.BAT!
+ bgfoxpac	equ	bg2bpac
+diff -Nurp ./ultrastarfox/SF/INC/MACROS.INC ./miyu-and-fay-in-star-fox/SF/INC/MACROS.INC
+--- ./ultrastarfox/SF/INC/MACROS.INC	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/INC/MACROS.INC	2025-07-26 10:47:33
+@@ -1,4 +1,9 @@
+ ;------------------------------------------------------------------------
++printerror	macro	[errormsg]
++	printf	"%q%f%q (%l) %01%31Error: {errormsg}%00%n"
++	error+
++	ENDM
++;------------------------------------------------------------------------
+ 	IFD		_ARGSFX
+ ; Rotates a string left by offset for ARGSFX
+ rols	MACRO	[string,offset]
+@@ -168,6 +173,65 @@ marioprintdec	MACRO	[xpos,ypos,var]
+ 
+ ;------------------------------------------------------------------------
+ 
++; Sets up RNG seed for random_l
++setuprng	MACRO
++	IFEQ	rngmode-2
++	savemode
++	ai16
++	; seeding
++	LDA #$026c ; seed, can be anything except 0
++	STA rand
++	LDY $1D0 ; get uninitialized startup ram garbage, ram is always random on power-on
++	TYA
++	EOR	rand	; XOR rand against said garbage
++	STA	rand
++	LDA	rand
++	beq	.zero ; check if Y and rand were equal (highly unlikely), seed can't be zero or the RNG routine will do nothing
++	bne	.randomseeddone
++.zero
++	LDA	#$026c ; backup seed
++	STA	rand
++.randomseeddone
++	returnmode
++	ELSEIF ; rngmode == 0 || 1
++	savemode
++	ai8
++	lda	#$3a
++	sta	rand
++	lda	#$a7
++	sta	rand+1
++	lda	#$55
++	sta	rand+2
++	lda	#$7f
++	sta	rand+3
++	returnmode
++	ENDC
++	ENDM
++
++xorshiftrng	MACRO
++	; Code taken from https://codebase64.org/doku.php?id=base:16bit_xorshift_random_generator
++	; should be run with A in 8-bit mode
++	; saves 2 bytes of zp vs the original routine
++	; in C, what this does is:
++	;	rand ^= rand << 7;
++	;	rand ^= rand >> 9;
++	;	rand ^= rand << 8;
++	;	return rand;
++	LDA rand+1
++	LSR a
++	LDA rand
++	ROR a
++	EOR rand+1
++	STA rand+1 ; high part of x ^= x << 7 done
++	ROR a	; A has now x >> 9 and high bit comes from low byte
++	EOR rand
++	STA rand  ; x ^= x >> 9 and the low part of x ^= x << 7 done
++	EOR rand+1 
++	STA rand+1 ; x ^= x << 8 done
++	ENDM
++
++;------------------------------------------------------------------------
++
+ ; Checks for space remaining
+ 
+ chkmemoryfull	macro	[symbol,name,extramsg]
+@@ -5851,10 +5915,16 @@ fast	MACRO ; Run MARIO chip @ 21.4mhz (no clock divide
+ 	IFEQ	LONGA
+ 	lda	#1
+ 	sta	m_clsr
++	; Enable fast multiplication mode (MS1) and disable GSU IRQs
++	lda	#cfgr_ms1+cfgr_noirq
++	sta	m_cfgr
+ 	ELSEIF
+ 	a8
+ 	lda	#1
+ 	sta	m_clsr
++	; Enable fast multiplication mode (MS1) and disable GSU IRQs
++	lda	#cfgr_ms1+cfgr_noirq
++	sta	m_cfgr
+ 	a16
+ 	ENDC
+ 	ENDM
+@@ -6114,4 +6184,50 @@ inccgx2	MACRO	[filepath,NUMCHRS]
+ inccgx2	MACRO	[filepath,NUMCHRS]
+ 	inccol	{filepath},0,{NUMCHRS}/2
+ 	ENDM
+-;---------------------------------------------------------------
+\ No newline at end of file
++;---------------------------------------------------------------
++scrambleandbaseexit	macro	[route]
++	IFEQ	noscrambleseq ; if noscrambleseq is off
++
++	meters_off
++	initlevel	1_1i,nofadenostage,mstarwipe_circle
++	mapwait	100
++	setvar.b	scramble,50
++
++	mapjsr	map1_1a ; Jump to SCRAMBLE map
++
++	setfadedown
++	waitfadefin
++
++	ENDC
++
++	mapcode_jsl	initblack_l
++	mapwait	1
++
++	meters_on	trans
++
++	setvar	keeppstrat,1
++	setbg	{route}_1c
++	initbg
++	wipein	mscramwipe_circle
++	mapwait	medpspeed*2
++	setfadeup	quick
++
++	mapplayermode   ExitBase
++	mapobj		0000,0000,0000,0000,mybase_1,nocoll_Istrat	
++	mapobj		0000,0000,0000,0000,mybase_0,nocoll_Istrat	
++	mapobj		0000,-27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
++	setalvar	sbyte1,17
++	mapobj		0000,-27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
++	setalvar	sbyte1,17+(1000/pexitbasespeed)
++
++	mapobj		0000,27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
++	setalvar	sbyte1,17
++	mapobj		0000,27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
++	setalvar	sbyte1,17+(1000/pexitbasespeed)
++
++	pathobj	0000,3000,3000,3000,nullshape,matemsg,10,10
++	pathobj	0000,100,-90,1400,friendship_4,falco_lv1,10,10
++	pathobj	0000,-80,-140,1200,friendship_4,frog_lv1,10,10
++	pathobj	0000,-100,-90,1400,friendship_4,falco_lv1,10,10
++	pathobj	0000,80,-140,1200,friendship_4,frog_lv1,10,10
++	endm
+\ No newline at end of file
+diff -Nurp ./ultrastarfox/SF/INC/MAPMACS.INC ./miyu-and-fay-in-star-fox/SF/INC/MAPMACS.INC
+--- ./ultrastarfox/SF/INC/MAPMACS.INC	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/INC/MAPMACS.INC	2025-07-26 10:47:33
+@@ -1150,21 +1150,33 @@ CLfriendmsg	MACRO
+ 
+ ;------------------------------------------------------------------
+ CLfriendmsg	MACRO
++; shield low
+ fmes10_frog	=	87
+ fmes10_cock	=	85
+ fmes10_bunny	=	86
++fmes10_miyu	=	146
++fmes10_fay	=	150
+ 
++; shield med
+ fmes20_frog	=	84
+ fmes20_cock	=	82
+ fmes20_bunny	=	83
++fmes20_miyu	=	147
++fmes20_fay	=	151
+ 
++;shield 3/4
+ fmes30_frog	=	81
+ fmes30_cock	=	79
+ fmes30_bunny	=	80
++fmes30_miyu	=	148
++fmes30_fay	=	152
+ 
++; shield full
+ fmes40_frog	=	77
+ fmes40_cock	=	75
+ fmes40_bunny	=	76
++fmes40_miyu	=	149
++fmes40_fay	=	153
+ 
+ 
+ 	start_65816
+diff -Nurp ./ultrastarfox/SF/INC/MREGS.INC ./miyu-and-fay-in-star-fox/SF/INC/MREGS.INC
+--- ./ultrastarfox/SF/INC/MREGS.INC	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/INC/MREGS.INC	2025-07-26 10:47:33
+@@ -37,3 +37,6 @@ m_cbr		equ	$303E ; Cache Base Register (R)
+ m_un3d		equ	$303D ; Unused
+ m_cbr		equ	$303E ; Cache Base Register (R)
+ 
++; MARIO chip Config Register (CFGR, $3037) bits
++cfgr_noirq	equ	%10000000	; IRQs DISABLED
++cfgr_ms1		equ	%00100000	; HighSpeed Multiply ON (MS1)
+\ No newline at end of file
+diff -Nurp ./ultrastarfox/SF/INC/RMBLMACS.INC ./miyu-and-fay-in-star-fox/SF/INC/RMBLMACS.INC
+--- ./ultrastarfox/SF/INC/RMBLMACS.INC	1969-12-31 19:00:00
++++ ./miyu-and-fay-in-star-fox/SF/INC/RMBLMACS.INC	2025-07-26 10:47:33
+@@ -0,0 +1,76 @@
++; Rumble Controller Macros
++
++; Queue up rumble command to be executed on the next NMI/IRQ cycle
++queue_rumble	MACRO	[left,right,time]
++	ifne	longa
++	printerror	<%m: A must be in 8-bit mode!>
++	endc
++
++; Each nybble controls the strength of each motor.
++; <--RIGHT--> <---LEFT-->
++; R3 R2 R1 R0 L3 L2 L1 L0
++
++	lda	#({right}<<4)+({left})
++	sta	rumble_cmd
++
++	lda	#{time}
++	sta	rumble_time
++	ENDM
++	
++; Same as above, but correct DBR for strat/path interpreter
++s_queue_rumble	MACRO	[left,right,time]
++	ifne	longa
++	printerror	<%m: A must be in 8-bit mode!>
++	endc
++	PHB
++	IFNE	FASTROM
++	lda	#$80
++	pha
++	plb
++	ELSEIF
++	lda	#0
++	pha
++	plb
++	ENDC
++	queue_rumble	{left},{right},{time}
++	plb
++	ENDM
++
++; Same as above, but for PATHs
++P_QUEUERUMBLE	MACRO	[left,right,time]
++	P_START65816
++	s_queue_rumble	{left},{right},{time}
++	P_END65816
++	ENDM
++
++; Uses a table for sequenced rumbles
++s_queue_rumble_table	MACRO	[table]
++	ifne	longa
++	printerror	<%m: A must be in 8-bit mode!>
++	endc
++	phx
++	lda #1
++	sta rumble_index
++	ldx	#0
++.loop\@
++	lda.l {table},x
++	cmp #$19
++	beq	.done2\@
++	sta rumble_table,x
++	inx
++	cpx #40
++	bmi	.loop\@
++	bra	.done\@
++.done2\@
++	sta rumble_table,x
++.done\@
++	plx
++	ENDM
++
++; Terminate rumble sequence
++s_end_rumble_table	MACRO
++	ifne	longa
++	printerror	<%m: A must be in 8-bit mode!>
++	endc
++	stz	rumble_index
++	ENDM
+\ No newline at end of file
+diff -Nurp ./ultrastarfox/SF/INC/SFCREGS.INC ./miyu-and-fay-in-star-fox/SF/INC/SFCREGS.INC
+--- ./ultrastarfox/SF/INC/SFCREGS.INC	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/INC/SFCREGS.INC	2025-07-26 10:47:33
+@@ -75,6 +75,9 @@ wmaddh	equ	$2183
+ wmaddm	equ	$2182
+ wmaddh	equ	$2183
+ 
++JOYSER0 equ $4016   ; old-style joypad 1
++JOYSER1 equ $4017   ; old-style joypad 2
++
+ nmitimen	equ	$4200
+ wrio	equ	$4201
+ wrmpya	equ	$4202
+diff -Nurp ./ultrastarfox/SF/INC/VARS.INC ./miyu-and-fay-in-star-fox/SF/INC/VARS.INC
+--- ./ultrastarfox/SF/INC/VARS.INC	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/INC/VARS.INC	2025-07-26 10:47:33
+@@ -180,17 +180,23 @@ friend_frog		equ	3
+ friend_rabbit 	equ	1
+ friend_falcon 	equ	2
+ friend_frog		equ	3
+-friend_pepper 	equ	4
+-friend_andross 	equ	5
+-friend_anyone 	equ	6
++friend_miyu		equ	4
++friend_fay		equ	5
++friend_robfx	equ	6
++friend_pepper 	equ	7
++friend_andross 	equ	8
++friend_anyone 	equ	9
+ 
+ friend_fox3		equ	0+128
+ friend_rabbit3 	equ	1+128
+ friend_falcon3 	equ	2+128
+ friend_frog3	equ	3+128
+-friend_pepper3 	equ	4+128
+-friend_andross3 equ	5+128
+-friend_anyone3 	equ	6+128
++friend_miyu3	equ	4+128
++friend_fay3		equ	5+128
++friend_robfx3	equ	6+128
++friend_pepper3 	equ	7+128
++friend_andross3 equ	8+128
++friend_anyone3 	equ	9+128
+ 
+ 
+ ; sprites.asm
+diff -Nurp ./ultrastarfox/SF/MAKEFILE ./miyu-and-fay-in-star-fox/SF/MAKEFILE
+--- ./ultrastarfox/SF/MAKEFILE	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/MAKEFILE	2025-07-26 10:47:33
+@@ -4,12 +4,12 @@ ASM=ARGSFXX
+ 
+ # Assembler
+ ASM=ARGSFXX
+-# Setup heap for SASM and export symbols to symbols.txt
+-ASMFLAGS= -e__heap=14400 -xsymbols.txt
++# Setup heap for SASM and export symbols for ARGSFX
++ASMFLAGS= -e__heap=14400 -z
+ 
+ # Linker
+ LINK=ARGLINK
+-LOPTS=-b30 -h1024 -t7d
++LOPTS=-b30 -h1024 -t7d -z
+ 
+ # ROM Extender
+ EXTEND=EXTEND
+@@ -30,6 +30,9 @@ FONT=FON
+ # Font Converter
+ FONT=FON
+ 
++# Argonaut .MAP File Decoder
++MAPDEC=MAPDEC
++
+ #!! If you add/remove a cgx/scr in these two lists, make sure to add/remove the corresponding file.
+ 
+ # Crunched tilesets
+@@ -40,7 +43,7 @@ CGXFILES= DATA\1-3-B.CCR DATA\2-3B.CCR DATA\3-4.CCR DA
+  DATA\2-2.CCR DATA\3-2.CCR DATA\B-HOLE.CCR DATA\CONT-2-G.CCR DATA\CP.CCR DATA\E-TEST2.CCR \
+  DATA\FOX-G.CCR DATA\LSB.CCR DATA\OBJ-1-G.CCR DATA\OBJ-4.CCR DATA\OOPS.CCR DATA\STARS.CCR \
+  DATA\TI-3-US.CCR DATA\2-3.CCR DATA\3-3.CCR DATA\B-M.CCR DATA\CONT-2.CCR DATA\DEMO.CCR \
+- DATA\FOX.CCR DATA\M.CCR DATA\OBJ-1.CCR DATA\T-SP.CCR DATA\TI-3.CCR
++ DATA\FOX.CCR DATA\M.CCR DATA\OBJ-1.CCR DATA\T-SP.CCR DATA\TI-3.CCR DATA\MSUBG.CCR
+ 
+ # Crunched tilemaps
+ SCRFILES= DATA\1-3-B.PCR DATA\2-3.PCR DATA\3-2.PCR DATA\B-HOLE.PCR DATA\CONT.PCR DATA\DOG.PCR \
+@@ -49,7 +52,7 @@ SCRFILES= DATA\1-3-B.PCR DATA\2-3.PCR DATA\3-2.PCR DAT
+  DATA\T-SS.PCR DATA\TI-3.PCR DATA\1-4.PCR DATA\2-3H.PCR DATA\3-4.PCR DATA\CONT-2-G.PCR \
+  DATA\CP.PCR DATA\E-TEST2.PCR DATA\FS-NI.PCR DATA\M.PCR DATA\OOPS.PCR DATA\STARS.PCR DATA\T-ST.PCR \
+  DATA\2-2.PCR DATA\2-4.PCR DATA\AND.PCR DATA\CONT-2.PCR DATA\DEMO.PCR DATA\HOLE-A.PCR DATA\MAP.PCR \
+- DATA\T-F-S.PCR DATA\TI-3-G.PCR
++ DATA\T-F-S.PCR DATA\TI-3-G.PCR DATA\MSUBG.PCR
+ 
+ #!! If you add/remove a font, make sure to add/remove the corresponding file.
+ 
+@@ -64,7 +67,7 @@ ALLFILES= BANK\BANK0.SOB BANK\BANK1.SOB BANK\BANK2.SOB
+ 
+ # Recipe to assemble a .ASM file and create a linkable .SOB file
+ .asm.sob:
+-	@$(ASM) $(NOANSI) -m30 $(ASMFLAGS) $< -v$*.SOB
++	@$(ASM) $(NOANSI) -eFAST=$(fast) -m30 $(ASMFLAGS) $< -v$*.SOB
+ 
+ # Recipes to crunch graphics
+ .cgx.ccr:
+@@ -82,6 +85,7 @@ setup:
+ 
+ setup:
+ 	@del BANK\*.SOB
++	@del BANK\*.MAP
+ 
+ # Recipe to crunch palettes
+ allcols:
+@@ -115,13 +119,16 @@ sf.sfc: $(ALLFILES)
+ 	@$(LINK) $(LOPTS) -o$@ @flist
+ 	@$(EXTEND) $@ $(EXTOPS)
+ 	@$(CHECK) $(COPTS) $@
+-	@del msgs.txt
+ 
+ # Actions to perform when assembly is completed
+ donebld:
++	@del msgs.txt
+ 	@del BANK\*.SOB
++	@del BANK\*.MAP
+ 	@copy sf.sfc ..\SF.SFC
+ 	@del sf.sfc
++	@$(MAPDEC) SF.MAP SYMBOLS.TXT
++	@del SF.MAP
+ 	@copy symbols.txt ..\symbols.txt
+ 	@del symbols.txt
+ 	@copy BANKS.CSV ..\BANKS.CSV
+@@ -130,6 +137,7 @@ clean:
+ # Clean everything up
+ clean:
+ 	@del BANK\*.SOB
++	@del BANK\*.MAP
+ 	@del MSPRITES\*.BIN
+ 	@del DATA\COL\ALLCOLS.COL
+ 	@del DATA\COL\*.PAC
+diff -Nurp ./ultrastarfox/SF/MAPS/CL_BRIDG.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/CL_BRIDG.ASM
+--- ./ultrastarfox/SF/MAPS/CL_BRIDG.ASM	2025-07-26 11:04:37
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/CL_BRIDG.ASM	2025-07-26 10:47:33
+@@ -9,7 +9,7 @@ cl_bridge
+ 	mapwait	2900
+ 
+ 
+-friendwait	=	medpspeed*30
++friendwait	=	medpspeed	;was *30
+ 
+ 	setvar.n	stageclear,1
+ 	mapmsg	1
+@@ -25,12 +25,20 @@ friendwait	=	medpspeed*30
+ 	mapobj	friendwait,1000,-300,50,myship_4,clshipBRIDGEa_Istrat
+ 	clfriendmsg	bunny
+ .nb
+-
+ 	mapjmpfrienddead	cock,.nc
+ 	mapobj	friendwait,00000,0,-2000,myship_4,clshipBRIDGEc_Istrat
+ 	clfriendmsg	cock
+ .nc
++	mapjmpfrienddead	miyu,.nm
++	mapobj	friendwait,-1000,-300,50,myship_4,clshipBRIDGEe_Istrat
++	clfriendmsg	miyu
+ 
++.nm
++	mapjmpfrienddead	fay,.nfay
++	mapobj	friendwait,1000,-300,50,myship_4,clshipBRIDGEd_Istrat
++	clfriendmsg	fay
++
++.nfay
+ 
+ 	mapwait	5000
+ 	setvar.b	clb2,0
+diff -Nurp ./ultrastarfox/SF/MAPS/CL_CHASE.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/CL_CHASE.ASM
+--- ./ultrastarfox/SF/MAPS/CL_CHASE.ASM	2025-07-26 11:04:37
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/CL_CHASE.ASM	2025-07-26 10:47:33
+@@ -30,6 +30,16 @@ friendwait	=	medpspeed*30
+ 	mapobj	friendwait,00000,0,-2000,myship_4,clshipCHASEc_Istrat
+ 	clfriendmsg	cock
+ .nc
++	mapjmpfrienddead	miyu,.nm
++	mapobj	friendwait,1000,-300,50,myship_4,clshipCHASEd_Istrat
++	clfriendmsg	miyu
++
++.nm
++	mapjmpfrienddead	fay,.nfay
++	mapobj	friendwait,-2000,-300,50,myship_4,clshipCHASEe_Istrat
++	clfriendmsg	fay
++
++.nfay
+ 	mapwait	7000
+ 
+ 	setvar.b	clb2,0
+diff -Nurp ./ultrastarfox/SF/MAPS/CL_DIVE.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/CL_DIVE.ASM
+--- ./ultrastarfox/SF/MAPS/CL_DIVE.ASM	2025-07-26 11:04:37
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/CL_DIVE.ASM	2025-07-26 10:47:33
+@@ -25,6 +25,14 @@ friendwait	=	medpspeed*30
+ 	clfriendmsg	cock
+ 	mapobj	friendwait,00000,space_viewcy-40,-50,myship_4,clshipDIVEc_Istrat
+ .nc
++	mapjmpfrienddead	miyu,.nm
++	clfriendmsg	miyu
++	mapobj	friendwait,0200,space_viewcy,50,myship_4,clshipDIVEe_Istrat
++.nm
++	mapjmpfrienddead	fay,.nfay
++	clfriendmsg	fay
++	mapobj	friendwait,-200,space_viewcy,50,myship_4,clshipDIVEd_Istrat
++.nfay
+ 
+ 	mapwait	5000
+ 	setvar.b	clb2,0
+diff -Nurp ./ultrastarfox/SF/MAPS/CL_EARTH.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/CL_EARTH.ASM
+--- ./ultrastarfox/SF/MAPS/CL_EARTH.ASM	2025-07-26 11:04:37
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/CL_EARTH.ASM	2025-07-26 10:47:33
+@@ -9,7 +9,7 @@ cl_earth
+ 	mapwait	3300
+ 
+ 
+-friendwait	=	medpspeed*30
++friendwait	=	medpspeed ; was *30
+ 
+ 	setvar.n	stageclear,1
+ 	mapmsg	1
+@@ -24,11 +24,18 @@ friendwait	=	medpspeed*30
+ 	mapobj	friendwait,-2000,-50,50,myship_4,clshipEARTHa_Istrat
+ 	clfriendmsg	bunny
+ .nb
++	mapjmpfrienddead	miyu,.nm
++	mapobj	friendwait,02000,-400,-1000,myship_4,clshipEARTHe_Istrat
++	clfriendmsg	miyu
++.nm
++	mapjmpfrienddead	fay,.nfay
++	mapobj	friendwait,-2000,-400,-1000,myship_4,clshipEARTHd_Istrat
++	clfriendmsg	fay
++.nfay
+ 	mapjmpfrienddead	cock,.nc
+ 	mapobj	friendwait,00000,1000,-700,myship_4,clshipEARTHc_Istrat
+ 	clfriendmsg	cock
+ .nc
+-
+ 
+ 	mapwait	5000
+ 
+diff -Nurp ./ultrastarfox/SF/MAPS/CL_GND.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/CL_GND.ASM
+--- ./ultrastarfox/SF/MAPS/CL_GND.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/CL_GND.ASM	2025-07-26 10:47:33
+@@ -27,6 +27,14 @@ friendwait	=	medpspeed*30
+ 	clfriendmsg	cock
+ 	mapobj	friendwait,0000,-500,-300,myship_4,clshipGNDc_Istrat
+ .nc
++	mapjmpfrienddead	miyu,.nm
++	clfriendmsg	miyu
++	mapobj	friendwait,0500,-500,-300,myship_4,clshipGNDd_Istrat
++.nm
++	mapjmpfrienddead	fay,.nfay
++	clfriendmsg	fay
++	mapobj	friendwait,-500,-500,-300,myship_4,clshipGNDe_Istrat
++.nfay
+ 
+ 	mapwait	3800
+ 
+diff -Nurp ./ultrastarfox/SF/MAPS/CL_SHIP.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/CL_SHIP.ASM
+--- ./ultrastarfox/SF/MAPS/CL_SHIP.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/CL_SHIP.ASM	2025-07-26 10:47:33
+@@ -45,6 +45,14 @@ friendwait	=	medpspeed*30
+ 	mapobj	friendwait,00000,200,-500,myship_4,clshipSHIPc_Istrat		; 200,-1000
+ 	clfriendmsg	cock
+ .nc
++	mapjmpfrienddead	miyu,.nm
++	mapobj	friendwait,-100,200,-2000,myship_4,clshipSHIPd_Istrat
++	clfriendmsg	miyu
++.nm
++	mapjmpfrienddead	fay,.nfay
++	mapobj	friendwait,0100,200,-2000,myship_4,clshipSHIPe_Istrat
++	clfriendmsg	fay
++.nfay
+ 
+ 	
+ 
+diff -Nurp ./ultrastarfox/SF/MAPS/CL_TURN.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/CL_TURN.ASM
+--- ./ultrastarfox/SF/MAPS/CL_TURN.ASM	2025-07-26 11:04:37
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/CL_TURN.ASM	2025-07-26 10:47:33
+@@ -30,6 +30,16 @@ friendwait	=	medpspeed*30
+ 	mapobj	friendwait,00000,space_viewcy+400,-3000,myship_4,clshipTURNc_Istrat
+ 	clfriendmsg	cock
+ .nc
++	mapjmpfrienddead	miyu,.nm
++	mapobj	friendwait,700,space_viewcy,50,myship_4,clshipTURNe_Istrat
++	clfriendmsg	miyu
++
++.nm
++	mapjmpfrienddead	fay,.nfay
++	mapobj	friendwait,-500,space_viewcy,50,myship_4,clshipTURNd_Istrat
++	clfriendmsg	fay
++
++.nfay
+ 	mapwait	4000
+ 	mapjsr		clfish
+ 	mapwait	4000
+diff -Nurp ./ultrastarfox/SF/MAPS/CL_UNDER.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/CL_UNDER.ASM
+--- ./ultrastarfox/SF/MAPS/CL_UNDER.ASM	2025-07-26 11:04:37
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/CL_UNDER.ASM	2025-07-26 10:47:33
+@@ -29,7 +29,15 @@ friendwait	=	medpspeed*30
+ 	clfriendmsg	cock
+ 	mapobj	friendwait,00000,0,-2000,myship_4,clshipUNDERc_Istrat
+ .nc
++	mapjmpfrienddead	miyu,.nm
++	clfriendmsg	miyu
++	mapobj	friendwait,1000,-300,50,myship_4,clshipUNDERd_Istrat
++.nm
++	mapjmpfrienddead	fay,.nfay
++	clfriendmsg	fay
++	mapobj	friendwait,-2000,-300,50,myship_4,clshipUNDERe_Istrat
+ 
++.nfay
+ 	mapwait	3800
+ 
+ 	setvar.b	clb2,0
+diff -Nurp ./ultrastarfox/SF/MAPS/CL_WARP.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/CL_WARP.ASM
+--- ./ultrastarfox/SF/MAPS/CL_WARP.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/CL_WARP.ASM	2025-07-26 10:47:33
+@@ -26,6 +26,14 @@ friendwait	=	medpspeed*30
+ 	mapobj	friendwait,00000,space_viewcy-40,-3000,myship_4,clshipWARPc_Istrat
+ 	clfriendmsg	cock
+ .nc
++	mapjmpfrienddead	miyu,.nm
++	mapobj	friendwait,0300,space_viewcy,100,myship_4,clshipWARPe_Istrat
++	clfriendmsg	miyu
++.nm
++	mapjmpfrienddead	fay,.nfay
++	mapobj	friendwait,-300,space_viewcy,100,myship_4,clshipWARPd_Istrat
++	clfriendmsg	fay
++.nfay
+ 
+ 	mapwait	500
+ 	mapmother	10000,0000,0,4000,mother1,mother1_istrat,mother_1
+@@ -40,6 +48,11 @@ friendwait	=	medpspeed*30
+ 	maprem		mother1
+ 	mapwait		9000
+ 	setvar.n	clb2,1
++	IFNE	RUMBLE
++	start_65816
++	s_end_rumble_table	; kill hyperjump rumble
++	end_65816
++	ENDC
+ 	maprts
+ 
+ 
+diff -Nurp ./ultrastarfox/SF/MAPS/DM_END.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/DM_END.ASM
+--- ./ultrastarfox/SF/MAPS/DM_END.ASM	2025-07-26 11:04:37
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/DM_END.ASM	2025-07-26 10:47:33
+@@ -70,7 +70,20 @@ fdeadmes_frog	=	60
+ 	mapgoto	.dc
+ .nc1
+ .dc
++	mapjmpfrienddead	miyu,.nm1
++	mapwait	friendwait
++	mapmsg	184
++	mapgoto	.dm
++.nm1
++.dm
++	mapjmpfrienddead	fay,.nfay1
++	mapwait	friendwait
++	mapmsg	185
++	mapgoto	.dfay
++.nfay1
++.dfay
+ 
++	mapwait	4000
+ 
+ .endwait
+ 	mapif	chkstratdone1,.endcont
+@@ -94,39 +107,56 @@ fdeadmes_frog	=	60
+ 
+ 
+ 	mapobj	0000,0000,space_viewcy,0000,my_demo,pshipoutofLB3_Istrat
+-	setalvar	sbyte2,45	; 50
++	setalvar	sbyte2,60 ;45	; 50
+ 	mapobj	0000,0000,space_viewcy,5000,nullshape,viewoutofLB3_Istrat
+ 
+ 	mapjmpfrienddead	cock,.nc,nowait
+ 	mapobj	0000,0000,space_viewcy-100,0000,my_demo,shipoutofLB3_Istrat
+-	setalvar.w	sword1,0
+-	setalvar.w	sword2,-100
++	setalvar.w	sword1,0	; x
++	setalvar.w	sword2,-100	; y
+ 	setalvar.w	ptr,600
+-	setalvar	sbyte2,10
++	setalvar	sbyte2,10	; wait time
+ .nc
+ 	mapjmpfrienddead	frog,.nf,nowait
+ 	mapobj	0000,70,space_viewcy+70,200,my_demo,shipoutofLB3_Istrat
+ 	setalvar	rotz,deg45
+-	setalvar.w	sword1,-100
+-	setalvar.w	sword2,50
++	setalvar.w	sword1,-100	; x
++	setalvar.w	sword2,50	; y
+ 	setalvar.w	ptr,400
+-	setalvar	sbyte2,20
++	setalvar	sbyte2,20	; wait time
+ .nf
+ 	mapjmpfrienddead	bunny,.nb,nowait
+ 	mapobj	0000,-70,space_viewcy+70,400,my_demo,shipoutofLB3_Istrat
+ 	setalvar	rotz,-deg45
+-	setalvar.w	sword1,100
+-	setalvar.w	sword2,75
++	setalvar.w	sword1,100	; x
++	setalvar.w	sword2,75	; y
+ 	setalvar.w	ptr,200
+-	setalvar	sbyte2,30
++	setalvar	sbyte2,30	; wait time
+ .nb
++	mapjmpfrienddead	miyu,.nm,nowait
++	mapobj	0000,70,space_viewcy+70,600,my_demo,shipoutofLB3_Istrat
++	setalvar	rotz,deg45
++	setalvar.w	sword1,-100	; x
++	setalvar.w	sword2,100	; y
++	setalvar.w	ptr,200
++	setalvar	sbyte2,40	; wait time
++.nm
++	mapjmpfrienddead	fay,.nfay,nowait
++	mapobj	0000,-70,space_viewcy+70,800,my_demo,shipoutofLB3_Istrat
++	setalvar	rotz,-deg45
++	setalvar.w	sword1,100	; x
++	setalvar.w	sword2,-100	; y
++	setalvar.w	ptr,100
++	setalvar	sbyte2,50	; wait time
++.nfay
++
+ 	mapwait	1000
+ 
+ 	setfadeup
+ 	mapwaitfade
+ 
+ 
+-.endwait1	mapif	chkstratdone1,.endcont1
++.endwait1	mapif	chkstratdone1,.endcont1	;done1 or done2?
+ 	mapwait	1
+    	mapgoto	.endwait1
+ .endcont1
+diff -Nurp ./ultrastarfox/SF/MAPS/LEVEL1_1.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/LEVEL1_1.ASM
+--- ./ultrastarfox/SF/MAPS/LEVEL1_1.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/LEVEL1_1.ASM	2025-07-26 10:47:33
+@@ -1,43 +1,9 @@ level1_1
+ ; 1-1 Corneria 1
+ level1_1
+-	IFEQ	noscrambleseq ; if noscrambleseq is off
++	scrambleandbaseexit	1
+ 
+-	meters_off
+-	initlevel	1_1i,nofadenostage,mstarwipe_circle
+-	mapwait	100
+-	setvar.b	scramble,50
++	IFEQ	0 ; commented out to test clear,chase
+ 
+-	mapjsr	map1_1a ; Jump to SCRAMBLE map
+-
+-	setfadedown
+-	waitfadefin
+-
+-	ENDC
+-
+-	mapcode_jsl	initblack_l
+-	mapwait	1
+-
+-	meters_on	trans
+-
+-	setvar	keeppstrat,1
+-	setbg	1_1c
+-	initbg
+-	wipein	mscramwipe_circle
+-	mapwait	medpspeed*2
+-	setfadeup	quick
+-
+-	mapplayermode   ExitBase
+-	mapobj		0000,0000,0000,0000,mybase_1,nocoll_Istrat	
+-	mapobj		0000,0000,0000,0000,mybase_0,nocoll_Istrat	
+-	mapobj		0000,-27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
+-	setalvar	sbyte1,17
+-	mapobj		0000,-27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
+-	setalvar	sbyte1,17+(1000/pexitbasespeed)
+-
+-	pathobj	0000,3000,3000,3000,nullshape,matemsg,10,10
+-	pathobj	0000,100,-90,1400,friendship_4,falco_lv1,10,10
+-	pathobj	0000,-80,-140,1200,friendship_4,frog_lv1,10,10
+-
+ 	mapobj	0000,-600,0000,2000,BU_1,HARD180YR_ISTRAT
+ 	mapobj	0000,0600,0000,2000,BU_1,HARD180YR_ISTRAT
+ 
+@@ -64,6 +30,60 @@ level1_1
+ 	mapobj	0500,1000,0000,8000,BU_6,HARD180YR_ISTRAT
+ 	mapobj	1000,-0800,0000,10000,BU_5,HARD180YR_ISTRAT
+ 	mapobj	1000,-1200,0000,12000,BU_4,HARD180YR_ISTRAT
++	ENDC
++
++	IFEQ	1 ; chase test
++
++	setrestart
++
++.chaseloop
++;	pathobj	0000,-750,-400,0000,friendship_4,chase6_1,10,10	
++;	pathcspecial	2000,-720,-400,0000,zaco_a,chase6_2,10,10	
++
++	mapwait	4000
++	mapwait	4000
++	mapwait	4000
++
++	pathobj	0000,900,-60,0000,friendship_4,chase4_1,200,10
++	pathcspecial	0000,900,-60,0000,zaco_b,chase4_2,200,10
++	pathcspecial	1000,900,-60,0000,zaco_b,chase4_3,200,10
++
++;	pathobj	0000,-750,-400,0000,friendship_4,chase6_1,10,10	
++;	pathcspecial	2000,-720,-400,0000,zaco_a,chase6_2,10,10	
++
++	pathobj	0000,900,-60,0000,friendship_4,chase4_1,200,10
++	pathcspecial	0000,900,-60,0000,zaco_b,chase4_2,200,10
++	pathcspecial	1000,900,-60,0000,zaco_b,chase4_3,200,10
++
++	mapwait	4000
++	mapwait	4000
++	mapwait	4000
++
++;	pathobj	0000,-750,-400,0000,friendship_4,chase6_1,10,10	
++;	pathcspecial	2000,-720,-400,0000,zaco_a,chase6_2,10,10	
++
++	pathobj	0000,900,-60,0000,friendship_4,chase4_1,200,10
++	pathcspecial	0000,900,-60,0000,zaco_b,chase4_2,200,10
++	pathcspecial	1000,900,-60,0000,zaco_b,chase4_3,200,10
++
++	mapwait	4000
++	mapwait	4000
++	mapwait	4000
++
++;	pathobj	0000,-750,-400,0000,friendship_4,chase6_1,10,10	
++;	pathcspecial	2000,-720,-400,0000,zaco_a,chase6_2,10,10	
++
++	pathobj	0000,900,-60,0000,friendship_4,chase4_1,200,10
++	pathcspecial	0000,900,-60,0000,zaco_b,chase4_2,200,10
++	pathcspecial	1000,900,-60,0000,zaco_b,chase4_3,200,10
++
++	mapwait	4000
++	mapwait	4000
++	mapwait	4000 ; remove when done 
++
++	mapgoto	.chaseloop
++
++	ENDC
+ 
+ 	mapjsr	cl_ground ; Clear type
+ 	mapend
+diff -Nurp ./ultrastarfox/SF/MAPS/LEVEL2_1.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/LEVEL2_1.ASM
+--- ./ultrastarfox/SF/MAPS/LEVEL2_1.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/LEVEL2_1.ASM	2025-07-26 10:47:33
+@@ -1,42 +1,6 @@ level2_1
+ ; 2-1 Corneria 2
+ level2_1
+-	IFEQ	noscrambleseq ; if noscrambleseq is off
+-
+-	meters_off
+-	initlevel	1_1i,nofadenostage,mstarwipe_circle
+-	mapwait	100
+-	setvar.b	scramble,50
+-
+-	mapjsr	map1_1a ; Jump to SCRAMBLE map
+-
+-	setfadedown
+-	waitfadefin
+-
+-	ENDC
+-
+-	mapcode_jsl	initblack_l
+-	mapwait	1
+-
+-	meters_on	trans
+-
+-	setvar	keeppstrat,1
+-	setbg	1_1c
+-	initbg
+-	wipein	mscramwipe_circle
+-	mapwait	medpspeed*2
+-	setfadeup	quick
+-
+-	mapplayermode   ExitBase
+-	mapobj		0000,0000,0000,0000,mybase_1,nocoll_Istrat	
+-	mapobj		0000,0000,0000,0000,mybase_0,nocoll_Istrat	
+-	mapobj		0000,-27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
+-	setalvar	sbyte1,17
+-	mapobj		0000,-27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
+-	setalvar	sbyte1,17+(1000/pexitbasespeed)
+-
+-	pathobj	0000,3000,3000,3000,nullshape,matemsg,10,10
+-	pathobj	0000,100,-90,1400,friendship_4,falco_lv1,10,10
+-	pathobj	0000,-80,-140,1200,friendship_4,frog_lv1,10,10
++	scrambleandbaseexit	1
+ 
+ 	mapobj	0000,-600,0000,2000,BU_1,HARD180YR_ISTRAT
+ 	mapobj	0000,0600,0000,2000,BU_1,HARD180YR_ISTRAT
+diff -Nurp ./ultrastarfox/SF/MAPS/LEVEL3_1.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/LEVEL3_1.ASM
+--- ./ultrastarfox/SF/MAPS/LEVEL3_1.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/LEVEL3_1.ASM	2025-07-26 10:47:33
+@@ -1,43 +1,6 @@ level3_1
+ ; 3-1 Corneria 3
+ level3_1
+-	IFEQ	noscrambleseq ; if noscrambleseq is off
+-
+-	meters_off
+-	initlevel	1_1i,nofadenostage,mstarwipe_circle
+-	mapwait	100
+-	setvar.b	scramble,50
+-
+-	mapjsr	map1_1a ; Jump to SCRAMBLE map
+-
+-	setfadedown
+-	waitfadefin
+-
+-	ENDC
+-
+-	mapcode_jsl	initblack_l
+-	mapwait	1
+-
+-	meters_on	trans
+-
+-	setvar	keeppstrat,1
+-	setbg	3_1c
+-	initbg
+-	wipein	mscramwipe_circle
+-	mapwait	medpspeed*2
+-	setfadeup	quick
+-
+-	mapplayermode   ExitBase
+-	mapobj		0000,0000,0000,0000,mybase_1,nocoll_Istrat	
+-	mapobj		0000,0000,0000,0000,mybase_0,nocoll_Istrat	
+-	mapobj		0000,-27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
+-	setalvar	sbyte1,17
+-	mapobj		0000,-27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
+-	setalvar	sbyte1,17+(1000/pexitbasespeed)
+-
+-	pathobj	0000,3000,3000,3000,nullshape,matemsg,10,10
+-	pathobj	0000,100,-90,1400,friendship_4,falco_lv1,10,10
+-	pathobj	0000,-80,-140,1200,friendship_4,frog_lv1,10,10
+-
++	scrambleandbaseexit	3
+ 
+ 	mapobj	0000,-600,0000,2000,BU_1,HARD180YR_ISTRAT
+ 	mapobj	0000,0600,0000,2000,BU_1,HARD180YR_ISTRAT
+diff -Nurp ./ultrastarfox/SF/MAPS/MAP1_1A.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/MAP1_1A.ASM
+--- ./ultrastarfox/SF/MAPS/MAP1_1A.ASM	2025-07-26 11:04:37
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/MAP1_1A.ASM	2025-07-26 10:47:33
+@@ -18,14 +18,21 @@ fudge	=	250
+ 
+ 	mapobj	0000,-40,0,-200,imyship_4,shipintro_istrat
+ 	setalvar.w	sword1,-70
+-	setalvar	sbyte1,60
++	setalvar	sbyte1,40
+ 	mapobj	0000,40,0,-200,imyship_4,shipintro_istrat
+ 	setalvar.w	sword1,-70
++	setalvar	sbyte1,30
++	; Miyu n' Fay
++	mapobj	0000,-40,0,-300,imyship_4,shipintro_istrat
++	setalvar.w	sword1,-70
++	setalvar	sbyte1,60
++	mapobj	0000,40,0,-300,imyship_4,shipintro_istrat
++	setalvar.w	sword1,-70
+ 	setalvar	sbyte1,50
++	; Falco? idk
+ 	mapobj	0000,0000,0,-300,imyship_4,shipintro_istrat
+ 	setalvar.w	sword1,-100
+-	setalvar	sbyte1,-1
+-
++	setalvar	sbyte1,70
+ 
+ .here2	
+ 	mapwait		(100<<3)-medpspeed
+diff -Nurp ./ultrastarfox/SF/MAPS/MAP1_4.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/MAP1_4.ASM
+--- ./ultrastarfox/SF/MAPS/MAP1_4.ASM	2025-07-26 11:04:37
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/MAP1_4.ASM	2025-07-26 10:47:33
+@@ -195,7 +195,7 @@ map1_4
+ 	mapobj	1300,-900,0000,4000,gro_6,hard180yr_istrat
+ 	mapobj	1300,0900,0000,4000,gro_6,hard180yr_istrat
+ 	mapobj	1300,01000,0000,4000,gro_6,hard180yr_istrat
+-	pathobj	0000,-100,-400,-150,friendship_4,chase7_1,10,10
++	pathobj	0000,-100,-400,-150,friendship_4,chase7_1,10,10 ; this is crashing, why??
+ 	pathcspecial	0000,-100,-400,-150,zaco_a,chase7_2,10,10
+ 	cspecial	0000,-100,0000,4000,tank_2,tank2_istrat
+ 	pathobj	0000,0300,-600,3000,heli,tmp_tank,10,10
+diff -Nurp ./ultrastarfox/SF/MAPS/MAPLIST2.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/MAPLIST2.ASM
+--- ./ultrastarfox/SF/MAPS/MAPLIST2.ASM	2025-07-26 11:04:37
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/MAPLIST2.ASM	2025-07-26 10:47:33
+@@ -79,6 +79,7 @@ creditsmap	incmap	credits
+ 
+ creditsmap	incmap	credits
+ 
++msu1map		incmap	msu1
+ intromap	incmap	intro
+ 
+ titlemap	incmap	title
+diff -Nurp ./ultrastarfox/SF/MAPS/MSU1.ASM ./miyu-and-fay-in-star-fox/SF/MAPS/MSU1.ASM
+--- ./ultrastarfox/SF/MAPS/MSU1.ASM	1969-12-31 19:00:00
++++ ./miyu-and-fay-in-star-fox/SF/MAPS/MSU1.ASM	2025-07-26 10:47:33
+@@ -0,0 +1,36 @@
++; disable player's movement and wobble:
++	setfadedown	;	quick
++	mapwaitfade
++	setbg	msu1
++	initbg
++
++	start_65816
++	a16
++	stz	lastplayz
++	stz	pviewposz
++	ldx	playpt
++	stz	al_worldz,x
++	a8
++	end_65816
++
++	mapcode_jsl	initblack_l
++	setvar		stayblack,10
++
++	setfadeup	;	quick
++
++	mapwait	246	800
++
++	start_65816
++	a8
++	lda	playerflymode
++	and	#~pfm_wobble
++	sta	playerflymode
++
++	lda	pshipflags
++	ora	#psf_noctrl!psf_nofire
++	sta	pshipflags
++
++	end_65816
++
++.ll	mapwait	5000
++	mapgoto	.ll
+\ No newline at end of file
+diff -Nurp ./ultrastarfox/SF/MARIO/MTXTPRT.MC ./miyu-and-fay-in-star-fox/SF/MARIO/MTXTPRT.MC
+--- ./ultrastarfox/SF/MARIO/MTXTPRT.MC	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/MARIO/MTXTPRT.MC	2025-07-26 10:47:33
+@@ -539,15 +539,18 @@ mshowteammate
+ 	sub	r0
+ 	cmode
+ 
+-	ibt	r0,#14
++	ibt	r0,#14 ; outer box colour
+ 	lms	r1,[m_x1]
+ 	lms	r2,[m_y1]
+-	iwt	r3,#40+4
++	iwt	r3,#24
+ 	iwt	r4,#8+4
++	from	r3
++;	to	r3 ;test
++;	div2
+ 	mcall	mdrawbox
+ 	nop
+ 
+-	ibt	r0,#2
++	ibt	r0,#2 ; bar colour
+ 	lms	r1,[m_x1]
+ 	inc	r1
+ 	inc	r1
+@@ -555,6 +558,12 @@ mshowteammate
+ 	inc	r2
+ 	inc	r2
+ 	lms	r3,[m_z1]
++;	REPT	12	; \
++;	dec	r3		;  | this is a stupid way of doing things
++;	ENDR		; /
++	from	r3
++	to	r3 ;test
++	div2
+ 	iwt	r4,#8
+ 	mcall	mdrawsolidbox
+ 	nop
+diff -Nurp ./ultrastarfox/SF/MSG/ENGLISH.INC ./miyu-and-fay-in-star-fox/SF/MSG/ENGLISH.INC
+--- ./ultrastarfox/SF/MSG/ENGLISH.INC	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/MSG/ENGLISH.INC	2025-07-26 10:47:33
+@@ -108,7 +108,7 @@
+ 	message	white,fox,<you've chosen course three###  a good choice to take venom by surprise!>,other	; (108)
+ 	message	white,fox,<use the l or r button to escape the tractor beam of the enemy battleship! you can do it, fox!>,other	; (109)
+ 	message	white,fox,<andross has taken control of the huge creatures who live on fortuna!  take care, fox!>,other	; (110)
+-	message	white,fox,<your team is doing well, fox!  i hope you're taking good care of my arwings!  go for macbeth!>,other	; (111)
++	message	white,fox,<your team is doing well, fox!  i hope you're taking care of my arwings and fay!  go for macbeth!>,other	; (111)
+ 	message	white,fox,<the hollow interior of macbeth is ideal for a base!  prevent andross from building here!>,other	; (112)
+ 	message	white,fox,<this space grave yard, created by andross's experiments, is where your father vanished, fox!>,other	; (113)
+ 	message	white,fox,<is everyone all right, fox?!  you're on course to sneak into venom's back door!>,other	; (114)
+@@ -140,3 +140,59 @@
+ 	message	white,falcon,<beware of the big stingray!>,other	; (140)
+ 	message	white,rabbit,<beware of the big stingray!>,other	; (141)
+ 	message	white,frog,<beware of the big stingray!>,other	; (142)
++	message white,miyu,<miyu test>,other	; (143)
++	message white,fay,<fay test>,other	; (144)
++	message	white,robfx,<robfx test>,other	; (145)
++; New teammate dialogue courtesy of Josh
++	message white,miyu,<this might be the end for me!>,other	; (146) ; teammate status on level clear
++	message white,miyu,<my ship has taken damage###>,other	; (147)
++	message white,miyu,<i'm alright, fox!>,other	; (148)
++	message white,miyu,<all systems are good, fox!>,other	; (149)
++	message white,fay,<tell my grandpa that i love him!>,other	; (150)
++	message white,fay,<you have to protect me, fox!>,other	; (151)
++	message white,fay,<it's all good!>,other	; (152)
++	message white,fay,<i'm ready for more!>,other	; (153)
++	message	white,miyu,<an enemy is right behind me!>,help	; (154) ; chased by an enemy/saved by player/died
++	message	white,miyu,<thanks, fox### i owe you one#>,other	; (155)
++	message	white,miyu,<aiiiieeee!! i'm done for!>,down	; (156)
++	message	white,fay,<oh no! fox, help!!>,help	; (157)
++	message	white,fay,<oh fox### you're my hero!>,other	; (158)
++	message	white,fay,<eeeeek!! foooox!!>,down	; (159)
++	message	white,miyu,<curses! i've been hit!>,help	; (160)
++	message	white,fay,<get away from me, you creep!>,help	; (161)
++	message	white,miyu,<this is no time for games, fox!>,help	; (162) ; player hits teammate
++	message	white,fay,<fox, don't shoot me!>,help	; (163)
++	message	white,miyu,<fox, you have to shoot him down!>,help	; (164) ; chase hurry
++	message	white,fay,<hurry, fox! save me!>,help	; (165)
++	message	white,miyu,<we're starting our attack run!>,other	; (166) ; space armada stuff
++	message	white,fay,<yippie! let's head in, fox!>,other	; (167)
++	message	white,miyu,<fox, look out!>,other	; (168)
++	message	white,fay,<eeeeek! watch out, fox!>,other	; (169)
++	message	white,miyu,<i think i had him, fox###>,other	; (170) ; teammate chase target shot down by player
++	message	white,fay,<aw, come on! that was mine!>,other	; (171)
++	message	white,miyu,<it's payback time!>,other	; (172) ; teammate chasing an enemy
++	message	white,miyu,<scratch one enemy target!>,other	; (173)
++	message	white,miyu,<eat this, venomian scum!>,other	; (174)
++	message	white,miyu,<hmph! be gone, you fools!>,other	; (175)
++	message	white,fay,<i'm gonna get ya, buster!>,other	; (176)
++	message	white,fay3,<you uncivilized ruffians!>,other	; (177)
++	message	white,fay,<take that, you meanie!>,other	; (178)
++	message	white,fay,<that's for my people!>,other	; (179)
++	message	white,miyu,<all systems go!>,other	; (180) ; 1-1,2-1,3-1 base exit
++	message	white,fay,<we can do this!>,other	; (181)
++	message	white,miyu3,<andross is controlling those stingrays!>,other	; (182) ; stingray
++	message	white,fay,<stay away from the big stingray!>,other	; (183)
++	message	white,miyu3,<mission accomplished, fox!>,other	; (184) ; venom clear
++	message	white,fay,<hurray! we did it, fox!>,other	; (185)
++	message	white,miyu,<i got your back, fox!>,other	; (186) ; teammate saves player
++	message	white,fay,<needed my help, fox!?>,other	; (187)
++	message	white,fay3,<why is grandpa making us do this!?>,other	; (188) ; training mode stuff
++	message	white,miyu3,<fox, aim for the dodora's neck and tail!>,other	; (189) ; monarch dodora
++	message	white,fay3,<it must be its neck and tail, fox!>,other	; (190)
++	message	white,miyu3,<the enemy's weakness is in its palms!>,other	; (191) ; plasma hydra
++	message	white,fay,<those hands are dangerous, fox!>,other	; (192)
++	message	white,miyu3,<space kites and butterflies, coming in!>,other	; (193) ; asteroid belt, sector x
++	message	white,fay,<oh no! they're gaining on us!>,other	; (194)
++	message	white,miyu3,<don't let that cling to your ship, fox! roll!>,other	; (195) ; amoebas, blade barrier tractor beam
++	message	white,fay,<eeeeek!! get it off! get it off!>,other	; (196)
++	message	white,miyu3,<we'd better get this over with quickly!>,other	;(197) ; training mode line
+\ No newline at end of file
+diff -Nurp ./ultrastarfox/SF/PATH/PATHDATA.ASM ./miyu-and-fay-in-star-fox/SF/PATH/PATHDATA.ASM
+--- ./ultrastarfox/SF/PATH/PATHDATA.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/PATH/PATHDATA.ASM	2025-07-26 10:47:33
+@@ -158,15 +158,19 @@
+ 	P_EXPORT		ebyte2,pbyte1
+ 	P_TRIGGER		.trn_ck_yn,always
+ 
+-	P_MSG		118
++	P_MSG		118	;pepper
+ 	P_WAIT		60
+-	P_MSG		119
++	P_MSG		119	;peppy
+ 	P_WAIT		60
+-	P_MSG		124
++	P_MSG		124	;falco
+ 	P_WAIT		60
+-	P_MSG		123
++	P_MSG		188	;fay
++	P_WAIT		60
++	P_MSG		197	;miyu
++	P_WAIT		60
++	P_MSG		123	;slippy
+ 	P_WAIT		100
+-	P_MSG		120
++	P_MSG		120	;pepper
+ 
+ .trn_ck_w
+ 	P_WAIT		1
+@@ -381,6 +385,9 @@
+ 	s_and_var		B,pshipflags3,#~psf3_enginesnd
+ 	s_or_var	B,pshipflags3,#psf3_nocollisions
+ 	startbgm	$2
++	IFNE	RUMBLE
++	s_queue_rumble	3,3,60 ; approx. 3sec at max frame rate
++	ENDC
+ 	routechange	1
+ 	lda	#0
+ 	sta.l	m_clrbitmaps
+@@ -3185,6 +3192,9 @@ dummyparent
+ 
+ .e_do_3
+ 	P_SOUNDEFFECT	$49
++	IFNE	RUMBLE
++	P_QUEUERUMBLE	3,3,3
++	ENDC
+ 	P_SET		worldy,-50
+ 
+ 	P_END
+@@ -3215,6 +3225,9 @@ dummyparent
+ 
+ .i_do_3
+ 	P_SOUNDEFFECT	$49
++	IFNE	RUMBLE
++	P_QUEUERUMBLE	3,3,3
++	ENDC
+ 	P_SET		worldy,-10
+ 
+ 	P_END
+@@ -4871,14 +4884,20 @@ eguchi1
+ 
+ 	P_WAIT		54
+ 
+-	P_MSG		1
++	P_MSG		1	;FOX - All ships check in!!
+ 	P_WAIT		25
+-	P_MSG		5
++	P_MSG		5	;FALCON - ready, fox!
+ 	P_WAIT		25
+-	P_MSG		45
++	P_MSG		180	;MIYU - all systems go!
+ 	P_WAIT		25
+-	P_MSG		25
++	P_MSG		45	;FROG - ok!!
++	P_WAIT		25
++	P_MSG		181	;FAY - we can do this!
++	P_WAIT		25
++	P_MSG		25	;RABBIT - yeah - let's go!
+ 
++
++
+ 	P_REMOVE
+ ;-------------------------------------------------------------------
+ 
+@@ -4896,9 +4915,15 @@ eguchi1
+ 	P_MSG		36
+ 	P_GOTO		.astms_2
+ .astms_1
+-	P_NOTFRIEND		frog,.astms_2
++	P_NOTFRIEND		frog,.astms_2_1
+ 	P_MSG		56
+-
++	P_GOTO		.astms_2
++.astms_2_1
++	P_NOTFRIEND		miyu,.astms_2_2
++	P_MSG		193
++	P_GOTO		.astms_2
++.astms_2_2
++	P_MSG		194
+ .astms_2
+ 	P_REMOVE
+ 
+@@ -4918,15 +4943,22 @@ eguchi1
+ 
+ 	P_NOTFRIEND		falcon,.drams_0
+ 	P_MSG		17
+-	P_GOTO		.drams_2
++	P_GOTO		.drams_end
+ .drams_0
+ 	P_NOTFRIEND		rabbit,.drams_1
+ 	P_MSG		37
+-	P_GOTO		.drams_2
++	P_GOTO		.drams_end
+ .drams_1
+ 	P_NOTFRIEND		frog,.drams_2
+ 	P_MSG		57
++	P_GOTO		.drams_end
+ .drams_2
++	P_NOTFRIEND		miyu,.drams_3
++	P_MSG		189
++	P_GOTO		.drams_end
++.drams_3
++	P_MSG		190
++.drams_end
+ 	P_REMOVE
+ 
+ 	P_END
+@@ -4953,8 +4985,16 @@ eguchi1
+ 	P_MSG		38
+ 	P_GOTO		.hanms_2
+ .hanms_1
+-	P_NOTFRIEND		frog,.hanms_2
++	P_NOTFRIEND		frog,.hanms_2_1
+ 	P_MSG		58
++	P_GOTO		.hanms_2
++.hanms_2_1
++	P_NOTFRIEND		miyu,.hanms_2_2
++	P_MSG		191
++	P_GOTO		.hanms_2
++.hanms_2_2
++	P_NOTFRIEND		fay,.hanms_2
++	P_MSG		192
+ .hanms_2
+ 	P_REMOVE
+ 
+@@ -4969,17 +5009,25 @@ eguchi1
+ 
+ 	P_WAIT		150
+ 
+-
++	; Inside Space Armada ship msg
+ 	P_NOTFRIEND		falcon,.kasms_0
+-	P_MSG		19
++	P_MSG		19			;FALCON
+ 	P_GOTO		.kasms_2
+ .kasms_0
+ 	P_NOTFRIEND		rabbit,.kasms_1
+-	P_MSG		39
++	P_MSG		39			;RABBIT
+ 	P_GOTO		.kasms_2
+ .kasms_1
+-	P_NOTFRIEND		frog,.kasms_2
+-	P_MSG		57
++	P_NOTFRIEND		frog,.kasms_1_1
++	P_MSG		57			;FROG
++	P_GOTO		.kasms_2
++.kasms_1_1
++	P_NOTFRIEND		miyu,.kasms_1_2
++	P_MSG		168			;MIYU
++	P_GOTO		.kasms_2
++.kasms_1_2
++	P_NOTFRIEND		fay,.kasms_2
++	P_MSG		169			;FAY
+ .kasms_2
+ 	P_REMOVE
+ 
+@@ -4991,16 +5039,23 @@ eguchi1
+ 	P_RELTOPLAYER	ON
+ 	P_INVISIBLE		ON
+ 
++	; Inside Space Armada ship msg
+ 	P_NOTFRIEND		falcon,.2kasms_0
+-	P_MSG		19
++	P_MSG		19			;FALCON
+ 	P_IGOTO		.2kasms_2
+ .2kasms_0
+ 	P_NOTFRIEND		rabbit,.2kasms_1
+-	P_MSG		39
++	P_MSG		39			;RABBIT
+ 	P_IGOTO		.2kasms_2
+ .2kasms_1
+-	P_NOTFRIEND		frog,.2kasms_2
+-	P_MSG		57
++	P_NOTFRIEND		frog,.2kasms_1_1
++	P_MSG		57			;FROG
++.2kasms_1_1
++	P_NOTFRIEND		miyu,.2kasms_1_2
++	P_MSG		168			;MIYU
++.2kasms_1_2
++	P_NOTFRIEND		fay,.2kasms_2
++	P_MSG		169			;FAY
+ .2kasms_2
+ 	P_REMOVE
+ 
+@@ -5015,6 +5070,7 @@ eguchi1
+ 
+ 	P_WAIT		80
+ 
++	;beware of the big stingray!
+ 	P_NOTFRIEND		falcon,.rayms_0
+ 	P_MSG		140
+ 	P_GOTO		.rayms_2
+@@ -5023,8 +5079,16 @@ eguchi1
+ 	P_MSG		141
+ 	P_GOTO		.rayms_2
+ .rayms_1
+-	P_NOTFRIEND		frog,.rayms_2
++	P_NOTFRIEND		frog,.rayms_1_0
+ 	P_MSG		142
++	P_GOTO		.rayms_2
++.rayms_1_0
++	P_NOTFRIEND		miyu,.rayms_1_1
++	P_MSG		182
++	P_GOTO		.rayms_2
++.rayms_1_1
++	P_NOTFRIEND		fay,.rayms_2
++	P_MSG		183
+ .rayms_2
+ 	P_REMOVE
+ 
+@@ -5046,8 +5110,16 @@ eguchi1
+ 	P_MSG		40
+ 	P_GOTO		.amems_2
+ .amems_1
+-	P_NOTFRIEND		frog,.amems_2
++	P_NOTFRIEND		frog,.amems_2_1
+ 	P_MSG		59
++	P_GOTO		.amems_2
++.amems_2_1
++	P_NOTFRIEND		miyu,.amems_2_2
++	P_MSG		195
++	P_GOTO		.amems_2
++.amems_2_2
++	P_NOTFRIEND		fay,.amems_2
++	P_MSG		196
+ .amems_2
+ 	P_REMOVE
+ 
+@@ -5079,16 +5151,25 @@ eguchi1
+ 
+ 	P_WAIT		40
+ 
++	;Should we go in?
+ 	P_NOTFRIEND		falcon,.totms_0
+-	P_MSG		66
++	P_MSG		66			;FALCON
+ 	P_GOTO		.totms_2
+ .totms_0
+ 	P_NOTFRIEND		rabbit,.totms_1
+-	P_MSG		67
++	P_MSG		67			;RABBIT
+ 	P_GOTO		.totms_2
+ .totms_1
+-	P_NOTFRIEND		frog,.totms_2
+-	P_MSG		68
++	P_NOTFRIEND		frog,.totms_1_1
++	P_MSG		68			;FROG
++	P_GOTO		.totms_2
++.totms_1_1
++	P_NOTFRIEND		miyu,.totms_1_2
++	P_MSG		166			;MIYU
++	P_GOTO		.totms_2
++.totms_1_2
++	P_NOTFRIEND		fay,.totms_2
++	P_MSG		167			;FAY
+ .totms_2
+ 	P_REMOVE
+ 
+@@ -5535,20 +5616,29 @@ eguchi2
+ 	P_SET		roty,DEG90
+ 
+ 	P_SETVEL		30
+-
++;***** FRIEND BEING CHASED *****
+ 	P_NOTFRIEND		falcon,.c1_1_m2
+-	P_MSG		7,meter		;FALCON SAYS
++	P_MSG		7,meter		;FALCON SAYS HELP!
+ 	P_GOTO		.c1_1_4
+ 
+ .c1_1_m2
+ 	P_NOTFRIEND		rabbit,.c1_1_m3
+-	P_MSG		27,meter		;RABBIT SAYS
++	P_MSG		27,meter		;RABBIT SAYS HELP!
+ 	P_GOTO		.c1_1_4
+ 
+ .c1_1_m3
+-	P_MSG		47,meter		;FROG SAYS
++	P_NOTFRIEND		frog,.c1_1_m4
++	P_MSG		47,meter		;FROG SAYS HELP!
++	P_GOTO		.c1_1_4
+ 
++.c1_1_m4
++	P_NOTFRIEND		miyu,.c1_1_m5
++	P_MSG		154,meter		;MIYU SAYS HELP!
++	P_GOTO		.c1_1_4
+ 
++.c1_1_m5
++	P_MSG		157,meter		;FAY SAYS HELP!
++
+ .c1_1_4
+ 	P_WAIT		35
+ 
+@@ -5572,17 +5662,25 @@ eguchi2
+ 
+ 
+ 	P_NOTFRIEND		falcon,.c1_1_2a
+-	P_MSG		15,meter
++	P_MSG		15,meter		;FALCON SAYS HIT!
+ 	P_IGOTO		.c1_a_3
+ .c1_1_2a
+ 	P_NOTFRIEND		rabbit,.c1_1_2b
+-	P_MSG		35,meter
++	P_MSG		35,meter		;RABBIT SAYS HIT!
+ 	P_IGOTO		.c1_a_3
+ .c1_1_2b
+-	P_MSG		55,meter
++	P_NOTFRIEND		frog,.c1_1_2c
++	P_MSG		55,meter		;FROG SAYS HIT!
++	P_IGOTO		.c1_a_3
++.c1_1_2c
++	P_NOTFRIEND		miyu,.c1_1_2d
++	P_MSG		160,meter		;MIYU SAYS HIT!
++	P_IGOTO		.c1_a_3
++.c1_1_2d
++	P_MSG		161,meter		;FAY SAYS HIT!
+ ;--------------------------------
+ .c1_a_3
+-	P_DAMAGE				;FRIEND GETS DAMAGE
++	P_DAMAGE	;FRIEND GETS DAMAGE
+ .c1_a_30
+ 	P_ADD		rotz,4
+ 	P_LOOP		7,.c1_a_30
+@@ -5613,16 +5711,24 @@ eguchi2
+ 	P_ACCEL		10,1
+ 
+ 	P_NOTFRIEND		falcon,.c1_1_m6
+-	P_MSG		9,meter		;FALCON SAYS
++	P_MSG		9,meter		;FALCON SAYS DEAD!
+ 	P_GOTO		.c1_1_d
+ 
+ .c1_1_m6
+ 	P_NOTFRIEND		rabbit,.c1_1_m7
+-	P_MSG		29,meter		;RABBIT SAYS
++	P_MSG		29,meter		;RABBIT SAYS DEAD!
+ 	P_GOTO		.c1_1_d
+ 
+ .c1_1_m7
+-	P_MSG		49,meter		;FROG SAYS
++	P_NOTFRIEND		frog,.c1_1_m8
++	P_MSG		49,meter		;FROG SAYS DEAD!
++	P_GOTO		.c1_1_d
++.c1_1_m8
++	P_NOTFRIEND		miyu,.c1_1_m9
++	P_MSG		156,meter		;MIYU SAYS DEAD!
++	P_GOTO		.c1_1_d
++.c1_1_m9
++	P_MSG		159,meter		;FAY SAYS DEAD!
+ 
+ .c1_1_d
+ 
+@@ -5763,17 +5869,27 @@ eguchi2
+ 
+ 
+ 	P_NOTFRIEND		falcon,.c2_1_m1
+-	P_MSG		7,meter		;FALCON SAYS
++	P_MSG		7,meter		;FALCON SAYS HELP!
+ 	P_GOTO		.c2_1_1
+ 
+ .c2_1_m1
+ 	P_NOTFRIEND		rabbit,.c2_1_m2
+-	P_MSG		27,meter		;RABBIT SAYS
++	P_MSG		27,meter		;RABBIT SAYS HELP!
+ 	P_GOTO		.c2_1_1
+ 
+ .c2_1_m2
+-	P_MSG		47,meter		;FROG SAYS
++	P_NOTFRIEND		frog,.c2_1_m3
++	P_MSG		47,meter		;FROG SAYS HELP!
++	P_GOTO		.c2_1_1
+ 
++.c2_1_m3
++	P_NOTFRIEND		miyu,.c2_1_m4
++	P_MSG		154,meter		;MIYU SAYS HELP!
++	P_GOTO		.c2_1_1
++
++.c2_1_m4
++	P_MSG		157,meter		;FAY SAYS HELP!
++
+ .c2_1_1
+ 	P_SOUND		1
+ 	P_SETVEL		30
+@@ -5811,14 +5927,22 @@ eguchi2
+ 
+ 
+ 	P_NOTFRIEND		falcon,.c2_1_tm1
+-	P_MSG		69,meter
++	P_MSG		69,meter		;FALCON SAYS HURRY!
+ 	P_IGOTO		.c2_1_tm3
+ .c2_1_tm1
+ 	P_NOTFRIEND		rabbit,.c2_1_tm2
+-	P_MSG		70,meter
++	P_MSG		70,meter		;RABBIT SAYS HURRY!
+ 	P_IGOTO		.c2_1_tm3
+ .c2_1_tm2
+-	P_MSG		71,meter
++	P_NOTFRIEND		frog,.c2_1_tm2_2
++	P_MSG		71,meter		;FROG SAYS HURRY!
++	P_IGOTO		.c2_1_tm3
++.c2_1_tm2_2
++	P_NOTFRIEND		miyu,.c2_1_tm2_3
++	P_MSG		164,meter		;MIYU SAYS HURRY!
++	P_IGOTO		.c2_1_tm3
++.c2_1_tm2_3
++	P_MSG		165,meter		;FAY SAYS HURRY!
+ 
+ ;;;;;;
+ .c2_1_tm3
+@@ -5858,15 +5982,25 @@ eguchi2
+ 
+ 
+ 	P_NOTFRIEND		falcon,.c2_1_8a
+-	P_MSG		15,meter
++	P_MSG		15,meter		;FALCON SAYS HIT!
+ 	P_GOTO		.c2_1_8c
+ .c2_1_8a
+ 	P_NOTFRIEND		rabbit,.c2_1_8b
+-	P_MSG		35,meter
++	P_MSG		35,meter		;RABBIT SAYS HIT!
+ 	P_GOTO		.c2_1_8c
+ .c2_1_8b
+-	P_MSG		55,meter
++	P_NOTFRIEND		frog,.c2_1_8b_2
++	P_MSG		55,meter		;FROG SAYS HIT!
++	P_GOTO		.c2_1_8c
+ 
++.c2_1_8b_2
++	P_NOTFRIEND		miyu,.c2_1_8b_3
++	P_MSG		160,meter		;MIYU SAYS HIT!
++	P_GOTO		.c2_1_8c
++
++.c2_1_8b_3
++	P_MSG		161,meter		;FAY SAYS HIT!
++
+ .c2_1_8c
+ 	P_DAMAGE
+ 	P_ACCEL		50,2
+@@ -5890,17 +6024,27 @@ eguchi2
+ 	P_SETVEL		10
+ 
+ 	P_NOTFRIEND		falcon,.c2_1_tm5
+-	P_MSG		9,meter		;FALCON SAYS
++	P_MSG		9,meter		;FALCON SAYS DEAD!
+ 	P_GOTO		.c2_1_tj
+ 
+ .c2_1_tm5
+ 	P_NOTFRIEND		rabbit,.c2_1_tm6
+-	P_MSG		29,meter		;RABBIT SAYS
++	P_MSG		29,meter		;RABBIT SAYS DEAD!
+ 	P_GOTO		.c2_1_tj
+ 
+ .c2_1_tm6
+-	P_MSG		49,meter		;FROG SAYS
++	P_NOTFRIEND		frog,.c2_1_tm7
++	P_MSG		49,meter		;FROG SAYS DEAD!
++	P_GOTO		.c2_1_tj
+ 
++.c2_1_tm7
++	P_NOTFRIEND		miyu,.c2_1_tm8
++	P_MSG		156,meter		;MIYU SAYS DEAD!
++	P_GOTO		.c2_1_tj
++
++.c2_1_tm8
++	P_MSG		159,meter		;FAY SAYS DEAD!
++
+ .c2_1_tj
+ 	P_DAMAGE
+ 	P_WAITCHASE		roty,256-64
+@@ -5939,16 +6083,26 @@ eguchi2
+ 	P_LOOP		15,.c2_1_g
+ 
+ 	P_NOTFRIEND		falcon,.c2_1_m5
+-	P_MSG		9,meter		;FALCON SAYS
++	P_MSG		9,meter		;FALCON SAYS DEAD!
+ 	P_GOTO		.c2_1_j
+ 
+ .c2_1_m5
+ 	P_NOTFRIEND		rabbit,.c2_1_m6
+-	P_MSG		29,meter		;RABBIT SAYS
++	P_MSG		29,meter		;RABBIT SAYS DEAD!
+ 	P_GOTO		.c2_1_j
+ 
+ .c2_1_m6
+-	P_MSG		49,meter		;FROG SAYS
++	P_NOTFRIEND		frog,.c2_1_m7
++	P_MSG		49,meter		;FROG SAYS DEAD!
++	P_GOTO		.c2_1_j
++
++.c2_1_m7
++	P_NOTFRIEND		miyu,.c2_1_m8
++	P_MSG		156,meter		;MIYU SAYS DEAD!
++	P_GOTO		.c2_1_j
++
++.c2_1_m8
++	P_MSG		159,meter		;FAY SAYS DEAD!
+ 	P_WAIT		2
+ 
+ .c2_1_j
+@@ -6151,19 +6305,28 @@ eguchi2
+ 
+ 	P_NOTFRIEND		anyone,.c3_1_z
+ 
++;**** FRIEND BEING CHASED ****
+ .c3_1_0
+ 	P_ADD		rotx,-32
+ 	P_SETVEL		30
+ 
+ 	P_NOTFRIEND		falcon,.c3_1_m1
+-	P_MSG		7,meter		;FALCON SAYS HELP!
++	P_MSG		7,meter			;FALCON SAYS HELP!
+ 	P_GOTO		.c3_1_1
+ .c3_1_m1
+ 	P_NOTFRIEND		rabbit,.c3_1_m2
+ 	P_MSG		27,meter		;RABBIT SAYS HELP!
+ 	P_GOTO		.c3_1_1
+ .c3_1_m2
++	P_NOTFRIEND		frog,.c3_1_m3
+ 	P_MSG		47,meter		;FROG SAYS HELP!
++	P_GOTO		.c3_1_1
++.c3_1_m3
++	P_NOTFRIEND		miyu,.c3_1_m4
++	P_MSG		154,meter		;MIYU SAYS HELP!
++	P_GOTO		.c3_1_1
++.c3_1_m4
++	P_MSG		157,meter		;FAY SAYS HELP!
+ 
+ .c3_1_1
+ 	P_CHASE		rotx,0
+@@ -6336,14 +6499,22 @@ eguchi2
+ 	P_WAIT		10
+ 
+ 	P_NOTFRIEND		falcon,.c3_1_2a
+-	P_MSG		15,meter
++	P_MSG		15,meter		;FALCON SAYS HIT!
+ 	P_GOTO		.c3_1_2c
+ .c3_1_2a
+ 	P_NOTFRIEND		rabbit,.c3_1_2b
+-	P_MSG		35,meter
++	P_MSG		35,meter		;RABBIT SAYS HIT!
+ 	P_GOTO		.c3_1_2c
+ .c3_1_2b
+-	P_MSG		55,meter
++	P_NOTFRIEND		frog,.c3_1_2b_1
++	P_MSG		55,meter		;FROG SAYS HIT!
++	P_GOTO		.c3_1_2c
++.c3_1_2b_1
++	P_NOTFRIEND		miyu,.c3_1_2b_2
++	P_MSG		160,meter		;MIYU SAYS HIT!
++	P_GOTO		.c3_1_2c
++.c3_1_2b_2
++	P_MSG		161,meter		;FAY SAYS HIT!
+ .c3_1_2c
+ 	P_DAMAGE
+ 	P_GOTO		.c3_1_y
+@@ -6360,18 +6531,27 @@ eguchi2
+ 	P_SPACESHIP		OFF
+ 
+ 	P_NOTFRIEND		falcon,.c3_1_m5
+-	P_MSG		9,meter		;FALCON SAYS
++	P_MSG		9,meter		;FALCON SAYS DEAD!
+ 	P_GOTO		.c3_1_8
+ 
+ .c3_1_m5
+ 	P_NOTFRIEND		rabbit,.c3_1_m6
+-	P_MSG		29,meter		;RABBIT SAYS
++	P_MSG		29,meter		;RABBIT SAYS DEAD!
+ 	P_GOTO		.c3_1_8
+ 
+ .c3_1_m6
+-	P_MSG		49,meter		;FROG SAYS
++	P_NOTFRIEND		frog,.c3_1_m7
++	P_MSG		49,meter		;FROG SAYS DEAD!
++	P_GOTO		.c3_1_8
+ 
++.c3_1_m7
++	P_NOTFRIEND		miyu,.c3_1_m8
++	P_MSG		156,meter		;MIYU SAYS DEAD!
++	P_GOTO		.c3_1_8
+ 
++.c3_1_m8
++	P_MSG		159,meter		;FAY SAYS DEAD!
++
+ .c3_1_8
+ 	P_DAMAGE
+ 	P_ADD		rotz,10
+@@ -6397,16 +6577,26 @@ eguchi2
+ 
+ .c3_tyame
+ 	P_NOTFRIEND		falcon,.c3_m_t1
+-	P_MSG		69,meter
++	P_MSG		69,meter		;FALCON SAYS HURRY!
+ 	P_RETURN
+ .c3_m_t1
+ 	P_NOTFRIEND		rabbit,.c3_m_t2
+-	P_MSG		70,meter
++	P_MSG		70,meter		;RABBIT SAYS HURRY!
+ 	P_RETURN
+ .c3_m_t2
+-	P_MSG		71,meter
++	P_NOTFRIEND		frog,.c3_m_t3
++	P_MSG		71,meter		;FROG SAYS HURRY!
+ 	P_RETURN
+ 
++.c3_m_t3
++	P_NOTFRIEND		miyu,.c3_m_t4
++	P_MSG		164,meter		;MIYU SAYS HURRY!
++	P_RETURN
++
++.c3_m_t4
++	P_MSG		165,meter		;FAY SAYS HURRY!
++	P_RETURN
++
+ .c3_1_td
+ 	P_FLAGSHAPE
+ 	P_TRIGGER		save,OFF
+@@ -6417,17 +6607,27 @@ eguchi2
+ 	P_SMOKE		ON
+ 
+ 	P_NOTFRIEND		falcon,.c3_1_tm5
+-	P_MSG		9,meter		;FALCON SAYS
++	P_MSG		9,meter		;FALCON SAYS DEAD!
+ 	P_IGOTO		.c3_1_td1
+ 
+ .c3_1_tm5
+ 	P_NOTFRIEND		rabbit,.c3_1_tm6
+-	P_MSG		29,meter		;RABBIT SAYS
++	P_MSG		29,meter		;RABBIT SAYS DEAD!
+ 	P_IGOTO		.c3_1_td1
+ 
+ .c3_1_tm6
+-	P_MSG		49,meter		;FROG SAYS
++	P_NOTFRIEND		frog,.c3_1_tm7
++	P_MSG		49,meter		;FROG SAYS DEAD!
++	P_IGOTO		.c3_1_td1
+ 
++.c3_1_tm7
++	P_NOTFRIEND		miyu,.c3_1_tm8
++	P_MSG		156,meter		;MIYU SAYS DEAD!
++	P_IGOTO		.c3_1_td1
++
++.c3_1_tm8
++	P_MSG		159,meter		;FAY SAYS DEAD!
++
+ .c3_1_td1
+ 	P_DAMAGE
+ 	P_ADD		worldz,-20
+@@ -6685,14 +6885,22 @@ eguchi2
+ 	P_LOOP		20,.c4_1_0
+ 
+ 	P_NOTFRIEND		falcon,.c4_1_a1
+-	P_MSG		13
++	P_MSG		13	;FALCON SAYS
+ 	P_IGOTO		.c4_1_a3
+ .c4_1_a1
+ 	P_NOTFRIEND		rabbit,.c4_1_a2
+-	P_MSG		33
++	P_MSG		33	;RABBIT SAYS
+ 	P_IGOTO		.c4_1_a3
+ .c4_1_a2
+-	P_MSG		50
++	P_NOTFRIEND		frog,.c4_1_a2_a
++	P_MSG		50	;FROG SAYS
++	P_IGOTO		.c4_1_a3
++.c4_1_a2_a
++	P_NOTFRIEND		miyu,.c4_1_a2_b
++	P_MSG		172	;MIYU SAYS
++	P_IGOTO		.c4_1_a3
++.c4_1_a2_b
++	P_MSG		176	;FAY SAYS
+ .c4_1_a3
+ 	P_WAIT		20
+ 	P_SOUND		1
+@@ -6702,14 +6910,22 @@ eguchi2
+ 	P_ZREMOVE	ON
+ 
+ 	P_NOTFRIEND		falcon,.c4_1_a
+-	P_GOSUB		.c4_fal_ms
++	P_GOSUB		.c4_fal_ms	;FALCON
+ 	P_GOTO		.c4_1_1
+ .c4_1_a
+ 	P_NOTFRIEND		rabbit,.c4_1_b
+-	P_GOSUB		.c4_rab_ms
++	P_GOSUB		.c4_rab_ms	;RABBIT
+ 	P_GOTO		.c4_1_1
+ .c4_1_b
+-	P_GOSUB		.c4_fro_ms
++	P_NOTFRIEND		frog,.c4_1_c
++	P_GOSUB		.c4_fro_ms	;FROG
++	P_GOTO		.c4_1_1
++.c4_1_c
++	P_NOTFRIEND		miyu,.c4_1_d
++	P_GOSUB		.c4_miy_ms	;MIYU
++	P_GOTO		.c4_1_1
++.c4_1_d
++	P_GOSUB		.c4_fay_ms	;FAY
+ .c4_1_1
+ 	P_CHASE		roty,0
+ 	P_CHASE		rotz,0
+@@ -6736,27 +6952,44 @@ eguchi2
+ 	P_SHAPEDEAD		.c4_1_6
+ 
+ 	P_NOTFRIEND		falcon,.c4_1_m1
+-	P_GOSUB		.c4_fal_ms
++	P_GOSUB		.c4_fal_ms	;FALCON
+ 	P_IGOTO		.c4_1_4
+ .c4_1_m1
+ 	P_NOTFRIEND		rabbit,.c4_1_m3
+-	P_GOSUB		.c4_rab_ms
++	P_GOSUB		.c4_rab_ms	;RABBIT
+ 	P_IGOTO		.c4_1_4
+ .c4_1_m3
+-	P_GOSUB		.c4_fro_ms
++	P_NOTFRIEND		frog,.c4_1_m4
++	P_GOSUB		.c4_fro_ms	;FROG
++	P_IGOTO		.c4_1_4
++.c4_1_m4
++	P_NOTFRIEND		miyu,.c4_1_m5_a
++	P_GOSUB		.c4_miy_ms	;MIYU
++	P_IGOTO		.c4_1_4
++.c4_1_m5_a
++	P_GOSUB		.c4_fay_ms	;FAY
+ 
+ 	P_IGOTO		.c4_1_4
+ ;------ shape dead ---------
++; player kills friend chase target
+ .c4_1_6
+-	P_NOTFRIEND		falcon,.c4_1_m5
++	P_NOTFRIEND		falcon,.c4_1_m5_b
+ 	P_MSG		22		;FALCON 1
+ 	P_GOTO		.c4_1_8
+-.c4_1_m5
++.c4_1_m5_b
+ 	P_NOTFRIEND		rabbit,.c4_1_m7
+ 	P_MSG		42		;RABBIT 1
+ 	P_GOTO		.c4_1_8
+ .c4_1_m7
+-	P_MSG		61		;FROG
++	P_NOTFRIEND		frog,.c4_1_m8
++	P_MSG		61		;FROG 1
++	P_GOTO		.c4_1_8
++.c4_1_m8
++	P_NOTFRIEND		miyu,.c4_1_m9
++	P_MSG		170		;MIYU 1
++	P_GOTO		.c4_1_8
++.c4_1_m9
++	P_MSG		171		;FAY 1
+ .c4_1_8
+ 	P_WAIT		12
+ 
+@@ -6782,81 +7015,131 @@ eguchi2
+ 
+ 	P_END
+ ;---------------------------------
+-.c4_fal_ms	LOCAL
++.c4_fal_ms	LOCAL		;FALCON SAYS
+ 	P_RANDOMGOTO	.c4_fal_1
+ 	P_RANDOMGOTO	.c4_fal_2
+ .c4_fal_4
+ 	P_IFSAME		pbyte1,23,.c4_fal_2
+-	P_MSG		23
++	P_MSG		23		;FALCON
+ 	P_SET		pbyte1,23
+ 	P_RETURN
+ .c4_fal_2
+ 	P_IFSAME		pbyte1,12,.c4_fal_1
+-	P_MSG		12
++	P_MSG		12		;FALCON
+ 	P_SET		pbyte1,12
+ 	P_RETURN
+ .c4_fal_1
+ 	P_RANDOMGOTO	.c4_fal_3
+ 	P_IFSAME		pbyte1,11,.c4_fal_3
+-	P_MSG		11
++	P_MSG		11		;FALCON
+ 	P_SET		pbyte1,11
+ 	P_RETURN
+ .c4_fal_3
+ 	P_IFSAME		pbyte1,10,.c4_fal_4
+-	P_MSG		10
++	P_MSG		10		;FALCON
+ 	P_SET		pbyte1,10
+ 	P_RETURN
+ ;---------------------------------
+-.c4_rab_ms	LOCAL
++.c4_rab_ms	LOCAL		;RABBIT SAYS
+ 	P_RANDOMGOTO	.c4_rab_1
+ 	P_RANDOMGOTO	.c4_rab_2
+ .c4_rab_4
+ 	P_IFSAME		pbyte1,43,.c4_rab_2
+-	P_MSG		43
++	P_MSG		43		;RABBIT
+ 	P_SET		pbyte1,43
+ 	P_RETURN
+ .c4_rab_2
+ 	P_IFSAME		pbyte1,32,.c4_rab_1
+-	P_MSG		32
++	P_MSG		32		;RABBIT
+ 	P_SET		pbyte1,32
+ 	P_RETURN
+ .c4_rab_1
+ 	P_RANDOMGOTO	.c4_rab_3
+ 	P_IFSAME		pbyte1,31,.c4_rab_3
+-	P_MSG		31
++	P_MSG		31		;RABBIT
+ 	P_SET		pbyte1,31
+ 	P_RETURN
+ .c4_rab_3
+ 	P_IFSAME		pbyte1,30,.c4_rab_4
+-	P_MSG		30
++	P_MSG		30		;RABBIT
+ 	P_SET		pbyte1,30
+ 	P_RETURN
+ ;---------------------------------
+-.c4_fro_ms	LOCAL
++.c4_fro_ms	LOCAL		;FROG SAYS
+ 	P_RANDOMGOTO	.c4_fro_1
+ 	P_RANDOMGOTO	.c4_fro_2
+ .c4_fro_4
+ 	P_IFSAME		pbyte1,62,.c4_fro_2
+-	P_MSG		62
++	P_MSG		62		;FROG
+ 	P_SET		pbyte1,62
+ 	P_RETURN
+ .c4_fro_2
+ 	P_IFSAME		pbyte1,53,.c4_fro_1
+-	P_MSG		53
++	P_MSG		53		;FROG
+ 	P_SET		pbyte1,53
+ 	P_RETURN
+ .c4_fro_1
+ 	P_RANDOMGOTO	.c4_fro_3
+ 	P_IFSAME		pbyte1,52,.c4_fro_3
+-	P_MSG		52
++	P_MSG		52		;FROG
+ 	P_SET		pbyte1,52
+ 	P_RETURN
+ .c4_fro_3
+ 	P_IFSAME		pbyte1,51,.c4_fro_4
+-	P_MSG		51
++	P_MSG		51		;FROG
+ 	P_SET		pbyte1,51
+ 	P_RETURN
+ ;------------------------------------------------------------------
++.c4_miy_ms	LOCAL		;MIYU SAYS
++	P_RANDOMGOTO	.c4_miy_1
++	P_RANDOMGOTO	.c4_miy_2
++.c4_miy_4
++	P_IFSAME		pbyte1,172,.c4_miy_2
++	P_MSG		172		;MIYU
++	P_SET		pbyte1,62
++	P_RETURN
++.c4_miy_2
++	P_IFSAME		pbyte1,173,.c4_miy_1
++	P_MSG		173		;MIYU
++	P_SET		pbyte1,53
++	P_RETURN
++.c4_miy_1
++	P_RANDOMGOTO	.c4_miy_3
++	P_IFSAME		pbyte1,174,.c4_miy_3
++	P_MSG		174		;MIYU
++	P_SET		pbyte1,52
++	P_RETURN
++.c4_miy_3
++	P_IFSAME		pbyte1,175,.c4_miy_4
++	P_MSG		175		;MIYU
++	P_SET		pbyte1,51
++	P_RETURN
++;------------------------------------------------------------------
++.c4_fay_ms	LOCAL		;FAY SAYS
++	P_RANDOMGOTO	.c4_fay_1
++	P_RANDOMGOTO	.c4_fay_2
++.c4_fay_4
++	P_IFSAME		pbyte1,176,.c4_fay_2
++	P_MSG		176		;FAY
++	P_SET		pbyte1,62
++	P_RETURN
++.c4_fay_2
++	P_IFSAME		pbyte1,177,.c4_fay_1
++	P_MSG		177		;FAY
++	P_SET		pbyte1,53
++	P_RETURN
++.c4_fay_1
++	P_RANDOMGOTO	.c4_fay_3
++	P_IFSAME		pbyte1,178,.c4_fay_3
++	P_MSG		178		;FAY
++	P_SET		pbyte1,52
++	P_RETURN
++.c4_fay_3
++	P_IFSAME		pbyte1,179,.c4_fay_4
++	P_MSG		179		;FAY
++	P_SET		pbyte1,51
++	P_RETURN
++;------------------------------------------------------------------
+ ;use set pos
+ ;same as chase4_1
+ 
+@@ -7043,14 +7326,22 @@ eguchi2
+ 	P_ACCEL		40,1
+ 
+ 	P_NOTFRIEND		falcon,.c5_1_a
+-	P_MSG		13
++	P_MSG		13	;FALCON SAYS
+ 	P_GOTO		.c5_1_01
+ .c5_1_a
+ 	P_NOTFRIEND		rabbit,.c5_1_b
+-	P_MSG		33
++	P_MSG		33	;RABBIT SAYS
+ 	P_GOTO		.c5_1_01
+ .c5_1_b
+-	P_MSG		50
++	P_NOTFRIEND		frog,.c5_1_c
++	P_MSG		50	;FROG SAYS
++	P_GOTO		.c5_1_01
++.c5_1_c
++	P_NOTFRIEND		miyu,.c5_1_d
++	P_MSG		172	;MIYU SAYS
++	P_GOTO		.c5_1_01
++.c5_1_d
++	P_MSG		176	;FAY SAYS
+ .c5_1_01
+ 	P_WAIT		35
+ 
+@@ -7073,7 +7364,15 @@ eguchi2
+ 	P_GOSUB		pchase4_1.c4_rab_ms
+ 	P_GOTO		.c5_1_1
+ .c5_1_m2
++	P_NOTFRIEND		frog,.c5_1_m3_a
+ 	P_GOSUB		pchase4_1.c4_fro_ms
++	P_GOTO		.c5_1_1
++.c5_1_m3_a
++	P_NOTFRIEND		miyu,.c5_1_m4_a
++	P_GOSUB		pchase4_1.c4_miy_ms
++	P_GOTO		.c5_1_1
++.c5_1_m4_a
++	P_GOSUB		pchase4_1.c4_fay_ms
+ .c5_1_1
+ 	P_ADD		rotx,-4
+ 	P_LOOP		15,.c5_1_1
+@@ -7103,31 +7402,48 @@ eguchi2
+ 	P_SHAPEDEAD		.c5_1_5
+ 
+ ;-------- shape alive --------
+-	P_NOTFRIEND		falcon,.c5_1_m3
++	P_NOTFRIEND		falcon,.c5_1_m3_b
+ 	P_GOSUB		pchase4_1.c4_fal_ms
+ 	P_GOTO		.c5_1_4
+-.c5_1_m3
++.c5_1_m3_b
+ 	P_NOTFRIEND		rabbit,.c5_1_m4
+ 	P_GOSUB		pchase4_1.c4_rab_ms
+ 	P_GOTO		.c5_1_4
+ .c5_1_m4
++	P_NOTFRIEND		frog,.c5_1_m5_a
+ 	P_GOSUB		pchase4_1.c4_fro_ms
++	P_GOTO		.c5_1_4
++.c5_1_m5_a
++	P_NOTFRIEND		miyu,.c5_1_m6_a
++	P_GOSUB		pchase4_1.c4_miy_ms
++	P_GOTO		.c5_1_4
++.c5_1_m6_a
++	P_GOSUB		pchase4_1.c4_fay_ms
+ 
+ .c5_1_4
+ 	P_FIRE		canhit
+ 
+ 	P_GOTO		.c5_1_6
+ ;-------- shape dead ---------
++; player kills friend chase target
+ .c5_1_5
+ 	P_NOTFRIEND		falcon,.c5_1_m5
+-	P_MSG		22
++	P_MSG		22		;FALCON 1
+ 	P_GOTO		.c5_1_6
+ .c5_1_m5
+ 	P_NOTFRIEND		rabbit,.c5_1_m6
+-	P_MSG		42
++	P_MSG		42		;RABBIT 1
+ 	P_GOTO		.c5_1_6
+ .c5_1_m6
+-	P_MSG		61
++	P_NOTFRIEND		frog,.c5_1_m7
++	P_MSG		61		;FROG 1
++	P_GOTO		.c5_1_6
++.c5_1_m7
++	P_NOTFRIEND		miyu,.c5_1_m8
++	P_MSG		170		;MIYU 1
++	P_GOTO		.c5_1_6
++.c5_1_m8
++	P_MSG		171		;FAY 1
+ ;-----------------------------
+ 
+ .c5_1_6
+@@ -7331,15 +7647,25 @@ eguchi2
+ 
+ 
+ 	P_NOTFRIEND		falcon,.c6_1_m1
+-	P_MSG		7,meter
++	P_MSG		7,meter			;FALCON SAYS HELP!
+ 	P_GOTO		.c6_1_6
+ .c6_1_m1
+ 	P_NOTFRIEND		rabbit,.c6_1_m2
+-	P_MSG		27,meter
++	P_MSG		27,meter		;RABBIT SAYS HELP!
+ 	P_GOTO		.c6_1_6
+ .c6_1_m2
+-	P_MSG		47,meter
++	P_NOTFRIEND		frog,.c6_1_m_3
++	P_MSG		47,meter		;FROG SAYS HELP!
++	P_GOTO		.c6_1_6
+ 
++.c6_1_m_3
++	P_NOTFRIEND		miyu,.c6_1_m_4
++	P_MSG		154,meter		;MIYU SAYS HELP!
++	P_GOTO		.c6_1_6
++
++.c6_1_m_4
++	P_MSG		157,meter		;FAY SAYS HELP!
++
+ .c6_1_6
+ 	P_SOUND		1
+ 	P_SETVEL		40
+@@ -7396,14 +7722,22 @@ eguchi2
+ 	P_ALMOSTDEAD	.c6_1_8
+ 
+ 	P_NOTFRIEND		falcon,.c6_1_4a
+-	P_MSG		15,meter
++	P_MSG		15,meter		;FALCON SAYS HIT!
+ 	P_GOTO		.c6_1_4c
+ .c6_1_4a
+ 	P_NOTFRIEND		rabbit,.c6_1_4b
+-	P_MSG		35,meter
++	P_MSG		35,meter		;RABBIT SAYS HIT!
+ 	P_GOTO		.c6_1_4c
+ .c6_1_4b
+-	P_MSG		55,meter
++	P_NOTFRIEND		frog,.c6_1_4b_1
++	P_MSG		55,meter		;FROG SAYS HIT!
++	P_GOTO		.c6_1_4c
++.c6_1_4b_1
++	P_NOTFRIEND		miyu,.c6_1_4b_2
++	P_MSG		160,meter		;MIYU SAYS HIT
++	P_GOTO		.c6_1_4c
++.c6_1_4b_2
++	P_MSG		161,meter		;FAY SAYS HIT!
+ .c6_1_4c
+ 	P_DAMAGE
+ 	P_WAIT		5
+@@ -7426,14 +7760,22 @@ eguchi2
+ 	P_TRIGGER		yamete,OFF
+ 	P_WAIT		8
+ 	P_NOTFRIEND		falcon,.c6_1_m3
+-	P_MSG		9,meter
++	P_MSG		9,meter		;FALCON SAYS DEAD!
+ 	P_GOTO		.c6_1_e
+ .c6_1_m3
+ 	P_NOTFRIEND		rabbit,.c6_1_m4
+-	P_MSG		29,meter
++	P_MSG		29,meter		;RABBIT SAYS DEAD!
+ 	P_GOTO		.c6_1_e
+ .c6_1_m4
+-	P_MSG		49,meter
++	P_NOTFRIEND		frog,.c6_1_m5
++	P_MSG		49,meter		;FROG SAYS DEAD!
++	P_GOTO		.c6_1_e
++.c6_1_m5
++	P_NOTFRIEND		miyu,.c6_1_m6
++	P_MSG		156,meter		;MIYU SAYS DEAD!
++	P_GOTO		.c6_1_e
++.c6_1_m6
++	P_MSG		159,meter		;FAY SAYS DEAD!
+ 
+ .c6_1_e
+ 	P_ACCEL		0,1
+@@ -7482,16 +7824,26 @@ eguchi2
+ 
+ .c6_tyame
+ 	P_NOTFRIEND		falcon,.c6_m_t1
+-	P_MSG		69,meter
++	P_MSG		69,meter		;FALCON SAYS HURRY!
+ 	P_RETURN
+ .c6_m_t1
+ 	P_NOTFRIEND		rabbit,.c6_m_t2
+-	P_MSG		70,meter
++	P_MSG		70,meter		;RABBIT SAYS HURRY!
+ 	P_RETURN
+ .c6_m_t2
+-	P_MSG		71,meter
++	P_NOTFRIEND		frog,.c6_m_t3
++	P_MSG		71,meter		;FROG SAYS HURRY!
+ 	P_RETURN
+ 
++.c6_m_t3
++	P_NOTFRIEND		miyu,.c6_m_t4
++	P_MSG		164,meter		;MIYU SAYS HURRY!
++	P_RETURN
++
++.c6_m_t4
++	P_MSG		165,meter		;FAY SAYS HURRY!
++	P_RETURN
++
+ .c6_td
+ 	P_TRIGGER		save,OFF
+ 	P_TRIGGER		yamete,OFF
+@@ -7499,17 +7851,27 @@ eguchi2
+ 	P_SMOKE		ON
+ 
+ 	P_NOTFRIEND		falcon,.c6_1_tm5
+-	P_MSG		9,meter		;FALCON SAYS
++	P_MSG		9,meter		;FALCON SAYS DEAD!
+ 	P_IGOTO		.c6_1_td1
+ 
+ .c6_1_tm5
+ 	P_NOTFRIEND		rabbit,.c6_1_tm6
+-	P_MSG		29,meter		;RABBIT SAYS
++	P_MSG		29,meter		;RABBIT SAYS DEAD!
+ 	P_IGOTO		.c6_1_td1
+ 
+ .c6_1_tm6
+-	P_MSG		49,meter		;FROG SAYS
++	P_NOTFRIEND		frog,.c6_1_tm7
++	P_MSG		49,meter		;FROG SAYS DEAD!
++	P_IGOTO		.c6_1_td1
+ 
++.c6_1_tm7
++	P_NOTFRIEND		miyu,.c6_1_tm8
++	P_MSG		156,meter		;MIYU SAYS DEAD!
++	P_IGOTO		.c6_1_td1
++
++.c6_1_tm8
++	P_MSG		159,meter		;FAY SAYS DEAD!
++
+ .c6_1_td1
+ 	P_DAMAGE
+ 	P_ADD		rotx,-2
+@@ -7654,15 +8016,25 @@ eguchi2
+ 
+ .c7_1_0
+ 	P_NOTFRIEND		falcon,.c7_1_m1
+-	P_MSG		7,meter
++	P_MSG		7,meter			;FALCON SAYS HELP!
+ 	P_IGOTO		.c7_1_1
+ .c7_1_m1
+ 	P_NOTFRIEND		rabbit,.c7_1_m2
+-	P_MSG		27,meter
++	P_MSG		27,meter		;RABBIT SAYS HELP!
+ 	P_IGOTO		.c7_1_1
+ .c7_1_m2
+-	P_MSG		47,meter
++	P_NOTFRIEND		frog,.c7_1_m3
++	P_MSG		47,meter		;FROG SAYS HELP!
++	P_IGOTO		.c7_1_1
+ 
++.c7_1_m3
++	P_NOTFRIEND		miyu,.c7_1_m4
++	P_MSG		154,meter		;MIYU SAYS HELP!
++	P_IGOTO		.c7_1_1
++
++.c7_1_m4
++	P_MSG		157,meter		;FAY SAYS HELP!
++
+ .c7_1_1
+ 	P_SOUND		1
+ 	P_SETVEL		50
+@@ -7736,14 +8108,22 @@ eguchi2
+ 
+ 
+ 	P_NOTFRIEND		falcon,.c7_1_6a
+-	P_MSG		15,meter
++	P_MSG		15,meter		;FALCON SAYS HIT!
+ 	P_GOTO		.c7_1_6c
+ .c7_1_6a
+ 	P_NOTFRIEND		rabbit,.c7_1_6b
+-	P_MSG		35,meter
++	P_MSG		35,meter		;RABBIT SAYS HIT!
+ 	P_GOTO		.c7_1_6c
+ .c7_1_6b
+-	P_MSG		55,meter
++	P_NOTFRIEND		frog,.c7_1_6b_1
++	P_MSG		55,meter		;FROG SAYS HIT!
++	P_GOTO		.c7_1_6c
++.c7_1_6b_1
++	P_NOTFRIEND		miyu,.c7_1_6b_2
++	P_MSG		160,meter		;MIYU SAYS HIT!
++	P_GOTO		.c7_1_6c
++.c7_1_6b_2
++	P_MSG		161,meter		;FAY SAYS HIT!
+ .c7_1_6c
+ 	P_DAMAGE
+ 	P_WAITCHASE		rotz,240
+@@ -7761,14 +8141,22 @@ eguchi2
+ 	P_WAIT		8
+ 
+ 	P_NOTFRIEND		falcon,.c7_1_m5
+-	P_MSG		9,meter
++	P_MSG		9,meter		;FALCON SAYS DEAD!
+ 	P_GOTO		.c7_1_h
+ .c7_1_m5
+ 	P_NOTFRIEND		rabbit,.c7_1_m6
+-	P_MSG		29,meter
++	P_MSG		29,meter		;RABBIT SAYS DEAD!
+ 	P_GOTO		.c7_1_h
+ .c7_1_m6
+-	P_MSG		49,meter
++	P_NOTFRIEND		frog,.c7_1_m7
++	P_MSG		49,meter		;FROG SAYS DEAD!
++	P_GOTO		.c7_1_h
++.c7_1_m7
++	P_NOTFRIEND		miyu,.c7_1_m8
++	P_MSG		156,meter		;MIYU SAYS DEAD!
++	P_GOTO		.c7_1_h
++.c7_1_m8
++	P_MSG		159,meter		;FAY SAYS DEAD!
+ 
+ .c7_1_h
+ 	P_DAMAGE
+@@ -7817,16 +8205,25 @@ eguchi2
+ 
+ .c7_tyame
+ 	P_NOTFRIEND		falcon,.c7_m_t1
+-	P_MSG		69,meter
++	P_MSG		69,meter		;FALCON SAYS HURRY!
+ 	P_RETURN
+ .c7_m_t1
+ 	P_NOTFRIEND		rabbit,.c7_m_t2
+-	P_MSG		70,meter
++	P_MSG		70,meter		;RABBIT SAYS HURRY!
+ 	P_RETURN
+ .c7_m_t2
+-	P_MSG		71,meter
++	P_NOTFRIEND		frog,.c7_m_t3
++	P_MSG		71,meter		;FROG SAYS HURRY!
+ 	P_RETURN
++.c7_m_t3
++	P_NOTFRIEND		miyu,.c7_m_t4
++	P_MSG		164,meter		;MIYU SAYS HURRY!
++	P_RETURN
++.c7_m_t4
++	P_MSG		165,meter		;FAY SAYS HURRY!
++	P_RETURN
+ 
++
+ .c7_td
+ 	P_TRIGGER		save,OFF
+ 	P_TRIGGER		yamete,OFF
+@@ -7834,17 +8231,27 @@ eguchi2
+ 	P_SMOKE		ON
+ 
+ 	P_NOTFRIEND		falcon,.c7_1_tm5
+-	P_MSG		9,meter		;FALCON SAYS
++	P_MSG		9,meter		;FALCON SAYS DEAD!
+ 	P_IGOTO		.c7_1_td1
+ 
+ .c7_1_tm5
+ 	P_NOTFRIEND		rabbit,.c7_1_tm6
+-	P_MSG		29,meter		;RABBIT SAYS
++	P_MSG		29,meter		;RABBIT SAYS DEAD!
+ 	P_IGOTO		.c7_1_td1
+ 
+ .c7_1_tm6
+-	P_MSG		49,meter		;FROG SAYS
++	P_NOTFRIEND		frog,.c7_1_tm7
++	P_MSG		49,meter		;FROG SAYS DEAD!
++	P_IGOTO		.c7_1_td1
+ 
++.c7_1_tm7
++	P_NOTFRIEND		miyu,.c7_1_tm8
++	P_MSG		156,meter		;MIYU SAYS DEAD!
++	P_IGOTO		.c7_1_td1
++
++.c7_1_tm8
++	P_MSG		159,meter		;FAY SAYS DEAD!
++
+ .c7_1_td1
+ 	P_DAMAGE
+ 	P_ACCEL		50,2
+@@ -8008,14 +8415,22 @@ eguchi2
+ 	P_SETVEL		40
+ 
+ 	P_NOTFRIEND		falcon,.c8_1_a
+-	P_MSG		13
++	P_MSG		13	;FALCON SAYS
+ 	P_IGOTO		.c8_1_01
+ .c8_1_a
+ 	P_NOTFRIEND		rabbit,.c8_1_b
+-	P_MSG		33
++	P_MSG		33	;RABBIT SAYS
+ 	P_IGOTO		.c8_1_01
+ .c8_1_b
+-	P_MSG		50
++	P_NOTFRIEND		frog,.c8_1_c
++	P_MSG		50	;FROG SAYS
++	P_IGOTO		.c8_1_01
++.c8_1_c
++	P_NOTFRIEND		miyu,.c8_1_d
++	P_MSG		172	;MIYU SAYS
++	P_IGOTO		.c8_1_01
++.c8_1_d
++	P_MSG		176	;FAY SAYS
+ .c8_1_01
+ 	P_WAIT		25
+ 	P_ZREMOVE	ON
+@@ -8038,7 +8453,18 @@ eguchi2
+ 	P_GOSUB		pchase4_1.c4_rab_ms
+ 	P_IGOTO		.c8_1_1
+ .c8_1_m2
++	P_NOTFRIEND		frog,.c8_1_m3_a
++	P_ADD		rotz,-5
+ 	P_GOSUB		pchase4_1.c4_fro_ms
++	P_IGOTO		.c8_1_1
++.c8_1_m3_a
++	P_NOTFRIEND		miyu,.c8_1_m4_a
++	P_ADD		rotz,-5
++	P_GOSUB		pchase4_1.c4_miy_ms
++	P_IGOTO		.c8_1_1
++.c8_1_m4_a
++	P_ADD		rotz,-5
++	P_GOSUB		pchase4_1.c4_fay_ms
+ 
+ .c8_1_1
+ 	P_WAITCHASE		rotz,0
+@@ -8074,7 +8500,15 @@ eguchi2
+ 	P_GOSUB		pchase4_1.c4_rab_ms
+ 	P_IGOTO		.c8_1_5
+ .c8_1_m4
++	P_NOTFRIEND		frog,.c8_1_m5
+ 	P_GOSUB		pchase4_1.c4_fro_ms
++	P_IGOTO		.c8_1_5
++.c8_1_m5
++	P_NOTFRIEND		miyu,.c8_1_m6
++	P_GOSUB		pchase4_1.c4_miy_ms
++	P_IGOTO		.c8_1_5
++.c8_1_m6
++	P_GOSUB		pchase4_1.c4_fay_ms
+ .c8_1_5
+ 	P_FIRE		canhit
+ 	P_SET		pbyte1,1
+@@ -8094,6 +8528,7 @@ eguchi2
+ 
+ 	P_END
+ ;---------------------------
++; player kills friend chase target
+ .c8_toru
+ 	P_IFSAME		pbyte1,0,.c8_toru1
+ 	P_RETURN
+@@ -8101,16 +8536,25 @@ eguchi2
+ 	P_SET		pbyte1,1
+ 
+ 	P_NOTFRIEND		falcon,.c8_toru2
+-	P_MSG		22
++	P_MSG		22		;FALCON 1
+ 	P_RETURN
+ .c8_toru2
+ 	P_NOTFRIEND		rabbit,.c8_toru3
+-	P_MSG		42
++	P_MSG		42		;RABBIT 1
+ 	P_RETURN
+ .c8_toru3
+-	P_MSG		61
++	P_NOTFRIEND		frog,.c8_toru4
++	P_MSG		61		;FROG 1
+ 	P_RETURN
++.c8_toru4
++	P_NOTFRIEND		miyu,.c8_toru5
++	P_MSG		170		;MIYU 1
++	P_RETURN
++.c8_toru5
++	P_MSG		171		;FAY 1
++	P_RETURN
+ 
++
+ ;---------------------------------
+ ;---------------------------------------------------------------------------
+ ;x = 3800,y = -3600, z = 4260
+@@ -8750,20 +9194,33 @@ eguchi2
+ 	P_IMPORT		pbyte1,ebyte2
+ 	P_IFNOTSAME		pbyte1,0,.sept_bye
+ 	P_NOTFRIEND		falcon,.sept_a
+-	P_MSG		72
++	P_MSG		72	;FALCON SAYS I SAVED YOU!
+ 	P_SET		pbyte1,1
+ 	P_EXPORT		ebyte2,pbyte1
+ 	P_IGOTO		.sept_bye
+ .sept_a
+ 	P_NOTFRIEND		rabbit,.sept_b
+-	P_MSG		73
++	P_MSG		73	;RABBIT SAYS I SAVED YOU!
+ 	P_SET		pbyte1,1
+ 	P_EXPORT		ebyte2,pbyte1
+ 	P_IGOTO		.sept_bye
+ .sept_b
+-	P_MSG		74
++	P_NOTFRIEND		frog,.sept_c
++	P_MSG		74	;FROG SAYS I SAVED YOU!
+ 	P_SET		pbyte1,1
+ 	P_EXPORT		ebyte2,pbyte1
++	P_IGOTO		.sept_bye
++.sept_c
++	P_NOTFRIEND		miyu,.sept_d
++	P_MSG		186	;MIYU SAYS I SAVED YOU!
++	P_SET		pbyte1,1
++	P_EXPORT		ebyte2,pbyte1
++	P_IGOTO		.sept_bye
++.sept_d
++	;fay
++	P_MSG		187	;FAY SAYS I SAVED YOU!
++	P_SET		pbyte1,1
++	P_EXPORT		ebyte2,pbyte1
+ .sept_bye
+ 	P_COLLISIONS	ON
+ 	P_ZREMOVE		ON
+@@ -9011,18 +9468,28 @@ yamete
+ .yame_ck
+ 	P_SET		pbyte2,1
+ 	P_NOTFRIEND		falcon,.yame_a
+-	P_MSG		14
++	P_MSG		14		;FALCON SAYS WATCH IT!
+ 	P_SET		hp,110
+ 	P_RETURN
+ .yame_a
+ 	P_NOTFRIEND		rabbit,.yame_b
+-	P_MSG		34
++	P_MSG		34		;RABBIT SAYS WATCH IT!
+ 	P_SET		hp,110
+ 	P_RETURN
+ .yame_b
+-	P_MSG		54
++	P_NOTFRIEND		frog,.yame_c
++	P_MSG		54		;FROG SAYS WATCH IT!
+ 	P_SET		hp,110
+ 	P_RETURN
++.yame_c
++	P_NOTFRIEND		miyu,.yame_d
++	P_MSG		162		;MIYU SAYS WATCH IT!
++	P_SET		hp,110
++	P_RETURN
++.yame_d
++	P_MSG		163		;FAY SAYS WATCH IT!
++	P_SET		hp,110
++	P_RETURN
+ 
+ ;***************************************************************************
+ 
+@@ -9032,17 +9499,27 @@ save
+ 	P_FORCE		.fit_0
+ 
+ 	P_NOTFRIEND		falcon,.save_0
+-	P_MSG		8,meter		;FALCON SAYS
+-	P_IGOTO		.save_2
++	P_MSG		8,meter		;FALCON SAYS THANKS!
++	P_IGOTO		.save_4
+ 
+ .save_0
+ 	P_NOTFRIEND		rabbit,.save_1
+-	P_MSG		28,meter		;RABBIT SAYS
+-	P_IGOTO		.save_2
++	P_MSG		28,meter		;RABBIT SAYS THANKS!
++	P_IGOTO		.save_4
+ 
+ .save_1
+-	P_MSG		48,meter		;FROG SAYS
++	P_NOTFRIEND		frog,.save_2
++	P_MSG		48,meter		;FROG SAYS THANKS!
++	P_IGOTO		.save_4
++
+ .save_2
++	P_NOTFRIEND		miyu,.save_3
++	P_MSG		155,meter		;MIYU SAYS THANKS!
++	P_IGOTO		.save_4
++
++.save_3
++	P_MSG		158,meter		;FAY SAYS THANKS!
++.save_4
+ 	P_RETURN
+ 
+ ;--------------------------------
+@@ -9060,9 +9537,19 @@ save
+ 	P_REMOVE
+ ;	P_END
+ .fit_sf
++	P_NOTFRIEND		frog,.fit_sm
+ 	P_QSPAWN		friendship_4,e_frog,100,1
+ 	P_REMOVE
+ ;	P_END
++.fit_sm
++	P_NOTFRIEND		miyu,.fit_sfay
++	P_QSPAWN		friendship_4,e_miyu,100,1
++	P_REMOVE
++;	P_END
++.fit_sfay
++	P_QSPAWN		friendship_4,e_fay,100,1
++	P_REMOVE
++;	P_END
+ ;--------------------------------
+ 	START_PATH	e_rabbit
+ 
+@@ -9071,7 +9558,6 @@ save
+ 	P_IGOTO		pe_falcon.fit_start_0
+ 
+ ;---------------------------------------------------------------------------
+-
+ 	START_PATH	e_frog
+ 
+ 	P_FRIEND		frog
+@@ -9079,6 +9565,21 @@ save
+ 	P_IGOTO		pe_falcon.fit_start_0
+ 
+ ;---------------------------------------------------------------------------
++	START_PATH	e_miyu
++
++	P_FRIEND		miyu
++
++	P_IGOTO		pe_falcon.fit_start_0
++
++;---------------------------------------------------------------------------
++	START_PATH	e_fay
++
++	P_FRIEND		fay
++
++	P_IGOTO		pe_falcon.fit_start_0
++
++;---------------------------------------------------------------------------
++
+ 	START_PATH	e_falcon
+ 
+ 	P_FRIEND		falcon
+@@ -9240,6 +9741,22 @@ save
+ 
+ ;---------------------------------------------------------------------------
+ 
++	START_PATH	hentai_miy
++
++	P_FRIEND		miyu
++
++	P_IGOTO		phentai_fal.hentai_init
++
++;---------------------------------------------------------------------------
++
++	START_PATH	hentai_fay
++
++	P_FRIEND		fay
++
++	P_IGOTO		phentai_fal.hentai_init
++
++;---------------------------------------------------------------------------
++
+ 	START_PATH	hentai_damy
+ 
+ 	P_TRIGGER		.hen_ckrad,always
+@@ -9572,6 +10089,11 @@ save
+ 	P_END
+ 
+ 
++	START_PATH	cl_warpwait
++
++	P_WAIT	20*3 ; ~3 seconds at max fps
++
++	P_END
+ 
+ 
+ ;---------------------------------------------------------------------
+diff -Nurp ./ultrastarfox/SF/PATH/PATHS.ASM ./miyu-and-fay-in-star-fox/SF/PATH/PATHS.ASM
+--- ./ultrastarfox/SF/PATH/PATHS.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/PATH/PATHS.ASM	2025-07-26 10:47:33
+@@ -1259,44 +1259,39 @@ path_istrat
+ 	tya
+ 	jmp		.okdok
+ .randomselect
+-
+-	lda		cock
+-	beq		.5050bunnyfrog
+-	lda		frog
+-	beq		.4060cockbunny
+-	lda		bunny
+-	beq		.4060cockfrog
+-.404020frogbunnycock
+-	jsl		random_l	; 20% falco, 40% frog/bunny
+-	cmp		#50
+-	bcc		.cock
+-	cmp		#150
+-	bcc		.bunny
+-	bra		.frog
+-.4060cockbunny
+-	lda		bunny
+-	beq		.cock
+-	s_jmp_random	.cock,40
+-	bra		.bunny
+-.4060cockfrog
+-	s_jmp_random	.cock,40
+-	bra		.frog
+-.5050bunnyfrog
+-	lda		frog
++	lda	cock
++	beq	.falcodead
++	s_jmp_random	.cock,teammateselectchance
++.falcodead
++	lda	bunny
++	beq	.peppydead
++	s_jmp_random	.bunny,teammateselectchance
++.peppydead
++	lda	frog
++	beq	.slippydead	;slippy's dead
++	s_jmp_random	.frog,teammateselectchance
++.slippydead	;NICE
++	lda		miyu
++	beq		.miyudead
++	s_jmp_random	.miyu,teammateselectchance
++.miyudead
++	lda		fay
+ 	beq		.nooneleft
+-	lda		bunny
+-	beq		.frog
+-	s_jmp_random	.frog
+-	jmp		.bunny
++	s_jmp_random	.fay,teammateselectchance
++	bra	.randomselect ; roll again if none picked
+ 
+ .nooneleft
+-	lda		bunny
++	lda		fay
+ 	beq		.nonealive
+ .bunny	lda		#friend_rabbit
+ 	bra		.okdok
+ .frog	lda		#friend_frog
+ 	bra		.okdok
+ .cock	lda		#friend_falcon
++	bra		.okdok
++.miyu	lda		#friend_miyu
++	bra		.okdok
++.fay	lda		#friend_fay
+ .okdok
+ 	sta		al_sbyte4,x
+ 	jmp		.add2
+diff -Nurp ./ultrastarfox/SF/STRAT/DSTRATS.ASM ./miyu-and-fay-in-star-fox/SF/STRAT/DSTRATS.ASM
+--- ./ultrastarfox/SF/STRAT/DSTRATS.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/STRAT/DSTRATS.ASM	2025-07-26 10:47:33
+@@ -5633,6 +5633,9 @@ madtrucker_istrat
+ 	s_set_alvar	W,x,al_sword1,#20
+ 	jsl		bigwhiteFOsprite_l
+ 	stx		circleobj
++	IFNE	RUMBLE
++	s_queue_rumble	5,5,20
++	ENDC
+ 	trigse		$1d
+ 	s_jmp		.skid
+ .swervy
+diff -Nurp ./ultrastarfox/SF/STRAT/EXPSTRAT.ASM ./miyu-and-fay-in-star-fox/SF/STRAT/EXPSTRAT.ASM
+--- ./ultrastarfox/SF/STRAT/EXPSTRAT.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/STRAT/EXPSTRAT.ASM	2025-07-26 10:47:33
+@@ -297,18 +297,30 @@ makeLexpobj_srou
+ 
+ ;*******************************************************************************
+ makeLexpobj_srou
++	IFNE	RUMBLE
++	s_queue_rumble	5,5,20
++	ENDC
+ 	jsl			makeexpobj_srou
+ 	s_set_alvar		W,y,al_shape,#largeshape
+ 	s_rtl
+ makeMEDexpobj_srou
++	IFNE	RUMBLE
++	s_queue_rumble	3,3,20
++	ENDC
+ 	jsl			makeexpobj_srou
+ 	s_set_alvar		W,y,al_shape,#mediumshape
+ 	s_rtl
+ makeSMLexpobj_srou
++	IFNE	RUMBLE
++	s_queue_rumble	1,1,20
++	ENDC
+ 	jsl			makeexpobj_srou
+ 	s_set_alvar		W,y,al_shape,#smallshape
+ 	s_rtl
+ makeFOLexpobj_srou
++	IFNE	RUMBLE
++	s_queue_rumble	5,5,16
++	ENDC
+ 	jsl			makeexpobj_srou
+ 	s_set_alvar		W,y,al_shape,#FOlargeshape
+ 	s_rtl
+@@ -851,12 +863,21 @@ explode_Icont
+ 	bcc	.mid
+ .far	a8
+ 	trigse		se_destructenemyfar
++	IFNE	RUMBLE
++	s_queue_rumble	2,2,15
++	ENDC
+ 	s_jmp		.end2
+ .mid	a8
+ 	trigse		se_destructenemymid
++	IFNE	RUMBLE
++	s_queue_rumble	4,4,15
++	ENDC
+ 	s_jmp		.end2
+ .near	a8
+ 	trigse		se_destructenemynear
++	IFNE	RUMBLE
++	s_queue_rumble	8,8,15
++	ENDC
+ .end2	ply
+ .nesnd
+ 
+@@ -937,6 +958,9 @@ BIGparticleexplode_strat
+ 	s_end_strat
+ BIGparticleexplode_strat
+ 	s_start_strat
++	IFNE	RUMBLE
++	s_queue_rumble	2,2,1
++	ENDC
+ 	s_particle_data	x,0,0,0
+ 	s_inc_alvar	 	B,x,al_count
+ 	s_jmp_alvarEQ		B,x,al_count,#110,remove_Istrat
+diff -Nurp ./ultrastarfox/SF/STRAT/GA2STRAT.ASM ./miyu-and-fay-in-star-fox/SF/STRAT/GA2STRAT.ASM
+--- ./ultrastarfox/SF/STRAT/GA2STRAT.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/STRAT/GA2STRAT.ASM	2025-07-26 10:47:33
+@@ -2166,71 +2166,6 @@ meteo0_Istrat
+ .badobj
+ 	s_jmp		explode_Istrat
+ 
+-
+-
+-
+-	ifeq	1
+-;**********************************************************************************
+-blackhole_Istrat
+-	s_start_strat
+-	s_sprite_obj	x,#0
+-	s_set_alptrs	x,.blackhole_strat,hitflash_Istrat,.exp_Istrat
+-	s_set_aldata	x,#10,#meteorAP
+-	s_set_alvar	B,x,al_roty,#deg180
+-	s_set_alvar	B,x,al_sbyte1,#70
+-	s_set_var		B,nosetport3,#1
+-.blackhole2_strat
+-	s_start_strat
+-	s_add_alvar		B,x,al_rotz,#12
+-	s_set_objtobeplayer	y
+-	s_jmp_alsflag		x,sflag1,.do
+-	s_jmp_distmore		x,y,#100,.ninto
+-	s_setnoremove_behind	x
+-	s_set_alsflag		x,sflag1
+-.do	
+-	s_copy_pos		x,y
+-	s_add_alvar		W,x,al_worldz,#100
+-
+-	s_jmp_alvarNE		B,x,al_sbyte1,#31,.nf
+-	startbgm		$f1
+-	fadedown
+-.nf
+-	s_decbne_alvar		B,x,al_sbyte1,.nc
+-	routechange	2
+-	s_set_var	B,levelfinished,#le_enterbhole
+-.nc
+-	startbgm		$f4
+-
+-	s_playerctrl		off
+-	s_achase_alvar		W,y,al_worldy,viewcy,2
+-	s_achase_alvar		W,y,al_worldx,#0,2
+-
+-	s_add_var		W,viewdist,#8
+-
+-	s_add_var		B,player_zstratadd,#12
+-	s_set_var		B,screenflashcnt,#screenflashwingfrms
+-	s_set_var		B,screenflashtype,#screenflashwingtype
+-
+-
+-	s_achase_alvar		W,x,al_worldy,player_posy,2
+-	s_achase_alvar		W,x,al_worldx,player_posx,2
+-	s_add_alvar		W,x,al_worldz,#-20
+-.ninto
+-.blackhole_strat
+-	s_add_playerZ	x
+-	s_add_alvar	W,x,al_worldz,#-30
+-	s_end_strat
+-.exp_Istrat
+-	s_start_strat
+-	s_set_alvar	B,x,al_roty,#0
+-	s_set_alvar	W,x,al_shape,#b_holl
+-	s_set_alsflag	x,colldisable
+-	s_set_strat	x,.blackhole2_strat	
+-	s_jmpto_strat
+-	endc
+-
+-
+-	ifeq	0
+ ;*********************************************************************************
+ blackhole_Istrat
+ 	s_start_strat
+@@ -2287,7 +2222,11 @@ blackhole_Istrat
+ 	s_jmp_alvarMORE		B,x,al_sbyte1,#30,.slow
+ 	s_jmp_ifdelay		2,.snd
+ .slow	s_jmp_notdelay		3,.nsnd
+-.snd	trigse			$2c
++.snd
++	IFNE	RUMBLE
++	s_queue_rumble	5,5,15
++	ENDC
++	trigse			$2c
+ .nsnd
+ 	s_jmp_notdelay		2,.badobj
+ 	s_make_obj		#blackhole,.badobj
+@@ -2321,8 +2260,6 @@ blackhole_Istrat
+ 	s_achase_alvar		W,x,al_worldx,player_posx,2
+ 	s_add_alvar		W,x,al_worldz,#-20
+ 	s_brl			.blackhole_strat
+-
+-	endc
+ 
+ 
+ ;***********************************************************************************
+diff -Nurp ./ultrastarfox/SF/STRAT/GB3STRAT.ASM ./miyu-and-fay-in-star-fox/SF/STRAT/GB3STRAT.ASM
+--- ./ultrastarfox/SF/STRAT/GB3STRAT.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/STRAT/GB3STRAT.ASM	2025-07-26 10:47:33
+@@ -3156,7 +3156,11 @@ bossBrobnextstate
+ ; DOUBLE LAUNCHER AND HATCH.
+ ;	mapobj	0000,0000,-70<<boss7_scale,-200,boss_7_1,boss7_Istrat
+ 
+-     
++	IFNE	RUMBLE
++boss7rumble1_tab
++	db	$40,$00,$00,$04,$00,$00,$91
++	ENDC
++
+ boss7_Istrat
+ 	s_start_strat
+ ;	set_sound1	x,#4
+@@ -3189,6 +3193,9 @@ boss7_Istrat
+ 	s_nodepthcue	x
+ 
+ 	trigse		$5b
++	IFNE	RUMBLE
++	s_queue_rumble_table	boss7rumble1_tab	; attack carrier go brrrrrrrrrrrrr
++	ENDC
+ 	s_set_alsflag	x,nohitaffect
+  
+ 	s_end_strat
+@@ -3395,7 +3402,9 @@ boss7b_init	; hatch fire
+ 
+ ;-----------------------------------------------------------------------------
+ boss7b_init	; hatch fire
+-
++	IFNE	RUMBLE
++	s_end_rumble_table	; kill sequenced rumble
++	ENDC
+ 	s_set_objtobechild	y,x,#1
+ 	s_chk_objptr		y,boss7c2_init	
+ 
+diff -Nurp ./ultrastarfox/SF/STRAT/GCSTRATS.ASM ./miyu-and-fay-in-star-fox/SF/STRAT/GCSTRATS.ASM
+--- ./ultrastarfox/SF/STRAT/GCSTRATS.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/STRAT/GCSTRATS.ASM	2025-07-26 10:47:33
+@@ -34,8 +34,10 @@ cockwait	=	90
+ frogwait	=	30
+ bunnywait	=	60
+ cockwait	=	90
++miyuwait	=	120
++faywait		=	150
+ clgndwait	=	110
+-cl_warp_btime	equ	430
++cl_warp_btime	equ	230+350 ;430 ;TODO: ADJUST THIS
+ 
+ 
+ 	shorta
+@@ -134,8 +136,43 @@ clshipWARPc_strat
+ 	s_set_var		W,svar_word3,#-30	; Y
+ 	s_jmp			clshipWARP_cont	
+ 
++clshipWARPd_Istrat
++	s_start_strat
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clshipWARPd_strat
++	s_setnoremove_behind	x
++	s_set_alvar		W,x,al_sword1,#cl_warp_btime-faywait-40
++ 	s_set_alvar		B,x,al_sbyte2,#20  	; time until remove.
++	s_set_alvar		W,x,al_vx,#10 
++	s_set_alvar		B,x,al_rotz,#-deg90	
++clshipWARPd_strat
++	s_start_strat
+ 
++	jsr			flyinleft_srou
+ 
++	s_set_var		W,svar_word2,#100	; Z
++	s_set_var		W,svar_word3,#-40	; Y
++	s_jmp			clshipWARP_cont	
++
++clshipWARPe_Istrat
++	s_start_strat
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clshipWARPe_strat
++	s_setnoremove_behind	x
++	s_set_alvar		W,x,al_sword1,#cl_warp_btime-miyuwait
++ 	s_set_alvar		B,x,al_sbyte2,#20  	; time until remove.
++	s_set_alvar		W,x,al_vx,#-10 
++	s_set_alvar		B,x,al_rotz,#deg90	
++clshipWARPe_strat
++	s_start_strat
++
++	jsr			flyinright_srou
++
++	s_set_var		W,svar_word2,#200	; Z
++	s_set_var		W,svar_word3,#-40	; Y
++	s_jmp			clshipWARP_cont	
++
++
+ clshipWARP_cont
+ 	s_jmp_alvarNE		W,x,al_sword1,#1,.nbs
+ ;	trigse			$32		; BOOST SOUND.
+@@ -204,6 +241,32 @@ clshipGNDc_strat
+ 	s_set_var		W,svar_word3,#50	; Y
+ 	s_jmp			clshipGND_cont	
+ 
++clshipGNDd_Istrat
++	s_start_strat
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clshipGNDd_strat
++	s_setnoremove_behind	x
++	s_set_alvar		W,x,al_sword1,#clgndwait+100-miyuwait
++clshipGNDd_strat
++	s_start_strat
++	s_achase_alvar		W,x,al_worldx,#90,4	  
++	s_set_var		W,svar_word2,#-300	; Z
++	s_set_var		W,svar_word3,#50	; Y
++	s_jmp			clshipGND_cont	
++
++clshipGNDe_Istrat
++	s_start_strat
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clshipGNDe_strat
++	s_setnoremove_behind	x
++	s_set_alvar		W,x,al_sword1,#clgndwait+100-faywait
++clshipGNDe_strat
++	s_start_strat
++	s_achase_alvar		W,x,al_worldx,#-90,4	  
++	s_set_var		W,svar_word2,#-300	; Z
++	s_set_var		W,svar_word3,#50	; Y
++	s_jmp			clshipGND_cont	
++
+ clshipGND_cont
+ 	s_beqdec_alvar		W,x,al_sword1,clshipboost_Istrat
+ 	s_set_objtobeplayer	y
+@@ -314,6 +377,46 @@ clshipEARTHc_strat
+ 	jsl		floatCLship2_l
+ 	s_jmp			clship_cont	
+ 
++clshipEARTHd_Istrat
++	s_start_strat	
++	s_set_alsflag		x,sflag1
++	s_set_alvar		B,x,al_sbyte1,#20
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clshipEARTHd_strat
++	s_set_alvar		B,x,al_rotz,#deg90+deg45
++	s_setnoremove_behind	x
++	s_set_alvar2rnd	x,al_sbyte3,#15
++	s_set_alvar2rnd	x,al_sbyte4,#7
++
++clshipEARTHd_strat
++	s_start_strat
++	s_achase_alvar		W,x,al_worldx,#50,4	  
++	s_set_var		W,svar_word2,#300
++	s_set_var		W,svar_word3,#50
++	jsl		floatCLship2_l
++	s_jmp			clship_cont	
++
++clshipEARTHe_Istrat
++	s_start_strat	
++	s_set_alsflag		x,sflag1
++	s_set_alvar		B,x,al_sbyte1,#10
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clshipEARTHe_strat
++	s_set_alvar		B,x,al_rotz,#-deg90
++	s_setnoremove_behind	x
++	s_set_alvar2rnd	x,al_sbyte3,#15
++	s_set_alvar2rnd	x,al_sbyte4,#7
++
++
++clshipEARTHe_strat
++	s_start_strat
++	s_achase_alvar		W,x,al_worldx,#-50,4	  
++	s_set_var		W,svar_word2,#200
++	s_set_var		W,svar_word3,#20
++	jsl		floatCLship2_l
++	s_jmp			clship_cont	
++
++
+ ;*****************************************************************************
+ clshipSHIPa_Istrat
+ 	s_start_strat	
+@@ -367,9 +470,43 @@ clship3_strat
+ 	s_set_var		W,svar_word3,#50
+ 	s_jmp			clship_cont	
+ 
++clshipSHIPd_Istrat
++	s_start_strat	
++	s_set_alsflag		x,sflag1
++	s_set_alvar		B,x,al_sbyte1,#10
++clship4_Istrat
++	s_start_strat
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clship4_strat
++	s_set_alvar		B,x,al_rotz,#-deg90
++	s_setnoremove_behind	x
++clship4_strat
++	s_start_strat
++	s_achase_alvar		W,x,al_worldx,#-150,4	  
++	s_set_var		W,svar_word2,#100
++	s_set_var		W,svar_word3,#20
++	s_jmp			clship_cont	
+ 
++clshipSHIPe_Istrat
++	s_start_strat	
++	s_set_alsflag		x,sflag1
++	s_set_alvar		B,x,al_sbyte1,#20
++clship5_Istrat
++	s_start_strat
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clship5_strat
++	s_set_alvar		B,x,al_rotz,#deg90
++	s_setnoremove_behind	x
++clship5_strat
++	s_start_strat
++	s_achase_alvar		W,x,al_worldx,#150,4	  
++	s_set_var		W,svar_word2,#200
++	s_set_var		W,svar_word3,#40
++	s_jmp			clship_cont	
+ 
+ 
++
++
+ clship_cont
+ 
+ 	a16
+@@ -454,9 +591,6 @@ clshipTURNa_strat
+ 	s_set_var		W,svar_word3,#-20	; Y
+ 	s_jmp			clshipTURN_cont	
+ 
+-	
+-
+-
+ clshipTURNb_Istrat
+ 	s_start_strat
+ 	s_set_alsflag		x,shadow
+@@ -483,7 +617,7 @@ clshipTURNc_Istrat
+ 	s_set_alsflag		x,shadow
+ 	s_set_strat		x,clshipTURNc_strat
+ 	s_setnoremove_behind	x
+-	s_set_alvar		B,x,al_sword1,#100+100+10-cockwait	200
++	s_set_alvar		B,x,al_sword1,#100+100+10-cockwait
+ 	s_set_alvar		B,x,al_sbyte1,#(deg180+deg45+deg22)/4
+ 	s_set_alsflag		x,sflag2
+ 	s_set_alvar2rnd	x,al_sbyte3,#15
+@@ -495,8 +629,50 @@ clshipTURNc_strat
+ 	s_set_var		W,svar_word3,#-30	; Y
+ 	s_jmp			clshipTURN_cont	
+ 
++clshipTURNd_Istrat
++	s_start_strat
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clshipTURNd_strat
++	s_setnoremove_behind	x
++	s_set_alvar		W,x,al_vx,#10 
++	s_set_alvar		B,x,al_rotz,#-deg90	
++	s_set_alvar		B,x,al_sword1,#100+130+10-faywait
++	s_set_alvar		B,x,al_sbyte1,#(deg180+deg45+deg22)/4
++	s_set_alsflag		x,sflag2
++	s_set_alvar2rnd	x,al_sbyte3,#15
++	s_set_alvar2rnd	x,al_sbyte4,#7
+ 
++clshipTURNd_strat
++	s_start_strat
+ 
++	jsr			flyinleft_srou
++
++	s_set_var		W,svar_word2,#100	; Z
++	s_set_var		W,svar_word3,#-20	; Y
++	s_jmp			clshipTURN_cont	
++
++clshipTURNe_Istrat
++	s_start_strat
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clshipTURNe_strat
++	s_setnoremove_behind	x
++	s_set_alvar		W,x,al_vx,#-10 
++	s_set_alvar		B,x,al_rotz,#deg90	
++	s_set_alvar		B,x,al_sword1,#100+120+10-miyuwait
++	s_set_alvar		B,x,al_sbyte1,#(deg180+deg45+deg22)/4
++	s_clr_alsflag		x,sflag2
++	s_set_alvar2rnd	x,al_sbyte3,#15
++	s_set_alvar2rnd	x,al_sbyte4,#7
++clshipTURNe_strat
++	s_start_strat
++
++	jsr			flyinright_srou
++
++	s_set_var		W,svar_word2,#200	; Z
++	s_set_var		W,svar_word3,#-20	; Y
++	s_jmp			clshipTURN_cont	
++
++
+ clshipTURN_cont
+ 
+ 	s_beqdec_alvar		W,x,al_sword1,clshipTURN_Istrat
+@@ -568,7 +744,7 @@ clshipBRIDGEa_Istrat
+ 	s_setnoremove_behind	x
+ 	s_set_alvar		B,x,al_rotz,#-deg90	
+ 	s_set_alvar		B,x,al_roty,#deg45
+-	s_set_alvar		W,x,al_sword1,#130-bunnywait
++	s_set_alvar		W,x,al_sword1,#230-bunnywait
+ clshipBRIDGEa_strat
+ 	s_start_strat
+ 
+@@ -578,9 +754,6 @@ clshipBRIDGEa_strat
+ 	s_set_var		W,svar_word3,#20	; Y
+ 	s_jmp			clshipBRIDGE_cont	
+ 
+-	
+-
+-
+ clshipBRIDGEb_Istrat
+ 	s_start_strat
+ 	s_set_alsflag		x,shadow
+@@ -588,7 +761,7 @@ clshipBRIDGEb_Istrat
+ 	s_setnoremove_behind	x
+ 	s_set_alvar		B,x,al_rotz,#deg90	
+ 	s_set_alvar		B,x,al_roty,#-deg45
+-	s_set_alvar		W,x,al_sword1,#140-frogwait
++	s_set_alvar		W,x,al_sword1,#240-frogwait
+ clshipBRIDGEb_strat
+ 	s_start_strat
+ 
+@@ -603,7 +776,7 @@ clshipBRIDGEc_Istrat
+ 	s_set_alsflag		x,shadow
+ 	s_set_strat		x,clshipBRIDGEc_strat
+ 	s_setnoremove_behind	x
+-	s_set_alvar		W,x,al_sword1,#150-cockwait
++	s_set_alvar		W,x,al_sword1,#250-cockwait
+ clshipBRIDGEc_strat
+ 	s_start_strat
+ 	s_achase_alvar		W,x,al_worldx,#0,4	  
+@@ -612,7 +785,41 @@ clshipBRIDGEc_strat
+ 	s_jmp			clshipBRIDGE_cont	
+ 
+ 
++clshipBRIDGEd_Istrat
++	s_start_strat
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clshipBRIDGEd_strat
++	s_setnoremove_behind	x
++	s_set_alvar		B,x,al_rotz,#-deg90	
++	s_set_alvar		B,x,al_roty,#deg45
++	s_set_alvar		W,x,al_sword1,#260-faywait
++clshipBRIDGEd_strat
++	s_start_strat
+ 
++	s_achase_alvar		W,x,al_worldx,#-70,4	  
++
++	s_set_var		W,svar_word2,#-300	; Z
++	s_set_var		W,svar_word3,#20	; Y
++	s_jmp			clshipBRIDGE_cont	
++
++clshipBRIDGEe_Istrat
++	s_start_strat
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clshipBRIDGEe_strat
++	s_setnoremove_behind	x
++	s_set_alvar		B,x,al_rotz,#deg90	
++	s_set_alvar		B,x,al_roty,#-deg45
++	s_set_alvar		W,x,al_sword1,#270-miyuwait
++clshipBRIDGEe_strat
++	s_start_strat
++
++	s_achase_alvar		W,x,al_worldx,#70,4	  
++
++	s_set_var		W,svar_word2,#-400	; Z
++	s_set_var		W,svar_word3,#20	; Y
++	s_jmp			clshipBRIDGE_cont	
++
++
+ clshipBRIDGE_cont
+ 	s_beqdec_alvar		W,x,al_sword1,clshipbridgeboost_Istrat
+ 	s_set_objtobeplayer	y
+@@ -673,7 +880,7 @@ clshipDIVEa_Istrat
+ 	s_start_strat
+ 	s_set_strat		x,clshipDIVEa_strat
+ 	s_setnoremove_behind	x
+-	s_set_alvar		W,x,al_sword1,#180-bunnywait
++	s_set_alvar		W,x,al_sword1,#280-bunnywait
+ 	s_set_alvar		B,x,al_rotz,#-deg90	
+ clshipDIVEa_strat
+ 	s_start_strat
+@@ -710,7 +917,7 @@ clshipDIVEb_Istrat
+ 	s_start_strat
+ 	s_set_strat		x,clshipDIVEb_strat
+ 	s_setnoremove_behind	x
+-	s_set_alvar		W,x,al_sword1,#190-frogwait
++	s_set_alvar		W,x,al_sword1,#290-frogwait
+ 	s_set_alvar		B,x,al_rotz,#deg90	
+ clshipDIVEb_strat
+ 	s_start_strat
+@@ -745,7 +952,7 @@ clshipDIVEc_Istrat
+ 	s_start_strat
+ 	s_set_strat		x,clshipDIVEc_strat
+ 	s_setnoremove_behind	x
+-	s_set_alvar		W,x,al_sword1,#170-cockwait
++	s_set_alvar		W,x,al_sword1,#270-cockwait
+  	s_set_alvar		B,x,al_sbyte2,#20
+ clshipDIVEc_strat
+ 	s_start_strat
+@@ -771,6 +978,82 @@ clshipDIVEc_strat
+ 
+ 
+ 
++clshipDIVEd_Istrat
++	s_start_strat
++	s_set_strat		x,clshipDIVEd_strat
++	s_setnoremove_behind	x
++	s_set_alvar		W,x,al_sword1,#280-faywait
++	s_set_alvar		B,x,al_rotz,#-deg90	
++clshipDIVEd_strat
++	s_start_strat
++
++	s_achase_alvar		W,x,al_worldx,#-50,4	  
++
++	s_set_var		W,svar_word2,#100	; Z
++	s_set_var		W,svar_word3,#-50	; Y    
++
++	s_jmp_alvarMORE		W,x,al_sword1,#60,.nhigh
++	s_jmp_alvarLESS		W,x,al_sword1,#30,.nvy
++	s_add_alvar		B,x,al_rotz,#2   
++	s_jmp_notdelay		2,.nvx
++	s_add_alvar		W,x,al_vx,#-1
++.nvx	s_jmp_notdelay		1,.nvy
++	s_add_alvar		W,x,al_vy,#-1
++.nvy	
++	s_add_vecs2pos		x
++	s_jmp_alvarNE		W,x,al_sword1,#1,.nb
++	s_set_objtobeplayer	y
++	s_copy_pos		x,y
++	s_add_alvar		W,x,al_worldy,#-200
++	s_add_alvar		W,x,al_worldx,#-50
++.nb
++
++	brl			clshipDIVE_cont2
++.nhigh
++	s_jmp			clshipDIVE_cont	
++
++	
++
++
++clshipDIVEe_Istrat
++	s_start_strat
++	s_set_strat		x,clshipDIVEe_strat
++	s_setnoremove_behind	x
++	s_set_alvar		W,x,al_sword1,#290-miyuwait
++	s_set_alvar		B,x,al_rotz,#deg90	
++clshipDIVEe_strat
++	s_start_strat
++
++	s_achase_alvar		W,x,al_worldx,#50,4	  
++
++	s_set_var		W,svar_word2,#100	; Z
++	s_set_var		W,svar_word3,#-50	; Y
++
++	s_jmp_alvarMORE		W,x,al_sword1,#60,.nhigh
++	s_jmp_alvarLESS		W,x,al_sword1,#30,.nvy
++	s_sub_alvar		B,x,al_rotz,#2    
++	s_jmp_notdelay		2,.nvx
++	s_add_alvar		W,x,al_vx,#1
++.nvx	s_jmp_notdelay		1,.nvy
++	s_add_alvar		W,x,al_vy,#-1
++.nvy	
++	s_add_vecs2pos		x
++	s_jmp_alvarNE		W,x,al_sword1,#1,.nb
++	s_set_objtobeplayer	y
++	s_copy_pos		x,y
++	s_add_alvar		W,x,al_worldy,#-200
++	s_add_alvar		W,x,al_worldx,#50
++.nb
++
++	brl			clshipDIVE_cont2
++.nhigh
++
++	s_jmp			clshipDIVE_cont	
++
++
++
++
++
+ clshipDIVE_cont
+ 
+ 
+@@ -827,9 +1110,6 @@ clshipCHASEa_strat
+ 	s_set_var		W,svar_word3,#20	; Y
+ 	s_jmp			clshipCHASE_cont	
+ 
+-	
+-
+-
+ clshipCHASEb_Istrat
+ 	s_start_strat
+ 	s_set_alsflag		x,shadow
+@@ -860,8 +1140,42 @@ clshipCHASEc_strat
+ 	s_set_var		W,svar_word3,#30	; Y
+ 	s_jmp			clshipCHASE_cont	
+ 
++clshipCHASEd_Istrat
++	s_start_strat
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clshipCHASEd_strat
++	s_setnoremove_behind	x
++	s_set_alvar		B,x,al_rotz,#-deg90	
++	s_set_alvar		B,x,al_roty,#deg45
++	s_set_alvar		W,x,al_sword1,#246+5-miyuwait
++clshipCHASEd_strat
++	s_start_strat
+ 
++	s_achase_alvar		W,x,al_worldx,#-70,4	  
+ 
++	s_set_var		W,svar_word2,#-200	; Z
++	s_set_var		W,svar_word3,#40	; Y
++	s_jmp			clshipCHASE_cont	
++
++clshipCHASEe_Istrat
++	s_start_strat
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clshipCHASEe_strat
++	s_setnoremove_behind	x
++	s_set_alvar		B,x,al_rotz,#deg90	
++	s_set_alvar		B,x,al_roty,#-deg45
++	s_set_alvar		W,x,al_sword1,#246+10-faywait
++clshipCHASEe_strat
++	s_start_strat
++
++	s_achase_alvar		W,x,al_worldx,#70,4	  
++
++	s_set_var		W,svar_word2,#-300	; Z
++	s_set_var		W,svar_word3,#40	; Y
++	s_jmp			clshipCHASE_cont	
++
++
++
+ clshipCHASE_cont
+ 	s_beqdec_alvar		W,x,al_sword1,clshipboost_Istrat
+ 	s_set_objtobeplayer	y
+@@ -938,9 +1252,7 @@ clshipUNDERa_strat
+ 	s_set_var		W,svar_word3,#20	; Y
+ 	s_jmp			clshipUNDER_cont	
+ 
+-	
+ 
+-
+ clshipUNDERb_Istrat
+ 	s_start_strat
+ 	s_set_alsflag		x,shadow
+@@ -974,8 +1286,46 @@ clshipUNDERc_strat
+ 	s_set_var		W,svar_word3,#30	; Y
+ 	s_jmp			clshipUNDER_cont	
+ 
++clshipUNDERd_Istrat
++	s_start_strat
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clshipUNDERd_strat
++	s_setnoremove_behind	x
++	s_set_alvar		B,x,al_rotz,#-deg90	
++	s_set_alvar		B,x,al_roty,#deg45
++	s_set_alvar		W,x,al_sword1,#140+20
++	s_set_alvar		B,x,al_sbyte1,#1
++	s_set_alsflag		x,sflag2
++clshipUNDERd_strat
++	s_start_strat
+ 
++	s_achase_alvar		W,x,al_worldx,#-70,4	  
+ 
++	s_set_var		W,svar_word2,#-100	; Z
++	s_set_var		W,svar_word3,#20	; Y
++	s_jmp			clshipUNDER_cont	
++
++clshipUNDERe_Istrat
++	s_start_strat
++	s_set_alsflag		x,shadow
++	s_set_strat		x,clshipUNDERe_strat
++	s_setnoremove_behind	x
++	s_set_alvar		B,x,al_rotz,#deg90	
++	s_set_alvar		B,x,al_roty,#-deg45
++	s_set_alvar		W,x,al_sword1,#140+25
++	s_set_alvar		B,x,al_sbyte1,#2
++	s_clr_alsflag		x,sflag2
++clshipUNDERe_strat
++	s_start_strat
++
++	s_achase_alvar		W,x,al_worldx,#70,4	  
++
++	s_set_var		W,svar_word2,#-200	; Z
++	s_set_var		W,svar_word3,#20	; Y
++	s_jmp			clshipUNDER_cont	
++
++
++
+ clshipUNDER_cont					    
+ 	s_beqdec_alvar		W,x,al_sword1,clshipUNDERboost_Istrat
+ 	s_set_objtobeplayer	y
+@@ -1326,17 +1676,46 @@ pshipOutofLB1_strat
+ 	s_set_strat		y,shiplb1_Istrat
+ .bad2
+ 
+-	s_jmp_varZERO		B,bunny,.bad3
+-	s_make_obj		#my_demos,.bad3
++	s_jmp_varZERO		B,bunny,.bad2_1
++	s_make_obj		#my_demos,.bad2
+ 	s_copy_pos		y,x
+ 	s_copy_rots		y,x
+ 	s_copy_vecs		y,x
+ 	s_add_alvar		W,y,al_worldx,#450+600
+ 	s_add_alvar		W,y,al_worldy,#1000
+ 	s_set_alvar		W,y,al_sword1,#50
++	s_add_alvar		W,y,al_worldz,#450
++	s_set_alvar		B,y,al_sbyte1,#30+30+2
++	s_set_strat		y,shiplb1_Istrat
++
++.bad2_1
++
++	s_jmp_varZERO		B,miyu,.bad2_2
++	s_make_obj		#my_demos,.bad2_2
++	s_copy_pos		y,x
++	s_copy_rots		y,x
++	s_copy_vecs		y,x
++	s_add_alvar		W,y,al_worldx,#450+600+100
++	s_add_alvar		W,y,al_worldy,#1500
++	s_set_alvar		W,y,al_sword1,#50
+ 	s_add_alvar		W,y,al_worldz,#400
+ 	s_set_alvar		B,y,al_sbyte1,#30+30+2
+ 	s_set_strat		y,shiplb1_Istrat
++
++.bad2_2
++
++	s_jmp_varZERO		B,fay,.bad3
++	s_make_obj		#my_demos,.bad3
++	s_copy_pos		y,x
++	s_copy_rots		y,x
++	s_copy_vecs		y,x
++	s_add_alvar		W,y,al_worldx,#450+600+200
++	s_add_alvar		W,y,al_worldy,#2000
++	s_set_alvar		W,y,al_sword1,#50
++	s_add_alvar		W,y,al_worldz,#450
++	s_set_alvar		B,y,al_sbyte1,#30+30+2
++	s_set_strat		y,shiplb1_Istrat
++
+ .bad3
+ 	s_next_state		x
+ .ns3
+diff -Nurp ./ultrastarfox/SF/STRAT/GISTRATS.ASM ./miyu-and-fay-in-star-fox/SF/STRAT/GISTRATS.ASM
+--- ./ultrastarfox/SF/STRAT/GISTRATS.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/STRAT/GISTRATS.ASM	2025-07-26 10:47:33
+@@ -241,7 +241,7 @@ friendstart2go_init
+ friendstart2go_init
+ 	s_start_strat	
+ 	s_set_strat		x,friendstart2go_strat
+-	s_set_lifecnt		x,#50
++	s_set_lifecnt		x,#70
+ 	s_set_speed		x,#70
+ 	s_set_alvar		B,x,al_rotx,#deg11
+ 	s_set_alvar		B,x,al_rotz,#deg90
+@@ -261,8 +261,8 @@ friendstart2go_strat
+ 	s_achase_alvar		B,x,al_rotz,#0,4
+ 	s_jmp_notdelay		1,.nch
+ 	s_achase_alvar		B,x,al_rotx,#0,4
+-	s_achase_alvar		W,x,al_worldx,#0,4
+-	s_achase_alvar		W,x,al_worldy,viewcy,3
++;	s_achase_alvar		W,x,al_worldx,#0,4
++;	s_achase_alvar		W,x,al_worldy,viewcy,3
+ .nch	s_gen_3dvecs		x,al_roty,al_rotx,al_vel
+ 	s_add_vecs2pos		x
+ 	s_dec_lifecnt		x
+@@ -271,7 +271,68 @@ friendstart2go_strat
+ 
+ 	endc
+ 
++friendstart1_Istrat
++	s_start_strat
++	s_setnoremove_behind	x
++	s_set_alsflag		x,colldisable
++	s_set_strat		x,friendstart1go_strat
++	s_set_lifecnt		x,#70
++	s_set_speed		x,#30
++;	s_set_alvar		B,x,al_rotz,#deg45
++friendstart1go_strat
++	s_start_strat
+ 
++	s_set_objtobeplayer	y
++	s_jmp_objinfront	y,x,.nch
++	s_jmp_alsflag		x,sflag1,.nb
++	s_set_alsflag		x,sflag1
++;	s_set_vartobeobj	boostobj,x
++;	boost_sprite
++;	trigse			$32
++.nb
++	s_achase_alvar		B,x,al_rotz,#0,4
++	s_jmp_notdelay		2,.nch
++	s_achase_alvar		B,x,al_rotx,#-deg90,4
++.nch	
++
++
++	s_gen_3dvecs		x,al_roty,al_rotx,al_vel
++	s_add_vecs2pos		x
++	s_add_playerZ		x
++	s_dec_lifecnt		x
++	s_end_strat
++
++friendstart2_Istrat
++	s_start_strat
++	s_setnoremove_behind	x
++	s_set_alsflag		x,colldisable
++	s_set_strat		x,friendstart2go_strat
++	s_set_lifecnt		x,#70
++	s_set_speed		x,#30
++	s_set_alvar		B,x,al_rotz,#-deg45
++friendstart2go_strat
++	s_start_strat
++
++	s_set_objtobeplayer	y
++	s_jmp_objinfront	y,x,.nch
++	s_jmp_alsflag		x,sflag1,.nb
++	s_set_alsflag		x,sflag1
++;	s_set_vartobeobj	boostobj,x
++;	boost_sprite
++;	trigse			$32
++.nb
++	s_achase_alvar		B,x,al_rotz,#0,4
++	s_jmp_notdelay		2,.nch
++	s_achase_alvar		B,x,al_rotx,#-deg45,4
++.nch	
++
++
++	s_gen_3dvecs		x,al_roty,al_rotx,al_vel
++	s_add_vecs2pos		x
++	s_add_playerZ		x
++	s_dec_lifecnt		x
++	s_end_strat
++
+ friendstart3_Istrat
+ 	s_start_strat
+ 	s_setnoremove_behind	x
+@@ -571,6 +632,10 @@ lastb4_Istrat	; second door
+ 
+ 	s_end_strat
+ ;*****************************************************************************
++	IFNE	RUMBLE
++partyboost
++	db	$11,$11,$22,$22,$33,$33,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$19
++	ENDC
+ shipintro_Istrat
+ 	s_start_strat
+ 	s_set_strat	x,shipintro_strat
+@@ -596,6 +661,9 @@ shipintro_strat
+ 	s_jmp_alvarNE		B,x,al_sbyte1,#2,.nspr
+ 	s_set_vartobeobj	boostobj,x
+ 	boost_sprite
++	IFNE	RUMBLE
++	s_queue_rumble_table		partyboost
++	ENDC
+ 	trigse			$32
+ .nspr
+ 
+@@ -675,8 +743,11 @@ viewopening_strat
+ 	s_copy_alvar2var	W,x,viewposz,al_worldz
+ 	s_end_strat
+ 
++	IFNE	RUMBLE
++shiptab1
++	db	$22,$22,$33,$33,$33,$33,$22,$22,$19
++	ENDC
+ 
+-
+ ;***********************************************************************************
+ playerdownintro_Istrat
+ 	s_start_strat
+@@ -684,6 +755,9 @@ playerdownintro_Istrat
+ 	s_set_alsflag	x,colldisable
+ 	s_set_alvar	B,x,al_rotx,#deg22
+ 	s_setnoremove_behind	x
++	IFNE	RUMBLE
++	s_queue_rumble_table	shiptab1
++	ENDC
+ 	s_set_strat	x,playerdownintro_strat
+ 	s_copy_alvar2alvar	B,x,al_sbyte3,x,al_roty
+ 	s_copy_alvar2alvar	B,x,al_sbyte4,x,al_rotx
+@@ -746,12 +820,17 @@ playerdown2intro_Istrat
+ 	s_set_alsflag	x,colldisable
+ 	s_set_alvar	B,x,al_rotx,#deg22
+ 	s_setnoremove_behind	x
++	IFNE	RUMBLE
++	s_queue_rumble_table	shiptab1
++	ENDC
+ 	s_set_strat	x,playerdown2intro_strat
+ 	s_copy_alvar2alvar	B,x,al_sbyte3,x,al_roty
+ 	s_copy_alvar2alvar	B,x,al_sbyte4,x,al_rotx
++	IFNE	RUMBLE
++	s_queue_rumble_table	shiptab1
++	ENDC
++	s_set_alvar		B,x,al_sbyte1,#30
+ 
+-	s_set_alvar		B,x,al_sbyte1,#30      
+-
+ 	s_set_speed	x,#120
+ 
+ 	s_set_aldata		x,#8,#hardAP
+@@ -792,7 +871,9 @@ playerdown3intro_Istrat
+ 	s_set_strat	x,playerdown3intro_strat
+ 	s_copy_alvar2alvar	B,x,al_sbyte3,x,al_roty
+ 	s_copy_alvar2alvar	B,x,al_sbyte4,x,al_rotx
+-
++	IFNE	RUMBLE
++	s_queue_rumble_table	shiptab1
++	ENDC
+ 	s_set_alvar		B,x,al_sbyte1,#30      
+ 
+ 	s_set_speed	x,#120
+@@ -856,6 +937,12 @@ playerfireintro_strat
+ 	s_add_playerZ		x
+ 	s_end_strat
+ 
++	IFNE	RUMBLE
++idlerumble1
++	db	$44,$00,$44,$00,$00,$00,$00,$00,$91
++idlerumble2
++	db	$11,$00,$11,$00,$00,$00,$00,$00,$91
++	ENDC
+ 
+ ;***********************************************************************************
+ boss7intro_Istrat
+@@ -867,7 +954,9 @@ boss7intro_Istrat
+ 
+ 	s_set_vecs	x,#0,#5,#15
+ 	s_nodepthcue	x
+-
++	IFNE	RUMBLE
++	s_queue_rumble_table	idlerumble1
++	ENDC
+ 	s_make_childobj	#deboss_0,#1,boss7intropart_Istrat,enemy1	      
+ 	s_nodepthcue	y
+ 	s_make_childobj	#deboss_2,#2,boss7intropart_Istrat,enemy1	      
+@@ -957,6 +1046,9 @@ zaco2intro_Istrat
+ 	s_set_strat	x,zaco2intro_strat
+ 	s_set_alsflag	x,colldisable
+ 	s_set_speed	x,#45
++	IFNE	RUMBLE
++	s_queue_rumble_table	idlerumble2
++	ENDC
+ 	s_set_alvar	B,x,al_rotx,#deg90
+ 	s_set_alvar	B,x,al_sbyte1,#30
+ 	s_set_alvar	B,x,al_sbyte2,#6	; time until end after near player.
+@@ -1012,6 +1104,9 @@ zaco2intro_strat
+ 	s_set_objtobeplayer	y
+ 	s_jmp_objinfront	x,y,.nexit
+ ;	s_decbne_alvar		B,x,al_sbyte2,.nexit
++	IFNE	RUMBLE
++	s_end_rumble_table
++	ENDC
+ 	s_set_var		B,exitintro,#1
+ .nexit
+ 
+diff -Nurp ./ultrastarfox/SF/STRAT/GSTRATS.ASM ./miyu-and-fay-in-star-fox/SF/STRAT/GSTRATS.ASM
+--- ./ultrastarfox/SF/STRAT/GSTRATS.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/STRAT/GSTRATS.ASM	2025-07-26 10:47:33
+@@ -2114,6 +2114,11 @@ removenuke_Istrat
+ 	s_jmp		remove_Istrat
+ 
+ 
++	IFNE	RUMBLE
++bombtable
++	db	$11,$11,$22,$33,$44,$55,$55,$55,$55,$55,$55,$55,$55,$55,$44,$33,$22,$11,$11,$19
++	ENDC
++
+ nukeexp_Istrat
+ 	s_start_strat
+ 	s_set_alvar		W,x,al_sword1,#nukeRATE
+@@ -2127,6 +2132,10 @@ nukeexp_strat
+ 	s_end_strat
+ nukeexp_strat
+ 	s_start_strat
++
++	IFNE	RUMBLE
++	s_queue_rumble_table	bombtable	; sequenced rumble effects have priority
++	ENDC
+ 
+ 	a16
+ 	lda	al_sword1,x
+diff -Nurp ./ultrastarfox/SF/STRAT/KSTRATS.ASM ./miyu-and-fay-in-star-fox/SF/STRAT/KSTRATS.ASM
+--- ./ultrastarfox/SF/STRAT/KSTRATS.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/STRAT/KSTRATS.ASM	2025-07-26 10:47:33
+@@ -743,6 +743,9 @@ blackholeexit_Istrat
+ 	s_set_alvar		W,y,al_worldz,player_posz
+ 	s_add_alvar		W,y,al_worldz,#600
+ 	s_set_strat		y,.strat2
++	IFNE	RUMBLE
++	s_queue_rumble	5,5,15
++	ENDC
+ 	trigse		$2c
+ .badobj
+ .ninto
+diff -Nurp ./ultrastarfox/SF/STRAT/PCSTRATS.ASM ./miyu-and-fay-in-star-fox/SF/STRAT/PCSTRATS.ASM
+--- ./ultrastarfox/SF/STRAT/PCSTRATS.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/STRAT/PCSTRATS.ASM	2025-07-26 10:47:33
+@@ -59,12 +59,12 @@ playerclearbridge_Istrat
+ 	s_set_var		W,psvar_word1,#0
+ 	s_set_var		W,psvar_word2,#0
+ 					     
+-	s_set_var		B,psvar_byte1,#125+38
++	s_set_var		W,psvar_word1,#280
+ 
+ playerclearbridge_strat
+ 	s_start_strat
+ 	jsr			centoutrots
+-	s_beqdec_var		B,psvar_byte1,playerclearbridge2_init
++	s_beqdec_var		W,psvar_word1,playerclearbridge2_init
+ 	s_achase_alvar.w	W,x,al_worldy,ViewCY,4
+ 	s_achase_alvar.w	W,x,al_worldx,#0,4
+ 	s_set_var		B,player_tospeed,#maxpspeed
+@@ -625,7 +625,7 @@ playerDIVE_Istrat
+ 	s_playerctrl		off
+ 
+ 	s_or_var		B,pstratflags,#pstf_novdistC
+-	s_set_var		W,psvar_word1,#210+56+20
++	s_set_var		W,psvar_word1,#350 ;286+100 ; time to wait before dive
+ 
+ 	lda	playerflymode
+ 	ora	#pfm_wobble
+@@ -815,7 +815,7 @@ playerwarp_Istrat
+ 	s_or_var		B,gameflags,#gf_noZremove
+ 	s_AND_var		B,gameflags,#~gf_viewrot
+ 
+-	s_set_var		W,psvar_word1,#200
++	s_set_var		W,psvar_word1,#350 ;200 ; wait time
+ 
+ 	lda	playerflymode
+ 	ora	#pfm_wobble
+@@ -862,6 +862,9 @@ playerwarp_strat
+ 	s_set_strat		y,hyperspace_Istrat
+ .bad	s_set_var		W,psvar_word1,#60
+ 	startbgm		8
++	IFNE	RUMBLE
++	s_queue_rumble_table	hyperspacerumbletab
++	ENDC
+ .nsturn
+ 
+ 
+diff -Nurp ./ultrastarfox/SF/STRAT/PISTRATS.ASM ./miyu-and-fay-in-star-fox/SF/STRAT/PISTRATS.ASM
+--- ./ultrastarfox/SF/STRAT/PISTRATS.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/STRAT/PISTRATS.ASM	2025-07-26 10:47:33
+@@ -38,6 +38,10 @@
+ 
+ 	incpublics	EXT\pistrats.ext
+ 
++	IFNE	RUMBLE
++partyboost2
++	db	$11,$11,$22,$22,$33,$33,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$44,$19
++	ENDC
+ ;*****************************************************************************
+ playeropening_Istrat
+ 	s_start_strat
+@@ -95,6 +99,9 @@ playeropeningboost_init
+ playeropeningboost_init
+ 	s_set_strat		x,playeropeningboost_strat
+ 	s_set_vartobeobj	boostobj,x
++	IFNE	RUMBLE
++	s_queue_rumble_table		partyboost2
++	ENDC
+ 	boost_sprite
+ 	trigse			$32
+ 	s_and_var		B,pshipflags3,#~psf3_enginesnd
+@@ -372,6 +379,9 @@ playerWarpOut_Istrat
+ 
+ 	s_make_obj		#nullshape,.badobj
+ 	s_set_strat		y,hyperspaceout_Istrat
++	IFNE	RUMBLE
++	s_queue_rumble_table	hyperspacerumbletab
++	ENDC
+ .badobj
+ 	s_set_speed		x,#120
+ 	s_set_var		B,player_tospeed,#120
+@@ -420,6 +430,9 @@ playerWarpOut_strat
+ 	plx
+ 
+ 	startbgm		4
++	IFNE	RUMBLE
++	s_end_rumble_table
++	ENDC
+ 	s_jmp			playerinspace_strat
+ 
+ ;*****************************************************************************
+@@ -714,6 +727,38 @@ playerExitBaseFollow_strat
+ 	clc
+ 	adc		#-200
+ 	sta.w		al_worldz,y
++
++	ifne	0
++
++	s_make_obj		#myship_4,.badobj
++	s_set_strat		y,friendstart2_Istrat
++	s_set_alsflag		y,colldisable
++	s_copy_pos		y,x
++	a16
++	lda		#50
++	sta.w		al_worldx,y
++	lda		#-100
++	sta.w		al_worldy,y
++	lda.w		al_worldz,y
++	clc
++	adc		#-300
++	sta.w		al_worldz,y
++
++	s_make_obj		#myship_4,.badobj
++	s_set_strat		y,friendstart1_Istrat
++	s_set_alsflag		y,colldisable
++	s_copy_pos		y,x
++	a16
++	lda		#0
++	sta.w		al_worldx,y
++	lda		#-150
++	sta.w		al_worldy,y
++	lda.w		al_worldz,y
++	clc
++	adc		#-200
++	sta.w		al_worldz,y
++	endc
++
+ ;	s_add_alvar		W,y,al_worldx,#-50
+ ;	s_add_alvar		W,y,al_worldy,#-50
+ ;	s_add_alvar		W,y,al_worldz,#-200
+diff -Nurp ./ultrastarfox/SF/STRAT/PSTRATS.ASM ./miyu-and-fay-in-star-fox/SF/STRAT/PSTRATS.ASM
+--- ./ultrastarfox/SF/STRAT/PSTRATS.ASM	2025-07-26 11:26:30
++++ ./miyu-and-fay-in-star-fox/SF/STRAT/PSTRATS.ASM	2025-07-26 10:47:33
+@@ -121,6 +121,9 @@ pwingcol	
+ 	s_brl		no_pwingcol
+ .wirewcol
+ 	trigse		$14
++	IFNE	RUMBLE
++	s_queue_rumble	1,1,2
++	ENDC
+ no_pwingcol
+ 
+ 
+@@ -177,9 +180,15 @@ pcolB_Istrat
+ 	s_jmp_objptrBAD		y,.b8snd
+ 	s_jmp_alvarLESS.w	B,y,al_AP,#8,.b8snd
+ 	TRIGSE			$04
++	IFNE	RUMBLE
++	s_queue_rumble	8,8,10
++	ENDC
+ 	bra			.dsn
+ .b8snd
+ 	TRIGSE			$19
++	IFNE	RUMBLE
++	s_queue_rumble	8,8,10
++	ENDC
+ .dsn
+ 
+ 	s_chk_objptr		y,.bady
+@@ -310,9 +319,15 @@ pcolLW_Istrat
+ 	s_jmp_objptrBAD		y,.b8snd
+ 	s_jmp_alvarLESS.w	B,y,al_AP,#8,.b8snd
+ 	TRIGSE			$04
++	IFNE	RUMBLE
++	s_queue_rumble	8,0,10
++	ENDC
+ 	bra			.dsn
+ .b8snd
+ 	TRIGSE			$07
++	IFNE	RUMBLE
++	s_queue_rumble	8,0,10
++	ENDC
+ .dsn
+ 
+ 
+@@ -373,6 +388,9 @@ PLWbrk_Istrat
+ 	s_jmp_varAND	B,pshipflags3,#psf3_nocollisions,.ncoll
+ 
+ 	TRIGSE			se_wingdestructleft
++	IFNE	RUMBLE
++	s_queue_rumble	15,0,5
++	ENDC
+ 	s_set_alvar		B,x,al_HP,#-1
+ 	s_set_alvar		B,x,al_AP,#0
+ 	s_and_var		B,pshipflags,#~psf_Lwingcoll
+@@ -447,9 +465,15 @@ pcolRW_Istrat
+ 	s_jmp_objptrBAD		y,.b8snd
+ 	s_jmp_alvarLESS.w	B,y,al_AP,#8,.b8snd
+ 	TRIGSE			$04
++	IFNE	RUMBLE
++	s_queue_rumble	0,8,10
++	ENDC
+ 	bra			.dsn
+ .b8snd
+ 	TRIGSE			$08
++	IFNE	RUMBLE
++	s_queue_rumble	0,8,10
++	ENDC
+ .dsn
+ 
+ 	s_chk_objptr		y,.bady
+@@ -510,6 +534,9 @@ PRWbrk_Istrat
+ 	s_jmp_varAND	B,pshipflags3,#psf3_nocollisions,.ncoll
+ 
+ 	TRIGSE		se_wingdestructright
++	IFNE	RUMBLE
++	s_queue_rumble	0,15,5
++	ENDC
+ 	s_set_alvar		B,x,al_HP,#-1
+ 	s_set_alvar		B,x,al_AP,#0
+ 	s_and_var		B,pshipflags,#~psf_Rwingcoll
+@@ -2156,6 +2183,9 @@ playermove_srou
+ 	boost_sprite
+ .nboostspr
+ 	trigse			$32
++	IFNE	RUMBLE
++	s_queue_rumble	4,4,10
++	ENDC
+ 
+ 	s_jmp			.npsd
+ .npsi
+@@ -2230,6 +2260,9 @@ playermove_srou
+ 	IFEQ	INFBRAKE
+ 	s_or_var	B,pshipflags2,#psf2_braking
+ 	trigse	$33
++	IFNE	RUMBLE
++	s_queue_rumble	1,1,5
++	ENDC
+ 	lda	#1
+ 	sta.l	m_boostcnt
+ 	s_set_var	B,player_tospeed,#minpspeed
+@@ -2862,6 +2895,9 @@ playerfire_srou
+ 	ENDC
+ 
+ 	trigse			$31
++	IFNE	RUMBLE
++	s_queue_rumble	2,2,5
++	ENDC
+ 
+ 	s_weapon_pos		#0,#0,#80>>weapon_scale
+ 	s_weapon_rot		#0,#0
+@@ -2908,6 +2944,9 @@ playerfire_srou
+ 	s_weapon_rot		#0,#0
+ 	s_fire_weapon		x,ELASER,.npfy
+ 	trigse	se_laser
++	IFNE	RUMBLE
++	s_queue_rumble	1,1,1
++	ENDC
+ 	inc			numplasers
+ 	s_brl			.npfy
+ 
+@@ -2920,6 +2959,9 @@ playerfire_srou
+ 	s_fire_weapon		x,ELASER,.npfy
+ 	inc			numplasers
+ 	trigse			$34
++	IFNE	RUMBLE
++	s_queue_rumble	2,2,1
++	ENDC
+ 	s_brl			.npfy
+ .beamb
+ 
+@@ -2931,6 +2973,9 @@ playerfire_srou
+ 	s_fire_weapon		x,PLAYERBEAM,.npfy
+ 	inc			numplasers
+ 	trigse			$36
++	IFNE	RUMBLE
++	s_queue_rumble	3,3,3
++	ENDC
+ .npfy
+ 	s_bra			.noresetfc
+ 
+@@ -3011,6 +3056,9 @@ playerdead_Istrat
+ 	s_and_var		B,gameflags2,#~gf2_ingame
+ 	trigse			se_playerdown
+ 	s_or_var		B,gameflags2,#gf2_ingame
++	IFNE	RUMBLE
++	s_queue_rumble	5,5,20
++	ENDC
+ 	s_or_var		B,pshipflags2,#psf2_playerHP0
+ 	s_set_alsflag		x,colldisable
+ 	s_set_var		B,splayerflymode,#spfm_tonorm
+@@ -3064,6 +3112,9 @@ playerdead_Istrat
+ 	s_and_var		B,gameflags2,#~gf2_ingame
+ 	trigse			se_playerdown
+ 	s_or_var		B,gameflags2,#gf2_ingame
++	IFNE	RUMBLE
++	s_queue_rumble	5,5,20
++	ENDC
+ 	startbgm		$11
+ .nsnd
+ 
+@@ -3201,6 +3252,9 @@ pexplode_Istrat
+ .badobj1
+ 	s_and_var		B,gameflags2,#~gf2_ingame
+ 	trigse			3
++	IFNE	RUMBLE
++	s_queue_rumble	5,5,20
++	ENDC
+ 	s_or_var		B,gameflags2,#gf2_ingame
+ 	s_or_var		B,gameflags,#GF_PLAYERDEAD
+ 
+@@ -3228,6 +3282,9 @@ playercoll_Istrat
+ 
+ 	s_jmpNOT_varAND		B,pshipflags2,#psf2_wireship,.normcoll
+ 	TRIGSE			$14
++	IFNE	RUMBLE
++	s_queue_rumble	1,1,2
++	ENDC
+ 	s_set_objtobealvar	y,x,al_collobjptr
+ 	s_jmp_alvarNE.w		B,y,al_hp,#hardHP,.ncoll
+ .normcoll
+@@ -3261,6 +3318,9 @@ playercoll_Istrat
+ 	s_set_strat			x,relflatmiss_strat
+ 	s_set_lifecnt		x,#30
+ 	trigse			$14
++	IFNE	RUMBLE
++	s_queue_rumble	1,1,2
++	ENDC
+ 	plx
+ 	s_jmp			.ncoll
+ .nlaser
