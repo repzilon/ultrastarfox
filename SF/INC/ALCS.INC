@@ -658,6 +658,9 @@ xlen	=	22*1024+450
 	alc	bunny,1
 	alc	cock,1
 	alc	frog,1
+; new friend alcs
+	alc	miyu,1
+	alc	fay,1
 	alc	pepper,1
 	alc	andorf,1
 	alc	hdmacirclebuf1,2
@@ -718,6 +721,7 @@ xlen	=	22*1024+450
 	alc	msupresent,1
 	ENDC
 	alc	boostcnt,1
+	alc	sunlittemp1,2
 
 ; msudrv.asm
 	IFNE	MSU1
