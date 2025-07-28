@@ -17,7 +17,7 @@ LOPTS=-b30 -h1024 -t7d -z -l2048
 # ROM Extender
 EXTEND=EXTEND
 # Extended size in Mbits, byte to pad with
-EXTOPTS= 8 ff
+EXTOPTS= 16 ff
 
 # Checksum Fixer
 CHECK=SFCHECK
