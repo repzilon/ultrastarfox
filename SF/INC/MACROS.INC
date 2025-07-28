@@ -6133,3 +6133,49 @@ inccgx2	MACRO	[filepath,NUMCHRS]
 	inccol	{filepath},0,{NUMCHRS}/2
 	ENDM
 ;---------------------------------------------------------------
+scrambleandbaseexit	macro	[route]
+	IFEQ	noscrambleseq ; if noscrambleseq is off
+
+	meters_off
+	initlevel	1_1i,nofadenostage,mstarwipe_circle
+	mapwait	100
+	setvar.b	scramble,50
+
+	mapjsr	map1_1a ; Jump to SCRAMBLE map
+
+	setfadedown
+	waitfadefin
+
+	ENDC
+
+	mapcode_jsl	initblack_l
+	mapwait	1
+
+	meters_on	trans
+
+	setvar	keeppstrat,1
+	setbg	{route}_1c
+	initbg
+	wipein	mscramwipe_circle
+	mapwait	medpspeed*2
+	setfadeup	quick
+
+	mapplayermode   ExitBase
+	mapobj		0000,0000,0000,0000,mybase_1,nocoll_Istrat	
+	mapobj		0000,0000,0000,0000,mybase_0,nocoll_Istrat	
+	mapobj		0000,-27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
+	setalvar	sbyte1,17
+	mapobj		0000,-27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
+	setalvar	sbyte1,17+(1000/pexitbasespeed)
+
+	mapobj		0000,27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
+	setalvar	sbyte1,17
+	mapobj		0000,27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
+	setalvar	sbyte1,17+(1000/pexitbasespeed)
+
+	pathobj	0000,3000,3000,3000,nullshape,matemsg,10,10
+	pathobj	0000,100,-90,1400,friendship_4,falco_lv1,10,10
+	pathobj	0000,-80,-140,1200,friendship_4,frog_lv1,10,10
+	pathobj	0000,-100,-90,1400,friendship_4,falco_lv1,10,10
+	pathobj	0000,80,-140,1200,friendship_4,frog_lv1,10,10
+	endm
