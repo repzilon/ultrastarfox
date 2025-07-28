@@ -1260,38 +1260,6 @@ path_istrat
 	tya
 	jmp		.okdok
 .randomselect
-
-	IFEQ	randomselectmode
-	lda		cock
-	beq		.5050bunnyfrog
-	lda		frog
-	beq		.4060cockbunny
-	lda		bunny
-	beq		.4060cockfrog
-.404020frogbunnycock
-	jsl		random_l	; 20% falco, 40% frog/bunny
-	cmp		#50
-	bcc		.cock
-	cmp		#150
-	bcc		.bunny
-	bra		.frog
-.4060cockbunny
-	lda		bunny
-	beq		.cock
-	s_jmp_random	.cock,40
-	bra		.bunny
-.4060cockfrog
-	s_jmp_random	.cock,40
-	bra		.frog
-.5050bunnyfrog
-	lda		frog
-	beq		.nooneleft
-	lda		bunny
-	beq		.frog
-	s_jmp_random	.frog
-	jmp		.bunny
-	ELSEIF
-
 	lda	cock
 	beq	.falcodead
 	s_jmp_random	.cock,teammateselectchance
@@ -1300,20 +1268,31 @@ path_istrat
 	beq	.peppydead
 	s_jmp_random	.bunny,teammateselectchance
 .peppydead
-	lda		frog
-	beq		.nooneleft
+	lda	frog
+	beq	.slippydead	;slippy's dead
 	s_jmp_random	.frog,teammateselectchance
+.slippydead	;NICE
+	lda		miyu
+	beq		.miyudead
+	s_jmp_random	.miyu,teammateselectchance
+.miyudead
+	lda		fay
+	beq		.nooneleft
+	s_jmp_random	.fay,teammateselectchance
 	bra	.randomselect ; roll again if none picked
-	ENDC
 
 .nooneleft
-	lda		bunny
+	lda		fay
 	beq		.nonealive
 .bunny	lda		#friend_rabbit
 	bra		.okdok
 .frog	lda		#friend_frog
 	bra		.okdok
 .cock	lda		#friend_falcon
+	bra		.okdok
+.miyu	lda		#friend_miyu
+	bra		.okdok
+.fay	lda		#friend_fay
 .okdok
 	sta		al_sbyte4,x
 	jmp		.add2

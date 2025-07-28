@@ -54,26 +54,13 @@ timery = 2 ; Row (from top of screen) 0 - 24
 exitcredits	equ	1
 
 ; Random Number Generation Behavior
-
 ; 0 = RNG reset at map screen (vanilla)
 ; 1 = RNG set at boot and never reset
 ; 2 = 789 xorshift RNG, seed set at boot and never reset (Saves 2 bytes of zeropage)
 rngmode	equ	0
 
-; Random Teammate Selection Behavior
-
-; 0 = 50/50 Peppy/Slippy 40/60 Falco/Peppy 40/60 Falco/Slippy
-; 1 = Completely random
-randomselectmode	equ	0
-
-; Chance of teammate selection for randomselectmode 1
-teammateselectchance	equ	3
-
-; Random Number Generation Behavior
-; 0 = RNG reset at map screen (vanilla)
-; 1 = RNG set at boot and never reset
-; 2 = 789 xorshift RNG, seed set at boot and never reset (Saves 2 bytes of zeropage)
-rngmode	equ	2
+; Chance of teammates being selected for chases, etc.
+teammateselectchance	equ	10
 
 ; Random Vertices
 
@@ -88,9 +75,6 @@ randvertandbit	equ	15
 ; randomize the vertices a lot, Both will not activate at once
 ; [0 = off, 1 = on]
 randverts2	equ	0
-
-; Chance of teammates being selected for chases, etc.
-teammateselectchance	equ	10
 
 ;####################################################################################################################
 
