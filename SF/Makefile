@@ -5,7 +5,7 @@
 # Assembler
 ASM=ARGSFXX
 # Set max error count, set heap for SASM, hide assembler title text, and export symbols for ARGSFX
-ASMFLAGS= -m30 -e__heap=14400 -e__notitle -z
+ASMFLAGS= -eFAST=$(fast) -m30 -e__heap=14400 -e__notitle -z
 
 # MSU-1 Data file Assembler
 MSUASM=SASMX -m30 -e__heap=14400 -e__notitle
@@ -267,7 +267,7 @@ BANK\BANK2.ASM
 BANK4.SOB: \
 BANK\BANK4.ASM
 
-## Banks 5, 13
+## Banks 5, 13, 32
 BANK5.SOB: \
 BANK\BANK5.ASM
 
