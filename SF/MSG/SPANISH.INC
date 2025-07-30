@@ -140,3 +140,59 @@
 	message	white,falcon,<beware of the big stingray!>,other	; (140)
 	message	white,rabbit,<beware of the big stingray!>,other	; (141)
 	message	white,frog,<beware of the big stingray!>,other	; (142)
+	message white,miyu,<miyu test>,other	; (143)
+	message white,fay,<fay test>,other	; (144)
+	message	white,robfx,<robfx test>,other	; (145)
+; New teammate dialogue courtesy of Josh
+	message white,miyu,<this might be the end for me!>,other	; (146) ; teammate status on level clear
+	message white,miyu,<my ship has taken damage###>,other	; (147)
+	message white,miyu,<i'm alright, fox!>,other	; (148)
+	message white,miyu,<all systems are good, fox!>,other	; (149)
+	message white,fay,<tell my grandpa that i love him!>,other	; (150)
+	message white,fay,<you have to protect me, fox!>,other	; (151)
+	message white,fay,<it's all good!>,other	; (152)
+	message white,fay,<i'm ready for more!>,other	; (153)
+	message	white,miyu,<an enemy is right behind me!>,help	; (154) ; chased by an enemy/saved by player/died
+	message	white,miyu,<thanks, fox### i owe you one#>,other	; (155)
+	message	white,miyu,<aiiiieeee!! i'm done for!>,down	; (156)
+	message	white,fay,<oh no! fox, help!!>,help	; (157)
+	message	white,fay,<oh fox### you're my hero!>,other	; (158)
+	message	white,fay,<eeeeek!! foooox!!>,down	; (159)
+	message	white,miyu,<curses! i've been hit!>,help	; (160)
+	message	white,fay,<get away from me, you creep!>,help	; (161)
+	message	white,miyu,<this is no time for games, fox!>,help	; (162) ; player hits teammate
+	message	white,fay,<fox, don't shoot me!>,help	; (163)
+	message	white,miyu,<fox, you have to shoot him down!>,help	; (164) ; chase hurry
+	message	white,fay,<hurry, fox! save me!>,help	; (165)
+	message	white,miyu,<we're starting our attack run!>,other	; (166) ; space armada stuff
+	message	white,fay,<yippie! let's head in, fox!>,other	; (167)
+	message	white,miyu,<fox, look out!>,other	; (168)
+	message	white,fay,<eeeeek! watch out, fox!>,other	; (169)
+	message	white,miyu,<i think i had him, fox###>,other	; (170) ; teammate chase target shot down by player
+	message	white,fay,<aw, come on! that was mine!>,other	; (171)
+	message	white,miyu,<it's payback time!>,other	; (172) ; teammate chasing an enemy
+	message	white,miyu,<scratch one enemy target!>,other	; (173)
+	message	white,miyu,<eat this, venomian scum!>,other	; (174)
+	message	white,miyu,<hmph! be gone, you fools!>,other	; (175)
+	message	white,fay,<i'm gonna get ya, buster!>,other	; (176)
+	message	white,fay3,<you uncivilized ruffians!>,other	; (177)
+	message	white,fay,<take that, you meanie!>,other	; (178)
+	message	white,fay,<that's for my people!>,other	; (179)
+	message	white,miyu,<all systems go!>,other	; (180) ; 1-1,2-1,3-1 base exit
+	message	white,fay,<we can do this!>,other	; (181)
+	message	white,miyu3,<andross is controlling those stingrays!>,other	; (182) ; stingray
+	message	white,fay,<stay away from the big stingray!>,other	; (183)
+	message	white,miyu3,<mission accomplished, fox!>,other	; (184) ; venom clear
+	message	white,fay,<hurray! we did it, fox!>,other	; (185)
+	message	white,miyu,<i got your back, fox!>,other	; (186) ; teammate saves player
+	message	white,fay,<needed my help, fox!?>,other	; (187)
+	message	white,fay3,<why is grandpa making us do this!?>,other	; (188) ; training mode stuff
+	message	white,miyu3,<fox, aim for the dodora's neck and tail!>,other	; (189) ; monarch dodora
+	message	white,fay3,<it must be its neck and tail, fox!>,other	; (190)
+	message	white,miyu3,<the enemy's weakness is in its palms!>,other	; (191) ; plasma hydra
+	message	white,fay,<those hands are dangerous, fox!>,other	; (192)
+	message	white,miyu3,<space kites and butterflies, coming in!>,other	; (193) ; asteroid belt, sector x
+	message	white,fay,<oh no! they're gaining on us!>,other	; (194)
+	message	white,miyu3,<don't let that cling to your ship, fox! roll!>,other	; (195) ; amoebas, blade barrier tractor beam
+	message	white,fay,<eeeeek!! get it off! get it off!>,other	; (196)
+	message	white,miyu3,<we'd better get this over with quickly!>,other	;(197) ; training mode line

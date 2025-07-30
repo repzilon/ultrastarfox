@@ -15,6 +15,8 @@ perfecttxt	txt	14,<PERFEKT//>
 slippytxt	txt	14,<SLIPPY>
 peppytxt	txt	14,<PEPPY>
 falcotxt	txt	14,<FALCO>
+miyutxt		txt	14,<MIYU>
+faytxt		txt	14,<FAY>
 deadtxt	txt	14,<. . . . . .>
 stagetxt	txt	14,<ETAPPE>
 	ENDC
@@ -32,7 +34,9 @@ perfecttxt	txt	14,<PARFAIT//>
 slippytxt	txt	14,<SLIPPY>
 peppytxt	txt	14,<PEPPY>
 falcotxt	txt	14,<FALCO>
-deadtxt		txt	14,<EST MORT>
+miyutxt		txt	14,<MIYU>
+faytxt		txt	14,<FAY>
+deadtxt		txt	14,<MORT>
 stagetxt	txt	14,<ETAPE>
 	ENDC
 
@@ -49,7 +53,9 @@ perfecttxt	txt	14,<PERFECT//>
 slippytxt	txt	14,<SLIPPY>
 peppytxt	txt	14,<PEPPY>
 falcotxt	txt	14,<FALCO>
-deadtxt	txt	14,<IS DOWN>
+miyutxt		txt	14,<MIYU>
+faytxt		txt	14,<FAY>
+deadtxt	txt	14,<DOWN>
 stagetxt	txt	14,<STAGE>
 	ENDC
 	
@@ -66,7 +72,9 @@ perfecttxt	txt	14,<PERFECTO//>
 slippytxt	txt	14,<SLIPPY>
 peppytxt	txt	14,<PEPPY>
 falcotxt	txt	14,<FALCO>
-deadtxt	txt	14,<ESTA MUERTO>
+miyutxt		txt	14,<MIYU>
+faytxt		txt	14,<FAY>
+deadtxt	txt	14,<MUERTO>
 stagetxt	txt	14,<ETAPA>
 	ENDC
 
