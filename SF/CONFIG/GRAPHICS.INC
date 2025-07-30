@@ -28,7 +28,7 @@ controlsscreenpal	equ	0
 ; Enable colored window over shield and boost meters as in vanilla.
 ; Set this to 0 if moving meter positions.
 ; [0 = off, 1 = on]
-shieldboostcolorbox	equ	0
+shieldboostcolorbox	equ	1
 
 ; Hides the HUD when a boss is defeated.
 ; [0 = off, 1 = on]

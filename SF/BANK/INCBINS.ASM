@@ -185,13 +185,14 @@ msprites3
 	IFEQ	GERMAN+FRENCH
 	inccru	bgcpccr,data\cp.ccr
 	ENDC
+	bankend	23
 
+	bank	36
 facedata	incbin	data\face.cgx
-	inccru	allcolscru,data\col\allcols.pac
-
+	inccru	allcolscru,data\col\allcols.pac	
 	inccru	dogpcr,data\dog.pcr
 	inccru	bgmccr,data\m.ccr
-	bankend	23
+	bankend	36
 
 ;------------------------------------------------------------------
 
