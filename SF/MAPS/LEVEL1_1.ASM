@@ -2,8 +2,6 @@
 level1_1
 	scrambleandbaseexit	1
 	
-	IFEQ	0 ; commented out to test clear,chase
-
 	mapobj	0000,-600,0000,2000,BU_1,HARD180YR_ISTRAT
 	mapobj	0000,0600,0000,2000,BU_1,HARD180YR_ISTRAT
 

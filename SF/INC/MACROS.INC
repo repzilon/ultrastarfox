@@ -6153,7 +6153,7 @@ scrambleandbaseexit	macro	[route]
 
 	meters_on	trans
 
-	setvar	keeppstrat,1
+;	setvar	keeppstrat,1
 	setbg	{route}_1c
 	initbg
 	wipein	mscramwipe_circle
