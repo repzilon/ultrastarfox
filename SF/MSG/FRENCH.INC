@@ -148,7 +148,7 @@
 	message white,miyu,<ceci pourrait être ma fin!>,other	; (146) ; teammate status on level clear
 	message white,miyu,<mon vaisseau est endommagé###>,other	; (147)
 	message white,miyu,<je suis correct, fox!>,other	; (148)
-	message white,miyu,<tous les systèmes au vert, fox!>,other	; (149)
+	message white,miyu,<tout est au vert, fox!>,other	; (149)
 	message white,fay,<dites à papi que je l'aime!>,other	; (150)
 	message white,fay,<tu dois me protéger, fox!>,other	; (151)
 	message white,fay,<tout est bien!>,other	; (152)
@@ -160,29 +160,29 @@
 	message	white,fay,<oh fox### tu es mon héros!>,other	; (158)
 	message	white,miyu,<merde! je suis touché!>,help	; (160)
 	message	white,fay,<va t'en, sale pervers!>,help	; (161)
-	message	white,miyu,<ce n'est pas le temps de jouer, fox!>,help	; (162) ; player hits teammate
+	message	white,miyu,<ce n'est pas un jeu, fox!>,help	; (162) ; player hits teammate
 	message	white,fay,<fox, ne me tire pas dessus!>,help	; (163)
 	message	white,miyu,<fox, tu dois le descendre!>,help	; (164) ; chase hurry
 	message	white,fay,<vite, fox! sauve-moi!>,help	; (165)
-	message	white,miyu,<commençons notre ronde d'attaque!>,other	; (166) ; space armada stuff
+	message	white,miyu3,<commençons notre ronde d'attaque!>,other	; (166) ; space armada stuff
 	message	white,fay,<youpi! fonçons là-dedans, fox!>,other	; (167)
 	message	white,miyu,<fox, regarde!>,other	; (168)
 	message	white,fay,<eeeeek! attention, fox!>,other	; (169)
 	message	white,miyu,<je pense que je l'ai eu, fox###>,other	; (170) ; teammate chase target shot down by player
 	message	white,fay,<voyons! il était à moi!>,other	; (171)
-	message	white,miyu,<l'heure de la revanche a sonné!>,other	; (172) ; teammate chasing an enemy
+	message	white,miyu3,<l'heure de la revanche a sonné!>,other	; (172) ; teammate chasing an enemy
 	message	white,miyu,<va égratigner un ennemi!>,other	; (173)
-	message	white,miyu,<mange ça, racaille de venom!>,other	; (174)
+	message	white,miyu3,<mange ça, racaille de venom!>,other	; (174)
 	message	white,miyu,<ha! partez, imbéciles!>,other	; (175)
 	message	white,fay,<je t'aurai, petit con!>,other	; (176)
-	message	white,fay3,<ours ruffiens mal léchés!>,other	; (177)
+	message	white,fay,<ours ruffiens mal léchés!>,other	; (177)
 	message	white,fay,<prends ça, le méchant!>,other	; (178)
 	message	white,fay,<ça, c'est pour mon peuple!>,other	; (179)
-	message	white,miyu,<tout est prêt!>,other	; (180) ; 1-1,2-1,3-1 base exit
+	message	white,miyu,<tous les systèmes prêts!>,other	; (180) ; 1-1,2-1,3-1 base exit
 	message	white,fay,<nous pouvons le faire!>,other	; (181)
 	message	white,miyu3,<andross contrôle ces raies!>,other	; (182) ; stingray
-	message	white,fay,<reste loin de cette grosse raie!>,other	; (183)
-	message	white,miyu3,<mission accomplie, fox!>,other	; (184) ; venom clear
+	message	white,fay,<reste loin de la grosse raie!>,other	; (183)
+	message	white,miyu,<mission accomplie, fox!>,other	; (184) ; venom clear
 	message	white,fay,<hourra! on a réussi, fox!>,other	; (185)
 	message	white,miyu,<je t'ai couvert, fox!>,other	; (186) ; teammate saves player
 	message	white,fay,<t'as eu besoin de mon aide, fox!?>,other	; (187)
@@ -191,8 +191,8 @@
 	message	white,fay3,<ça doit être son cou et sa queue, fox!>,other	; (190)
 	message	white,miyu3,<la faiblesse de l'ennemi sont ses paumes!>,other	; (191) ; plasma hydra
 	message	white,fay,<ces mains sont dangereuses, fox!>,other	; (192)
-	message	white,miyu3,<cerfs-volants et montgolfières en approche!>,other	; (193) ; asteroid belt, sector x
-	message	white,fay,<oh non! ils prennent le dessus!>,other	; (194)
+	message	white,miyu3,<cerfs-volants, montgolfières en approche!>,other	; (193) ; asteroid belt, sector x
+	message	white,fay3,<oh non! ils prennent le dessus!>,other	; (194)
 	message	white,miyu3,<ne le laisse pas se coller à toi, fox! tournoie!>,other	; (195) ; amoebas, blade barrier tractor beam
 	message	white,fay,<ark!! enlève-le! enlève ça!>,other	; (196)
 	message	white,miyu3,<nous ferions mieux de finir ça vite!>,other	;(197) ; training mode line
