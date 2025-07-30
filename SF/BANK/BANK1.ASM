@@ -45,12 +45,13 @@ yyy	mario	on
 	incfile	MARIO\mhud.mc
 	mario	off
 
-
-	incfile	ASM\fontdata.asm
-
 mariocodelen	=	*-mariobegin
 
 	bankend	1
+
+	bank	33
+	incfile	ASM\fontdata.asm
+	bankend	33
 
 	include	INC\tail.inc
 

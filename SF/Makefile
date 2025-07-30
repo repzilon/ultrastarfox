@@ -5,7 +5,8 @@
 # Assembler
 ASM=ARGSFXX
 # Set max error count, set heap for SASM, hide assembler title text, and export symbols for ARGSFX
-ASMFLAGS= -eFAST=$(fast) -m30 -e__heap=14400 -e__notitle -z
+ASMFLAGS= -m30 -e__heap=14400 -e__notitle -z
+#ASMFLAGS= -eFAST=$(fast) -m30 -e__heap=14400 -e__notitle -z
 
 # MSU-1 Data file Assembler
 MSUASM=SASMX -m30 -e__heap=14400 -e__notitle
@@ -17,7 +18,7 @@ LOPTS=-b30 -h1024 -t7d -z -l2048
 # ROM Extender
 EXTEND=EXTEND
 # Extended size in Mbits, byte to pad with
-EXTOPTS= 8 ff
+EXTOPTS= 16 ff
 
 # Checksum Fixer
 CHECK=SFCHECK

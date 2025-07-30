@@ -764,7 +764,7 @@ xlen	=	22*1024+450
 	alc	tmpcl,2
 	alc	temp23,2
 	alc	currshape,2
-;	alc	keeppstrat,1
+	alc	keeppstrat,1
 ;	alc	monitorcrosshairon,1	; FOR MONITOR TEST ONLY!!!
 
 	xalc	xhdma_tables,xhdma_max

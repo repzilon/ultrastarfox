@@ -505,7 +505,7 @@ setbginforeq_l
 	lda	pshipflags3
 	and	#~psf3_keeppstrat
 	sta	pshipflags3
-;	stz	keeppstrat
+	stz	keeppstrat
 
 
 	lda	inatunnel

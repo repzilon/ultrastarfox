@@ -30,7 +30,7 @@ FASTROM		equ 0
 ; This has no effect on the original MARIO Chip, as it is locked to 10.7mhz.
 ; This also enables fast multiplication mode (MS1).
 ; [0 = off, 1 = on]
-;fast	equ 1	; set on command line
+fast	equ 1	; could have been set on command line
 
 ; Enable/disable Super FX instruction cache [0 = off, 1 = on]
 ; you should have no good reason to ever switch this off, as it makes performance much, much worse.
@@ -49,7 +49,7 @@ pal			equ	0
 ; Changes the ROM header and Credits game names.
 ; ROM Header name: [0 = STAR FOX, 1 = STAR WING, 2 = Custom Name]
 ; End Credits name: [0 = STAR FOX, 1 = STARWING, 2 = Custom Name]
-gamename	equ	0
+gamename	equ	2
 
 ; Custom header name
 ; field for a custom internal ROM name. the internal ROM name must be 21 ASCII CHARACTERS long. No more, no less.

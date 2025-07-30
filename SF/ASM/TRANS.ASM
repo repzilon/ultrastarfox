@@ -235,7 +235,7 @@ stratsfrozen
 	marioprint		32,60+1,faytxt
 	ENDC
 
-	IFNE	MSU
+	IFNE	MSU1
 	lda	msupresent
 	beq	.msuchkfail
 	bne	.msuchkpass
