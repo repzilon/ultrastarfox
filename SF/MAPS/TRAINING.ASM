@@ -17,9 +17,22 @@ trnmapmsgcnt = 1
 
 .trnmsgtest
 
-; loops through every single message in the message file
+; loops through messages in the message file, except very long ones
+; that would hang the test for minutes before resuming
 
-	REPT totalmsgs+1 ; number of total messages in the message file
+	REPT	87
+	mapwait	1500
+	mapmsg	trnmapmsgcnt
+trnmapmsgcnt = trnmapmsgcnt+1
+	ENDR	; skip [88; 92]
+trnmapmsgcnt = 93
+	REPT	105-93+1; last would be 105
+	mapwait	1500
+	mapmsg	trnmapmsgcnt
+trnmapmsgcnt = trnmapmsgcnt+1
+	ENDR	; skip [106; 116]
+trnmapmsgcnt = 117
+	REPT	totalmsgs-117+1
 	mapwait	1500
 	mapmsg	trnmapmsgcnt
 trnmapmsgcnt = trnmapmsgcnt+1
