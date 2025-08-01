@@ -41,6 +41,7 @@ distclean: clean-sf
 nowindows:
 	rm -f dosbox-x.exe
 	rm -f usb2snes-cli.exe
+	rm -f flips.exe
 	$(MAKE) -C TOOLS nowindows
 
 nodosdupes: nodosdup.sh

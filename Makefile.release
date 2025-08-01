@@ -1,4 +1,13 @@
 VER := 2.2
+# flips make-macos.sh fails to build and also uses bogus optimization flags
+# Introduce saner flags
+CFLAGS_OPTIM := -O2 -pipe -fomit-frame-pointer
+CFLAGS_WARN := -W -Wall -Werror=format-security
+CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
+CXXFLAGS_WARN := $(CFLAGS_WARN)
+
+all: releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ $(VER).bps releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 2)\ $(VER).bps releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ $(VER).bps releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Germany)\ $(VER).bps
+	@echo "All done!"
 
 # The UltraStarFox builds cannot be done in parallel because its build 
 # system can only use the same intermediate directory. Do not replace 
@@ -32,45 +41,56 @@ releases/Release\ $(VER)/Japan\ Patches:
 releases/Release\ $(VER)/PAL\ Patches:
 	mkdir -p "releases/Release $(VER)/PAL Patches"
 
-#flips: https://git.disroot.org/Sir_Walrus/Flips/archive/master.tar.gz
+flips-latest.tar.gz:
+	curl https://git.disroot.org/Sir_Walrus/Flips/archive/master.tar.gz -o flips-latest.tar.gz
 
-releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ $(VER).bps: flips baseroms/Star\ Fox\ (USA).sfc SF-U.SFC releases/Release\ $(VER)/USA\ Patches
+flips/Makefile: flips-latest.tar.gz
+	tar -zxf flips-latest.tar.gz
+
+flips/flips: flips/Makefile
+	# Flips is written in C++ but uses CFLAGS for C++ optimization flags
+	$(MAKE) -C flips "CFLAGS=$(CXXFLAGS_OPTIM) $(CXXFLAGS_WARN)"
+
+releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (USA).sfc SF-U.SFC releases/Release\ $(VER)/USA\ Patches
 	@echo "Making USA rev 0 patches..."
-	flips --create --bps-delta "./baseroms/Star Fox (USA).sfc" SF-U.SFC "./releases/Release $(VER)/USA Patches/UltraStarFox (USA) $(VER).bps"
+	./flips/flips --create --bps-delta "./baseroms/Star Fox (USA).sfc" SF-U.SFC "./releases/Release $(VER)/USA Patches/UltraStarFox (USA) $(VER).bps"
 
-releases/Release\ $(VER)/USA Patches/UltraStarFox\ (USA)\ (Rev\ 1)\ $(VER).bps: flips baseroms/Star\ Fox\ (USA)\ (Rev\ 1).sfc SF-U.SFC releases/Release\ $(VER)/USA\ Patches
+releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 1)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (USA)\ (Rev\ 1).sfc SF-U.SFC releases/Release\ $(VER)/USA\ Patches
 	@echo "Making USA rev 1 patches..."
-	flips --create --bps-delta "./baseroms/Star Fox (USA) (Rev 1).sfc" SF-U.SFC "./releases/Release $(VER)/USA Patches/UltraStarFox (USA) (Rev 1) $(VER).bps"
+	./flips/flips --create --bps-delta "./baseroms/Star Fox (USA) (Rev 1).sfc" SF-U.SFC "./releases/Release $(VER)/USA Patches/UltraStarFox (USA) (Rev 1) $(VER).bps"
 
-releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 2)\ $(VER).bps: flips baseroms/Star\ Fox\ (USA)\ (Rev\ 2).sfc SF-U.SFC releases/Release\ $(VER)/USA\ Patches
+releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 2)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (USA)\ (Rev\ 2).sfc SF-U.SFC releases/Release\ $(VER)/USA\ Patches
 	@echo "Making USA rev 2 patches..."
-	flips --create --bps-delta "./baseroms/Star Fox (USA) (Rev 2).sfc" SF-U.SFC "./releases/Release $(VER)/USA Patches/UltraStarFox (USA) (Rev 2) $(VER).bps"
+	./flips/flips --create --bps-delta "./baseroms/Star Fox (USA) (Rev 2).sfc" SF-U.SFC "./releases/Release $(VER)/USA Patches/UltraStarFox (USA) (Rev 2) $(VER).bps"
 
-releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ $(VER).bps: flips baseroms/Star\ Fox\ (Japan).sfc SF-J.SFC releases/Release\ $(VER)/Japan\ Patches
+releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (Japan).sfc SF-J.SFC releases/Release\ $(VER)/Japan\ Patches
 	@echo "Making JP rev 0 patches..."
-	flips --create --bps-delta "./baseroms/Star Fox (Japan).sfc" SF-J.SFC "./releases/Release $(VER)/Japan Patches/UltraStarFox (Japan) $(VER).bps"
+	./flips/flips --create --bps-delta "./baseroms/Star Fox (Japan).sfc" SF-J.SFC "./releases/Release $(VER)/Japan Patches/UltraStarFox (Japan) $(VER).bps"
 
-releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ (Rev\ 1)\ $(VER).bps: flips baseroms/Star\ Fox\ (Japan)\ (Rev\ 1).sfc SF-J.SFC releases/Release\ $(VER)/Japan\ Patches
+releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ (Rev\ 1)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (Japan)\ (Rev\ 1).sfc SF-J.SFC releases/Release\ $(VER)/Japan\ Patches
 	@echo "Making JP rev 1 patches..."
-	flips --create --bps-delta "./baseroms/Star Fox (Japan) (Rev 1).sfc" SF-J.SFC "./releases/Release\ $(VER)/USA Patches/UltraStarFox (Japan) (Rev 1) $(VER).bps"
+	./flips/flips --create --bps-delta "./baseroms/Star Fox (Japan) (Rev 1).sfc" SF-J.SFC "./releases/Release $(VER)/Japan Patches/UltraStarFox (Japan) (Rev 1) $(VER).bps"
 
-releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ $(VER).bps: flips baseroms/Star\ Fox\ (Europe).sfc SF-E.SFC releases/Release\ $(VER)/PAL\ Patches
+releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ $(VER).bps: flips/flips baseroms/Starwing\ (Europe).sfc SF-E.SFC releases/Release\ $(VER)/PAL\ Patches
 	@echo "Making PAL rev 0 patches..."
-	flips --create --bps-delta "./baseroms/Starwing (Europe).sfc" SF-J.SFC "./releases/Release $(VER)/PAL Patches/UltraStarFox (Europe) $(VER).bps"
+	./flips/flips --create --bps-delta "./baseroms/Starwing (Europe).sfc" SF-E.SFC "./releases/Release $(VER)/PAL Patches/UltraStarFox (Europe) $(VER).bps"
 
-releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ (Rev\ 1)\ $(VER).bps: flips baseroms/Star\ Fox\ (Europe)\ (Rev\ 1).sfc SF-E.SFC releases/Release\ $(VER)/PAL\ Patches
+releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ (Rev\ 1)\ $(VER).bps: flips/flips baseroms/Starwing\ (Europe)\ (Rev\ 1).sfc SF-E.SFC releases/Release\ $(VER)/PAL\ Patches
 	@echo "Making PAL rev 1 patches..."
-	flips --create --bps-delta "./baseroms/Starwing (Europe) (Rev 1).sfc" SF-J.SFC "./releases/Release $(VER)/PAL Patches/UltraStarFox (Europe) (Rev 1) $(VER).bps"
+	./flips/flips --create --bps-delta "./baseroms/Starwing (Europe) (Rev 1).sfc" SF-E.SFC "./releases/Release $(VER)/PAL Patches/UltraStarFox (Europe) (Rev 1) $(VER).bps"
 
-releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Germany)\ $(VER).bps: flips baseroms/Star\ Fox\ (Germany).sfc SF-G.SFC releases/Release\ $(VER)/PAL\ Patches
+releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Germany)\ $(VER).bps: flips/flips baseroms/Starwing\ (Germany).sfc SF-G.SFC releases/Release\ $(VER)/PAL\ Patches
 	@echo "Making PAL-G patches..."
-	flips --create --bps-delta "./baseroms/Starwing (Germany).sfc" SF-J.SFC "./releases/Release $(VER)/PAL Patches/UltraStarFox (Germany) $(VER).bps"
+	./flips/flips --create --bps-delta "./baseroms/Starwing (Germany).sfc" SF-G.SFC "./releases/Release $(VER)/PAL Patches/UltraStarFox (Germany) $(VER).bps"
 
-all: releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ $(VER).bps releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 2)\ $(VER).bps releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ $(VER).bps releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Germany)\ $(VER).bps
-	@echo "All done!"
-
-clean:
+clean-sf:
 	$(MAKE) -f Makefile clean
+
+clean-flips:
+	$(MAKE) -C flips clean
+	rm -f flips/flips # broken flips Makefile
+
+clean-patches:
 	rm -f SF-U.SFC
 	rm -f SF-J.SFC
 	rm -f SF-E.SFC
@@ -79,4 +99,14 @@ clean:
 	rm -f "releases/Release $(VER)/Japan Patches/UltraStarFox*.bps"
 	rm -f "releases/Release $(VER)/PAL Patches/UltraStar*.bps"
 
-.PHONY: all clean
+clean: clean-sf clean-flips clean-patches
+	true
+
+distclean: clean-sf clean-patches
+	# No need to call make clean on flips when its directory gets deleted
+	rm -rf flips/
+
+mrproper: distclean
+	rm -f flips-latest.tar.gz
+
+.PHONY: all clean distclean mrproper clean-sf clean-flips clean-patches

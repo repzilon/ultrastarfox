@@ -21,7 +21,7 @@ Miscellanous hacks
 - [ ] Cross compile updated foxfont for DJGPP
 - [x] Correct timing of the intro sequence when built for 21 MHz Super FX
 - [ ] Code bank reorganisation to fit the base game inside 8 megabits and extras above that boundary ==WIP==
-- [ ] Port buildrelease.cmd to a Makefile and generate localized patches from it
+- [ ] Port buildrelease.cmd to a Makefile and generate localized patches from it ==WIP==
 - [ ] MUCH Later: raise the cap to 24 fps on NTSC by implementing a telecine-inspired approach
 
 French Canadian Translation

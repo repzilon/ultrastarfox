@@ -69,6 +69,10 @@ TOOLS/SuperFamiconv-*/
 # Downloaded usb2snes-cli
 usb2snes-cli/
 
+# Downloaded flips
+flips/
+flips-latest.tar.gz
+
 # Compiled tools
 TOOLS/bgconv/bin/palconv
 TOOLS/bgconv/bin/sf_crunch
@@ -97,6 +101,8 @@ TOOLS/mugconv/superfamiconv/superfamiconv.exe
 TOOLS/palconv.exe
 TOOLS/palconv_win64.exe
 TOOLS/sf_crunch.exe
+usb2snes-cli.exe
+flips.exe
 
 # Tools written in C#
 TOOLS/SharpUltraStarFoxTools/.vs/
