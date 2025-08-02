@@ -1,5 +1,5 @@
 VER := 2.2
-# flips make-macos.sh fails to build and also uses bogus optimization flags
+# flips make-macos.sh fails to build and also uses ricer optimization flags
 # Introduce saner flags
 CFLAGS_OPTIM := -O2 -pipe -fomit-frame-pointer
 CFLAGS_WARN := -W -Wall -Werror=format-security
@@ -7,29 +7,30 @@ CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
 CXXFLAGS_WARN := $(CFLAGS_WARN)
 
 all: releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ $(VER).bps releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 2)\ $(VER).bps releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ $(VER).bps releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Germany)\ $(VER).bps
+	sha256sum SF-*.SFC
 	@echo "All done!"
 
 # The UltraStarFox builds cannot be done in parallel because its build 
 # system can only use the same intermediate directory. Do not replace 
 # make with $(MAKE) for this reason
-SF-U.SFC: 
-	# TODO : Generate or copy USA config
-	make -f Makefile log
+SF-U.SFC:
+	cp -f SF/CONFIG/REL_USA.INC SF/CONFIG/RELEASE.INC
+	make -f Makefile
 	mv SF.SFC SF-U.SFC
 
 SF-J.SFC:
-	# TODO : Generate or copy Japan config
-	make -f Makefile log
+	cp -f SF/CONFIG/REL_JAP.INC SF/CONFIG/RELEASE.INC
+	make -f Makefile
 	mv SF.SFC SF-J.SFC
 
 SF-E.SFC:
-	# TODO : Generate or copy Europe config
-	make -f Makefile log
+	cp -f SF/CONFIG/REL_EUR.INC SF/CONFIG/RELEASE.INC
+	make -f Makefile
 	mv SF.SFC SF-E.SFC
 
 SF-G.SFC:
-	# TODO : Generate or copy Germany config
-	make -f Makefile log
+	cp -f SF/CONFIG/REL_GER.INC SF/CONFIG/RELEASE.INC
+	make -f Makefile
 	mv SF.SFC SF-G.SFC
 
 releases/Release\ $(VER)/USA\ Patches:
@@ -100,7 +101,7 @@ clean-patches:
 	rm -f "releases/Release $(VER)/PAL Patches/UltraStar*.bps"
 
 clean: clean-sf clean-flips clean-patches
-	true
+	rm -f SF/CONFIG/RELEASE.INC
 
 distclean: clean-sf clean-patches
 	# No need to call make clean on flips when its directory gets deleted

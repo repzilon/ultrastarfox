@@ -59,6 +59,9 @@ SF/DATA/COL/ALLCOLS.COL
 *.map
 *.MAP
 
+# File generated during Release build with Makefile.release
+SF/CONFIG/RELEASE.INC
+
 # macOS stuff
 .DS_Store
 

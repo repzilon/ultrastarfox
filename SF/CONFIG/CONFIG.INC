@@ -12,4 +12,7 @@
 	include	CONFIG\DEBUG.INC	; Debugging
 	include CONFIG\XCESSORY.INC	; Accessories
 	include	CONFIG\LANGUAGE.INC	; Language
+	IFFE "CONFIG\RELEASE.INC"
+	include CONFIG\RELEASE.INC	; Release build overriding config
+	ENDC
 ;#############################################
