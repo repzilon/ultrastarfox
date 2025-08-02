@@ -39,7 +39,7 @@ cacheon		equ	1
 ; Region
 
 ; Japanese ROM Header [0 = off, 1 = on]	(DO NOT USE IF PAL = 1)
-japan		= 0
+japan		=	0
 
 ; PAL/NTSC [0 = NTSC, 1 = PAL] (DO NOT USE IF JAPAN = 1)
 pal			=	0
