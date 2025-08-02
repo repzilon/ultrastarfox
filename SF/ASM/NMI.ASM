@@ -26,9 +26,9 @@ copy_to_0101_l
 	ldy	#$0101 ; dest data addr
 	lda	#nmihanend-nmihan-1 ; len of data to copy
 	IFNE	FASTROM
-	sasm_mvn	$9f,$80
+	_mvn	$9f,$80
 	ELSEIF
-	sasm_mvn	$1f,$00
+	_mvn	$1f,$00
 	ENDC
 
 	a8i16 ; set A to 8 bit and X/Y to 16 bit
@@ -89,19 +89,6 @@ nmihan ; Start of NMI handler
 	pha ; Push A to stack
 	plb ; Pull data bank from stack
 	ENDC ; End conditional
-
-	IFNE	MSU1
-; Handle MSU-1 fades
-	lda msufadeflag	; check fade flag
-	beq .msu1han_nofade	; if zero, don't fade
-	lda curmsuvolume	; load current volume
-	beq .msu1han_nofade	; if zero, don't fade
-	sec
-	sbc	#msu_voldecrement
-	sta curmsuvolume	; store new volume
-	sta msu_volume	; set msu-1 volume
-.msu1han_nofade
-	ENDC
 
 	IFNE	RUMBLE
 ; Randy's rumble controller fix for hardware
@@ -251,6 +238,20 @@ nmihan ; Start of NMI handler
 
 .skip_rumble
 	ENDC
+
+	IFNE	MSU1
+; Handle MSU-1 fades
+	lda msufadeflag	; check fade flag
+	beq .msu1han_nofade	; if zero, don't fade
+	lda curmsuvolume	; load current volume
+	beq .msu1han_nofade	; if zero, don't fade
+	sec
+	sbc	#msu_voldecrement
+	sta curmsuvolume	; store new volume
+	sta msu_volume	; set msu-1 volume
+.msu1han_nofade
+	ENDC
+
 
 	nastyon ; Turn MARIO nasty mode on
 	jsl	irqcode_l ; Jump to irqcode_l
