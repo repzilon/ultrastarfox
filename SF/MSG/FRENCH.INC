@@ -147,7 +147,7 @@
 ; New teammate dialogue courtesy of Josh, translated by repzilon
 	message white,miyu,<ceci pourrait être ma fin!>,other	; (146) ; teammate status on level clear
 	message white,miyu,<mon vaisseau est endommagé###>,other	; (147)
-	message white,miyu,<je suis correct, fox!>,other	; (148)
+	message white,miyu,<je suis correcte, fox!>,other	; (148)
 	message white,miyu,<tout est au vert, fox!>,other	; (149)
 	message white,fay,<dites à papi que je l'aime!>,other	; (150)
 	message white,fay,<tu dois me protéger, fox!>,other	; (151)
@@ -155,10 +155,10 @@
 	message white,fay,<je suis prête pour d'autres!>,other	; (153)
 	message	white,miyu,<un ennemi est derrière moi!>,help	; (154) ; chased by an enemy/saved by player/died
 	message	white,miyu,<merci, fox### je t'en dois une#>,other	; (155)
-	message	white,miyu,<aiiiieeee!! je suis fichu!>,down	; (156)
+	message	white,miyu,<aiiiieeee!! je suis fichue!>,down	; (156)
 	message	white,fay,<oh non! fox, à l'aide!!>,help	; (157)
 	message	white,fay,<oh fox### tu es mon héros!>,other	; (158)
-	message	white,miyu,<merde! je suis touché!>,help	; (160)
+	message	white,miyu,<merde! je suis touchée!>,help	; (160)
 	message	white,fay,<va t'en, sale pervers!>,help	; (161)
 	message	white,miyu,<ce n'est pas un jeu, fox!>,help	; (162) ; player hits teammate
 	message	white,fay,<fox, ne me tire pas dessus!>,help	; (163)
