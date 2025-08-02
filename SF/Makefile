@@ -104,6 +104,7 @@ setup:
 text:
 	@cd msg
 	@$(CHRMAP) --tokenize chrmap15.dat GERMAN.INC GERMAN.MSG
+	@$(CHRMAP) --tokenize chrmap15.dat FRENCH.INC FRENCH.MSG
 	@$(CHRMAP) --tokenize chrmapjp.dat JAPANESE.INC JAPANESE.MSG
 	@cd ..
 
@@ -236,6 +237,7 @@ donebld:
 	@copy BANKS.CSV ..\BANKS.CSV
 	@del BANKS.CSV
 	@del MSG\GERMAN.MSG
+	@del MSG\FRENCH.MSG
 	@del MSG\JAPANESE.MSG
 
 # Clean everything up

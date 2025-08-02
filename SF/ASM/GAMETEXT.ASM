@@ -130,7 +130,7 @@ msgnum	=	1
 	ENDC
 
 	IFNE	french			;if french = 1
-	include	MSG\french.inc		;use french message file
+	include	MSG\french.msg		;use french message file
 	ENDC
 
 	IFNE	spanish			;if spanish = 1
