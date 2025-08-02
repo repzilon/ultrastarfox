@@ -7,16 +7,16 @@
 ;!! Only ONE may be on at a time.
 
 ; Japanese/English [0 = English, 1 = Japanese]
-JAPANESE	equ	0
+JAPANESE	=	0
 
 ; German language version [0 = off, 1 = on]
-german		equ	0
+german		=	0
 
 ; French language version [0 = off, 1 = on]
-french		equ	0
+french		=	0
 
 ; Spanish language version [0 = off, 1 = on] (UNTRANSLATED TEXT, DIACRITICS AVAILABLE, NO GFX)
-spanish		equ	0
+spanish		=	0
 
 ;####################################################################################################################
 

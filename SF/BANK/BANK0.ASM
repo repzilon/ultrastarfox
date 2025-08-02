@@ -183,27 +183,33 @@ abort_vn
 	; Region/Destination Codes
 	IFEQ	JAPAN
 
-	IFEQ	PAL				; American
+		IFEQ	PAL			; NTSC
+		IFNE	FRENCH
+hdr_region	equ	$0f			; Destination Code (French Canada, as used with TLoZ: A Link to the Past)
+							; Reference: NoA SNES Development Manual, book 1 p. 1-2-20
+		ELSEIF
 hdr_region	equ	$01			; Destination Code (USA)
-	ELSEIF
+		ENDC
 
-	IFEQ	GERMAN+FRENCH+SPANISH	; British
-hdr_region	equ	$02					; Destination Code (PAL)
-	ENDC
+		ELSEIF
 
-	IFNE	GERMAN			; German
+			IFEQ	GERMAN+FRENCH+SPANISH	; British
+hdr_region	equ	$02			; Destination Code (PAL)
+			ENDC
+
+			IFNE	GERMAN	; German
 hdr_region	equ	$09			; Destination Code (GER)
-	ENDC
+			ENDC
 
-	IFNE	FRENCH			; French
+			IFNE	FRENCH	; French
 hdr_region	equ	$06			; Destination Code (FRA)
-	ENDC
-		
-	IFNE	SPANISH			; Spanish
+			ENDC
+				
+			IFNE	SPANISH	; Spanish
 hdr_region	equ	$08			; Destination Code (SPN)
-	ENDC
+			ENDC
 
-	ENDC
+		ENDC
 
 	ELSEIF					; Japanese
 hdr_region	equ	$00			; Destination Code (JPN)

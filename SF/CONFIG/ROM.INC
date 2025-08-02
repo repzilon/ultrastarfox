@@ -39,17 +39,17 @@ cacheon		equ	1
 ; Region
 
 ; Japanese ROM Header [0 = off, 1 = on]	(DO NOT USE IF PAL = 1)
-japan		equ 0
+japan		=	0
 
 ; PAL/NTSC [0 = NTSC, 1 = PAL] (DO NOT USE IF JAPAN = 1)
-pal			equ	0
+pal			=	0
 
 ; Game Name
 
 ; Changes the ROM header and Credits game names.
 ; ROM Header name: [0 = STAR FOX, 1 = STAR WING, 2 = Custom Name]
 ; End Credits name: [0 = STAR FOX, 1 = STARWING, 2 = Custom Name]
-gamename	equ	2
+gamename	=	2
 
 ; Custom header name
 ; field for a custom internal ROM name. the internal ROM name must be 21 ASCII CHARACTERS long. No more, no less.

@@ -6,6 +6,8 @@ CC := cc
 # Does -march=native also work on Clang?
 CFLAGS_OPTIM := -O2 -pipe -fomit-frame-pointer
 CFLAGS_WARN := -W -Wall -Werror=format-security
+#CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
+#CXXFLAGS_WARN := $(CFLAGS_WARN)
 
 all: bgconv/bin/palconv mugconv/foxchr bgconv/bin/sf_crunch bgconv/bin/superfamiconv mugconv/superfamiconv/superfamiconv cgx2fx fx2cgx fontconv/foxfont
 
@@ -37,7 +39,6 @@ clean: clean-tools clean-sink clean-superfamiconv
 	rm -rf SharpUltraStarFoxTools/*/obj/
 
 distclean: clean-tools clean-sink
-	rm -f SuperFamiconv-*.tar.gz
 	rm -rf SuperFamiconv-*
 
 nowindows:
@@ -58,6 +59,7 @@ permissions:
 	chmod +x */*.sh
 
 mrproper: distclean nowindows permissions
+	rm -f SuperFamiconv-*.tar.gz
 
 bgconv/bin/palconv: palconv_src/palconv.c
 	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) palconv_src/palconv.c -o bgconv/bin/palconv

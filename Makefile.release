@@ -1,0 +1,135 @@
+VER := 2.2
+# flips make-macos.sh fails to build and also uses ricer optimization flags
+# Introduce saner flags
+CFLAGS_OPTIM := -O2 -pipe -fomit-frame-pointer
+CFLAGS_WARN := -W -Wall -Werror=format-security
+CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
+CXXFLAGS_WARN := $(CFLAGS_WARN)
+
+all: releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ $(VER).bps releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 2)\ $(VER).bps releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ $(VER).bps releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Germany)\ $(VER).bps
+	sha256sum SF-*.SFC
+	@echo "All done!"
+
+french: releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA\ to\ Canada)\ (Rev\ 2)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe\ to\ France)\ (Rev\ 1)\ $(VER).bps
+	sha256sum SF-*.SFC
+	@echo "Slippy peut jouer des deux bords de l'Atlantique"
+
+# The UltraStarFox builds cannot be done in parallel because its build 
+# system can only use the same intermediate directory. Do not replace 
+# make with $(MAKE) for this reason
+SF-U.SFC:
+	cp -f SF/CONFIG/REL_USA.INC SF/CONFIG/RELEASE.INC
+	make -f Makefile
+	mv SF.SFC SF-U.SFC
+
+SF-J.SFC:
+	cp -f SF/CONFIG/REL_JAP.INC SF/CONFIG/RELEASE.INC
+	make -f Makefile
+	mv SF.SFC SF-J.SFC
+
+SF-E.SFC:
+	cp -f SF/CONFIG/REL_EUR.INC SF/CONFIG/RELEASE.INC
+	make -f Makefile
+	mv SF.SFC SF-E.SFC
+
+SF-G.SFC:
+	cp -f SF/CONFIG/REL_GER.INC SF/CONFIG/RELEASE.INC
+	make -f Makefile
+	mv SF.SFC SF-G.SFC
+
+SF-F.SFC:
+	cp -f SF/CONFIG/REL_FRA.INC SF/CONFIG/RELEASE.INC
+	make -f Makefile
+	mv SF.SFC SF-F.SFC
+
+SF-C.SFC:
+	cp -f SF/CONFIG/REL_CAN.INC SF/CONFIG/RELEASE.INC
+	make -f Makefile
+	mv SF.SFC SF-C.SFC
+
+releases/Release\ $(VER)/USA\ Patches:
+	mkdir -p "releases/Release $(VER)/USA Patches"
+
+releases/Release\ $(VER)/Japan\ Patches:
+	mkdir -p "releases/Release $(VER)/Japan Patches"
+
+releases/Release\ $(VER)/PAL\ Patches:
+	mkdir -p "releases/Release $(VER)/PAL Patches"
+
+flips-latest.tar.gz:
+	curl https://git.disroot.org/Sir_Walrus/Flips/archive/master.tar.gz -o flips-latest.tar.gz
+
+flips/Makefile: flips-latest.tar.gz
+	tar -zxf flips-latest.tar.gz
+
+flips/flips: flips/Makefile
+	# Flips is written in C++ but uses CFLAGS for C++ optimization flags
+	$(MAKE) -C flips "CFLAGS=$(CXXFLAGS_OPTIM) $(CXXFLAGS_WARN)"
+
+releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (USA).sfc SF-U.SFC releases/Release\ $(VER)/USA\ Patches
+	@echo "Making USA rev 0 patches..."
+	./flips/flips --create --bps-delta "./baseroms/Star Fox (USA).sfc" SF-U.SFC "./releases/Release $(VER)/USA Patches/UltraStarFox (USA) $(VER).bps"
+
+releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 1)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (USA)\ (Rev\ 1).sfc SF-U.SFC releases/Release\ $(VER)/USA\ Patches
+	@echo "Making USA rev 1 patches..."
+	./flips/flips --create --bps-delta "./baseroms/Star Fox (USA) (Rev 1).sfc" SF-U.SFC "./releases/Release $(VER)/USA Patches/UltraStarFox (USA) (Rev 1) $(VER).bps"
+
+releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 2)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (USA)\ (Rev\ 2).sfc SF-U.SFC releases/Release\ $(VER)/USA\ Patches
+	@echo "Making USA rev 2 patches..."
+	./flips/flips --create --bps-delta "./baseroms/Star Fox (USA) (Rev 2).sfc" SF-U.SFC "./releases/Release $(VER)/USA Patches/UltraStarFox (USA) (Rev 2) $(VER).bps"
+
+releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA\ to\ Canada)\ (Rev\ 2)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (USA)\ (Rev\ 2).sfc SF-C.SFC releases/Release\ $(VER)/USA\ Patches
+	@echo "Making USA rev 2 to Canada French patches..."
+	./flips/flips --create --bps-delta "./baseroms/Star Fox (USA) (Rev 2).sfc" SF-C.SFC "./releases/Release $(VER)/USA Patches/UltraStarFox (USA to Canada) (Rev 2) $(VER).bps"
+
+releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (Japan).sfc SF-J.SFC releases/Release\ $(VER)/Japan\ Patches
+	@echo "Making JP rev 0 patches..."
+	./flips/flips --create --bps-delta "./baseroms/Star Fox (Japan).sfc" SF-J.SFC "./releases/Release $(VER)/Japan Patches/UltraStarFox (Japan) $(VER).bps"
+
+releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ (Rev\ 1)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (Japan)\ (Rev\ 1).sfc SF-J.SFC releases/Release\ $(VER)/Japan\ Patches
+	@echo "Making JP rev 1 patches..."
+	./flips/flips --create --bps-delta "./baseroms/Star Fox (Japan) (Rev 1).sfc" SF-J.SFC "./releases/Release $(VER)/Japan Patches/UltraStarFox (Japan) (Rev 1) $(VER).bps"
+
+releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ $(VER).bps: flips/flips baseroms/Starwing\ (Europe).sfc SF-E.SFC releases/Release\ $(VER)/PAL\ Patches
+	@echo "Making PAL rev 0 patches..."
+	./flips/flips --create --bps-delta "./baseroms/Starwing (Europe).sfc" SF-E.SFC "./releases/Release $(VER)/PAL Patches/UltraStarFox (Europe) $(VER).bps"
+
+releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ (Rev\ 1)\ $(VER).bps: flips/flips baseroms/Starwing\ (Europe)\ (Rev\ 1).sfc SF-E.SFC releases/Release\ $(VER)/PAL\ Patches
+	@echo "Making PAL rev 1 patches..."
+	./flips/flips --create --bps-delta "./baseroms/Starwing (Europe) (Rev 1).sfc" SF-E.SFC "./releases/Release $(VER)/PAL Patches/UltraStarFox (Europe) (Rev 1) $(VER).bps"
+
+releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe\ to\ France)\ (Rev\ 1)\ $(VER).bps: flips/flips baseroms/Starwing\ (Europe)\ (Rev\ 1).sfc SF-F.SFC releases/Release\ $(VER)/PAL\ Patches
+	@echo "Making PAL rev 1 to PAL-F patches..."
+	./flips/flips --create --bps-delta "./baseroms/Starwing (Europe) (Rev 1).sfc" SF-F.SFC "./releases/Release $(VER)/PAL Patches/UltraStarFox (Europe to France) (Rev 1) $(VER).bps"
+
+releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Germany)\ $(VER).bps: flips/flips baseroms/Starwing\ (Germany).sfc SF-G.SFC releases/Release\ $(VER)/PAL\ Patches
+	@echo "Making PAL-G patches..."
+	./flips/flips --create --bps-delta "./baseroms/Starwing (Germany).sfc" SF-G.SFC "./releases/Release $(VER)/PAL Patches/UltraStarFox (Germany) $(VER).bps"
+
+clean-sf:
+	$(MAKE) -f Makefile clean
+
+clean-flips:
+	$(MAKE) -C flips clean
+	rm -f flips/flips # broken flips Makefile
+
+clean-patches:
+	rm -f SF-U.SFC
+	rm -f SF-J.SFC
+	rm -f SF-E.SFC
+	rm -f SF-G.SFC
+	rm -f "releases/Release $(VER)/USA Patches/UltraStarFox*.bps"
+	rm -f "releases/Release $(VER)/Japan Patches/UltraStarFox*.bps"
+	rm -f "releases/Release $(VER)/PAL Patches/UltraStar*.bps"
+
+clean: clean-sf clean-flips clean-patches
+	rm -f SF/CONFIG/RELEASE.INC
+
+distclean: clean-sf clean-patches
+	# No need to call make clean on flips when its directory gets deleted
+	rm -rf flips/
+
+mrproper: distclean
+	rm -f flips-latest.tar.gz
+
+.PHONY: all clean distclean mrproper clean-sf clean-flips clean-patches

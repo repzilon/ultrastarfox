@@ -5,7 +5,7 @@
 	message	white,fox,<retourne à la base! >,other	; (4)
 	message	white,falcon,<prêt, fox!>,other	; (5)
 	message	white,falcon,<je suis avec toi!>,other	; (6)
-	message	white,falcon,<problème à six heures!>,help	; (7)
+	message	white,falcon,<ennuis à six heures!>,help	; (7)
 	message	white,falcon,<regarde ce que tu fais, fox!>,other	; (8)
 	message	white,falcon,<haa! je suis touché!!!!>,down	; (9)
 	message	white,falcon,<j'vais tous les éclater!>,other	; (10)

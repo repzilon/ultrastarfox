@@ -41,6 +41,7 @@ distclean: clean-sf
 nowindows:
 	rm -f dosbox-x.exe
 	rm -f usb2snes-cli.exe
+	rm -f flips.exe
 	$(MAKE) -C TOOLS nowindows
 
 nodosdupes: nodosdup.sh
@@ -66,7 +67,7 @@ lineendings:
 	unix2dos -q -f SF/MARIO/*.MC
 	dos2unix -q -e Makefile TOOLS/Makefile
 	dos2unix -q -e commit.sh TOOLS/*/*.sh
-	dos2unix -q -e Makefile.extra
+	dos2unix -q -e Makefile.*
 
 prebuild: SF/DATA/CONT-2-F.CGX SF/DATA/MAP-F.CGX SF/DATA/OBJ-1-F.CGX SF/DATA/OBJ-2-F.CGX SF/DATA/FOX-F.CGX SF/DATA/CP-FF.CGX
 	true

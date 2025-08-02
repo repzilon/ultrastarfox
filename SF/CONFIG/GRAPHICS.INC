@@ -19,11 +19,11 @@ hipolyarwing	equ	0
 ; 1 = Star Fox US Rev 0
 ; 2 = Star Fox US Rev 1/2
 ; 3 = Starwing
-titlelogo	equ 1
+titlelogo	= 1
 
 ; Controls screen palette to use. 
 ; [0 = NTSC, 1 = PAL] (DOES NOT AFFECT JP)
-controlsscreenpal	equ	0
+controlsscreenpal	=	0
 
 ; Enable colored window over shield and boost meters as in vanilla.
 ; Set this to 0 if moving meter positions.
@@ -98,7 +98,7 @@ friendmugshoty	equ	152-((friendmsgyadd/8)*8)
 
 ;; Score screen positions
 ; use 24 instead of 22 for Japanese
-scoretextypos	equ	22
+scoretextypos	=	22
 ; default is 44 for all regions
 scoretotalypos	equ	40
 
