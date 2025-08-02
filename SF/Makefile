@@ -103,7 +103,7 @@ setup:
 # Tokenize German/Japanese script
 text:
 	@cd msg
-	@$(CHRMAP) --tokenize chrmapde.dat GERMAN.INC GERMAN.MSG
+	@$(CHRMAP) --tokenize chrmap15.dat GERMAN.INC GERMAN.MSG
 	@$(CHRMAP) --tokenize chrmapjp.dat JAPANESE.INC JAPANESE.MSG
 	@cd ..
 

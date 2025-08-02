@@ -1,4 +1,4 @@
-	; Character set of this file is ISO-8859-15.
+	; Character set of this file is UTF-8.
 	message	white,fox,<alles okay, jungs?!>,other	; (1)
 	message	white,fox,<geschafft!>,other	; (2)
 	message	white,fox,<slippy slippy!>,other	; (3)

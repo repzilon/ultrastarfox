@@ -1,3 +1,4 @@
+	; Character set of this file is UTF-8.
 	message	white,fox,<セﾞンキ ホウコクセヨ!>,other	; (1)
 	message	white,fox,<ヤッホ-!>,other	; (2)
 	message	white,fox,<スリッヒﾟ- スリッヒﾟ->,other	; (3)
