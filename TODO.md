@@ -21,7 +21,7 @@ Miscellanous hacks
 - [ ] Cross compile updated foxfont for DJGPP
 - [x] Correct timing of the intro sequence when built for 21 MHz Super FX
 - [ ] Code bank reorganisation to fit the base game inside 8 megabits and extras above that boundary ==WIP==
-- [ ] Port buildrelease.cmd to a Makefile and generate localized patches from it ==WIP==
+- [x] Port buildrelease.cmd to a Makefile and generate localized patches from it
 - [ ] MUCH Later: raise the cap to 24 fps on NTSC by implementing a telecine-inspired approach
 
 French Canadian Translation
@@ -37,4 +37,4 @@ French Canadian Translation
 - [x] Edit build system to select French graphics
 - [x] Extract strings from ENDSEQ.ASM
 - [ ] Translate end sequence ==WIP==
-- [ ] Add the French Canadian build configuration (NTSC, language code, French messages, StarFox [not Starwing] logo, North American [purple] controller button image) ==WIP==
+- [x] Add the French Canadian build configuration (NTSC, language code, French messages, StarFox [not Starwing] logo, North American [purple] controller button image)

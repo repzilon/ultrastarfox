@@ -10,6 +10,10 @@ all: releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ $(VER).bps relea
 	sha256sum SF-*.SFC
 	@echo "All done!"
 
+french: releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA\ to\ Canada)\ (Rev\ 2)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe\ to\ France)\ (Rev\ 1)\ $(VER).bps
+	sha256sum SF-*.SFC
+	@echo "Slippy peut jouer des deux bords de l'Atlantique"
+
 # The UltraStarFox builds cannot be done in parallel because its build 
 # system can only use the same intermediate directory. Do not replace 
 # make with $(MAKE) for this reason
@@ -32,6 +36,16 @@ SF-G.SFC:
 	cp -f SF/CONFIG/REL_GER.INC SF/CONFIG/RELEASE.INC
 	make -f Makefile
 	mv SF.SFC SF-G.SFC
+
+SF-F.SFC:
+	cp -f SF/CONFIG/REL_FRA.INC SF/CONFIG/RELEASE.INC
+	make -f Makefile
+	mv SF.SFC SF-F.SFC
+
+SF-C.SFC:
+	cp -f SF/CONFIG/REL_CAN.INC SF/CONFIG/RELEASE.INC
+	make -f Makefile
+	mv SF.SFC SF-C.SFC
 
 releases/Release\ $(VER)/USA\ Patches:
 	mkdir -p "releases/Release $(VER)/USA Patches"
@@ -64,6 +78,10 @@ releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 2)\ $(VER).bps:
 	@echo "Making USA rev 2 patches..."
 	./flips/flips --create --bps-delta "./baseroms/Star Fox (USA) (Rev 2).sfc" SF-U.SFC "./releases/Release $(VER)/USA Patches/UltraStarFox (USA) (Rev 2) $(VER).bps"
 
+releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA\ to\ Canada)\ (Rev\ 2)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (USA)\ (Rev\ 2).sfc SF-C.SFC releases/Release\ $(VER)/USA\ Patches
+	@echo "Making USA rev 2 to Canada French patches..."
+	./flips/flips --create --bps-delta "./baseroms/Star Fox (USA) (Rev 2).sfc" SF-C.SFC "./releases/Release $(VER)/USA Patches/UltraStarFox (USA to Canada) (Rev 2) $(VER).bps"
+
 releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (Japan).sfc SF-J.SFC releases/Release\ $(VER)/Japan\ Patches
 	@echo "Making JP rev 0 patches..."
 	./flips/flips --create --bps-delta "./baseroms/Star Fox (Japan).sfc" SF-J.SFC "./releases/Release $(VER)/Japan Patches/UltraStarFox (Japan) $(VER).bps"
@@ -79,6 +97,10 @@ releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ $(VER).bps: flips/
 releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ (Rev\ 1)\ $(VER).bps: flips/flips baseroms/Starwing\ (Europe)\ (Rev\ 1).sfc SF-E.SFC releases/Release\ $(VER)/PAL\ Patches
 	@echo "Making PAL rev 1 patches..."
 	./flips/flips --create --bps-delta "./baseroms/Starwing (Europe) (Rev 1).sfc" SF-E.SFC "./releases/Release $(VER)/PAL Patches/UltraStarFox (Europe) (Rev 1) $(VER).bps"
+
+releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe\ to\ France)\ (Rev\ 1)\ $(VER).bps: flips/flips baseroms/Starwing\ (Europe)\ (Rev\ 1).sfc SF-F.SFC releases/Release\ $(VER)/PAL\ Patches
+	@echo "Making PAL rev 1 to PAL-F patches..."
+	./flips/flips --create --bps-delta "./baseroms/Starwing (Europe) (Rev 1).sfc" SF-F.SFC "./releases/Release $(VER)/PAL Patches/UltraStarFox (Europe to France) (Rev 1) $(VER).bps"
 
 releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Germany)\ $(VER).bps: flips/flips baseroms/Starwing\ (Germany).sfc SF-G.SFC releases/Release\ $(VER)/PAL\ Patches
 	@echo "Making PAL-G patches..."
