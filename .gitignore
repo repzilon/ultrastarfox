@@ -90,6 +90,7 @@ TOOLS/argonautmapdec
 TOOLS/fxedit2
 TOOLS/inccol
 TOOLS/romExtender2
+TOOLS/chrmap
 
 # Removed Windows executables
 dosbox-x.exe
