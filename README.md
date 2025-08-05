@@ -17,18 +17,18 @@ Go [here](#building) to jump straight to the building instructions.
 
 ## Features
 
-## Cartridge Hardware Support and ROM Configuration
+### Cartridge Hardware Support and ROM Configuration
 
 - Uses GSU-2/Super FX 2 @21.4Mhz instead of MARIO Chip 1 @10.7Mhz
 - Super FX MS1 high-speed multiply enabled (if 21mhz is enabled)
 - FastROM support (Do not enable if you are targeting a real cartridge with a real MARIO/GSU-1/GSU-2 IC chip!)
 
-## Accessory Support
+### Accessory Support
 
 - SNES Mouse support and "analog stick" support via the SNES mouse
 - SNES Rumble Pad support and macros (see ``SF\INC\RMBLMACS.INC`` for macros)
 
-## QOL / Ease-of-use
+### QOL / Ease-of-use
 
 - Very configurable out-of-the-box, see ``SF\CONFIG\CONFIG.INC`` for more info
 - Lots of free ROM space (2MB/16Mbit ROM)
@@ -40,19 +40,27 @@ Go [here](#building) to jump straight to the building instructions.
 - Upload ROM directly to SNES and boot with QUsb2Snes and a SD2SNES/FXPak Pro flash cartridge
 - Easily create patches for your ROMhack with ``buildrelease.cmd``
 
-## Limits Removed/Increased
+#### Added in Repzilon's fork
+- Modified message font allowing easier translation to any Western or North European language
+- Boss roll sequence can be translated to languages other than English and German
+- No soft freeze during ``messagetest`` by skipping lengthy stage briefings
+- Corrected framerate displayed with ``mario_stats3d`` on PAL builds
+- Create *localized* patches with ``Makefile.release`` (extended port of ``buildrelease.cmd``)
+- (In progress) Boss roll sequence display from training
+
+### Limits Removed/Increased
 
 - 256 texture slots
 - 250 faces/vertices limit for models
 
-## Miscellaneous
+### Miscellaneous
 
 - All Starwing PAL and Germany text/GFX for PAL builds
 - **Kando and Randy were involved so you know it's good**
 
 ## Building
 
-## Building on Windows
+### Building on Windows
 
 Requirements: Microsoft Windows
 
@@ -66,7 +74,7 @@ To clean, run ``clean.cmd``.
 
 After building, a debug symbol map will be created at ``SYMBOLS.TXT``, and a bank space report at ``BANKS.CSV``.  
 
-## Building on Linux
+### Building on Linux
 
 **NOTE: this was tested on WSL with Ubuntu installed. YMMV.**  
 
@@ -86,7 +94,7 @@ To clean, run ``make clean``.
 
 After building, a debug symbol map will be created at ``SYMBOLS.TXT``, and a bank space report at ``BANKS.CSV``.  
 
-## Building on macOS
+### Building on macOS
 
 **Tested on an old Intel MacBook Pro Retina 2015, with a newer macOS thanks to OpenCore Legacy Patcher. No idea if it works on Apple Silicon Macs.**
 
