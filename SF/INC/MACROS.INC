@@ -6168,14 +6168,9 @@ scrambleandbaseexit	macro	[route]
 	mapobj		0000,-27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
 	setalvar	sbyte1,17+(1000/pexitbasespeed)
 
-	mapobj		0000,27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
-	setalvar	sbyte1,17
-	mapobj		0000,27<<mybase_scale,-39<<mybase_scale,-200,myship_4,friendexitbase_Istrat
-	setalvar	sbyte1,17+(1000/pexitbasespeed)
-
 	pathobj	0000,3000,3000,3000,nullshape,matemsg,10,10
 	pathobj	0000,100,-90,1400,friendship_4,falco_lv1,10,10
 	pathobj	0000,-80,-140,1200,friendship_4,frog_lv1,10,10
-	pathobj	0000,-100,-90,1400,friendship_4,falco_lv1,10,10
-	pathobj	0000,80,-140,1200,friendship_4,frog_lv1,10,10
+	mapobj	0000,-600,0000,2000,BU_1,HARD180YR_ISTRAT
+	mapobj	0000,0600,0000,2000,BU_1,HARD180YR_ISTRAT
 	endm
