@@ -4,7 +4,7 @@ Repzilon's TODO
 Immediate fixes
 ---------------
 - [x] Fix missing GROUND.COL when trying to build UltraStarFox!
-- [ ] Missing scenery in Corneria for all difficulty levels (seems to be introduced by the scrambleandbaseexit macro)
+- [x] Missing scenery in Corneria introduced by the scrambleandbaseexit macro
 
 Tool porting
 ------------
