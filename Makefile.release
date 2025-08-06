@@ -14,6 +14,14 @@ french: releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA\ to\ Canada)\ (
 	sha256sum SF-*.SFC
 	@echo "Slippy peut jouer des deux bords de l'Atlantique"
 
+roms: SF-U.SFC SF-J.SFC SF-E.SFC SF-G.SFC
+	sha256sum SF-*.SFC
+	@echo "UltraStarFox ROMs built"
+
+allroms: SF-U.SFC SF-J.SFC SF-E.SFC SF-G.SFC SF-F.SFC SF-C.SFC
+	sha256sum SF-*.SFC
+	@echo "UltraStarFox ROMs (with French) built"
+
 # The UltraStarFox builds cannot be done in parallel because its build 
 # system can only use the same intermediate directory. Do not replace 
 # make with $(MAKE) for this reason
@@ -109,15 +117,18 @@ releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Germany)\ $(VER).bps: flips
 clean-sf:
 	$(MAKE) -f Makefile clean
 
+ # flips Makefile is broken
 clean-flips:
 	$(MAKE) -C flips clean
-	rm -f flips/flips # broken flips Makefile
+	rm -f flips/flips
 
 clean-patches:
 	rm -f SF-U.SFC
 	rm -f SF-J.SFC
 	rm -f SF-E.SFC
 	rm -f SF-G.SFC
+	rm -f SF-F.SFC
+	rm -f SF-C.SFC
 	rm -f "releases/Release $(VER)/USA Patches/UltraStarFox*.bps"
 	rm -f "releases/Release $(VER)/Japan Patches/UltraStarFox*.bps"
 	rm -f "releases/Release $(VER)/PAL Patches/UltraStar*.bps"
@@ -125,11 +136,11 @@ clean-patches:
 clean: clean-sf clean-flips clean-patches
 	rm -f SF/CONFIG/RELEASE.INC
 
+# No need to call make clean on flips when its directory gets deleted
 distclean: clean-sf clean-patches
-	# No need to call make clean on flips when its directory gets deleted
-	rm -rf flips/
+	rm -rf flips/	
 
 mrproper: distclean
 	rm -f flips-latest.tar.gz
 
-.PHONY: all clean distclean mrproper clean-sf clean-flips clean-patches
+.PHONY: all clean distclean mrproper clean-sf clean-flips clean-patches roms allroms

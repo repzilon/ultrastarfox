@@ -11,7 +11,7 @@ CFLAGS_WARN := -W -Wall -Werror=format-security
 
 all: bgconv/bin/palconv mugconv/foxchr bgconv/bin/sf_crunch bgconv/bin/superfamiconv mugconv/superfamiconv/superfamiconv cgx2fx fx2cgx fontconv/foxfont
 
-sink: romExtender2 inccol argonautmapdec fxedit2
+sink: romExtender2 inccol argonautmapdec fxedit2 chrmap
 
 kitchensink: all sink
 
@@ -33,6 +33,7 @@ clean-sink:
 	rm -f inccol 
 	rm -f argonautmapdec 
 	rm -f fxedit2
+	rm -f chrmap
 
 clean: clean-tools clean-sink clean-superfamiconv
 	rm -rf SharpUltraStarFoxTools/*/bin/
@@ -105,5 +106,8 @@ argonautmapdec: mapdec_src/argonautmapdecoder.c
 
 fxedit2: unmerge_src/fxedit_v2.c
 	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) unmerge_src/fxedit_v2.c -o fxedit2
+
+chrmap: chrmap_src/chrmap.c
+	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) chrmap_src/chrmap.c -o chrmap
 
 .PHONY: all sink kitchensink clean distclean nowindows permissions mrproper

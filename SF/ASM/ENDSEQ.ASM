@@ -1517,7 +1517,7 @@ intro_l
 
 	bgm	intro
 	IFNE	MSU1
-	msuplay	introdemo,repeat
+	msuplay	titledemo,norepeat
 	ENDC
 
 	disable

@@ -4,6 +4,7 @@ Repzilon's TODO
 Immediate fixes
 ---------------
 - [x] Fix missing GROUND.COL when trying to build UltraStarFox!
+- [ ] Missing scenery in Corneria for all difficulty levels (seems to be introduced by the scrambleandbaseexit macro)
 
 Tool porting
 ------------
@@ -20,8 +21,10 @@ Miscellanous hacks
 - [x] Support 4bpp bitmaps in foxfont
 - [ ] Cross compile updated foxfont for DJGPP
 - [x] Correct timing of the intro sequence when built for 21 MHz Super FX
-- [ ] Code bank reorganisation to fit the base game inside 8 megabits and extras above that boundary ==WIP==
+- [ ] Code bank reorganisation to fit the base game inside 1 MiB and extras above that boundary ==WIP==
 - [x] Port buildrelease.cmd to a Makefile and generate localized patches from it
+- [ ] Skip scramble sequence by pressing Start
+- [ ] Better boss roll demo through training (background music, select level with controller mode, return to controls screen with Start)
 - [ ] MUCH Later: raise the cap to 24 fps on NTSC by implementing a telecine-inspired approach
 
 French Canadian Translation
@@ -36,5 +39,5 @@ French Canadian Translation
 - [x] Make French version of the graphics
 - [x] Edit build system to select French graphics
 - [x] Extract strings from ENDSEQ.ASM
-- [ ] Translate end sequence ==WIP==
+- [ ] Translate end sequence (fix garbled text in great commander measurements) ==WIP==
 - [x] Add the French Canadian build configuration (NTSC, language code, French messages, StarFox [not Starwing] logo, North American [purple] controller button image)

@@ -42,8 +42,8 @@ MAPDEC=MAPDEC
 # ALLCOLS palette stripper
 MC=MAKECOL
 
-# Argonaut .MAP File Decoder
-MAPDEC=MAPDEC
+# Script Tokenizer
+CHRMAP=CHRMAP
 
 #!! If you add/remove a cgx/scr in these two lists, make sure to add/remove the corresponding file.
 
@@ -95,11 +95,19 @@ ALLFILES= BANK\BANK0.SOB BANK\BANK1.SOB BANK\BANK2.SOB \
 
 # Everything that should be done when make is executed
 # add sf.msu before sf.sfc in this list if using MSU-1 data streaming
-all: setup make-allcols msprites crunch fonts sf.sfc donebld
+all: setup text make-allcols msprites crunch fonts sf.sfc donebld
 
 setup:
 	@del BANK\*.SOB > NUL
 	@del BANK\*.MAP > NUL
+
+# Tokenize German/Japanese script
+text:
+	@cd msg
+	@$(CHRMAP) --tokenize chrmap15.dat GERMAN.INC GERMAN.MSG
+	@$(CHRMAP) --tokenize chrmap15.dat FRENCH.INC FRENCH.MSG
+	@$(CHRMAP) --tokenize chrmapjp.dat JAPANESE.INC JAPANESE.MSG
+	@cd ..
 
 # Recipe to crunch palettes
 # Initialize allcols.col
@@ -229,6 +237,9 @@ donebld:
 	@del SYMBOLS.TXT
 	@copy BANKS.CSV ..\BANKS.CSV
 	@del BANKS.CSV
+	@del MSG\GERMAN.MSG
+	@del MSG\FRENCH.MSG
+	@del MSG\JAPANESE.MSG
 
 # Clean everything up
 clean:

@@ -226,11 +226,11 @@ xlen	=	22*1024+450
 	zalc	z1,2
 	zalc	shiftz,1
 	zalc	numnoclip,1
-	zalc	noclip,1
-	zalc	noclipx,1
-	zalc	linedrawvec,2
-	zalc	pauseflag,1
-	zalc	strptr,2
+;	zalc	noclip,1
+;	zalc	noclipx,1
+;	zalc	linedrawvec,2
+;	zalc	pauseflag,1
+;	zalc	strptr,2
 
 	zalc	rotx,1
 	zalc	roty,1
@@ -727,10 +727,13 @@ xlen	=	22*1024+450
 	IFNE	MSU1
 	zalc	msufadeflag,1	; \
 	zalc	curmsuvolume,1	; / MUST BE IN ZEROPAGE!!
-	zalc	msu_dest_zptr,2	; zp pointer for data stream destination
+	zalc	msu_dest_zptr,2	; zp pointer for data stream destination address
 
 	; MSU-1 data streaming routine alcs
 	alc	msu_read_len,2
+	alc	orchorband,1	; orchestra or band (for player down BGM) [0 = band, 1 = orch]
+msu_band	equ	0
+msu_orch	equ	1
 	ENDC
 
 	IFNE	RUMBLE
