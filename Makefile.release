@@ -116,6 +116,7 @@ releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Germany)\ $(VER).bps: flips
 
 clean-sf:
 	$(MAKE) -f Makefile clean
+	rm -f SF/CONFIG/RELEASE.INC
 
  # flips Makefile is broken
 clean-flips:
@@ -133,8 +134,8 @@ clean-patches:
 	rm -f "releases/Release $(VER)/Japan Patches/UltraStarFox*.bps"
 	rm -f "releases/Release $(VER)/PAL Patches/UltraStar*.bps"
 
-clean: clean-sf clean-flips clean-patches
-	rm -f SF/CONFIG/RELEASE.INC
+clean: clean-sf clean-patches clean-flips
+	true
 
 # No need to call make clean on flips when its directory gets deleted
 distclean: clean-sf clean-patches
