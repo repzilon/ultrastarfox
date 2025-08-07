@@ -42,6 +42,7 @@ Go [here](#building) to jump straight to the building instructions.
 
 #### Added in Repzilon's fork
 - Modified message font allowing easier translation to any Western or North European language
+- The foxfont utility also supports 4bpp bitmaps
 - Boss roll sequence can be translated to languages other than English and German
 - No soft freeze during ``messagetest`` by skipping lengthy stage briefings
 - Corrected framerate displayed with ``mario_stats3d`` on PAL builds
@@ -56,6 +57,7 @@ Go [here](#building) to jump straight to the building instructions.
 ### Miscellaneous
 
 - All Starwing PAL and Germany text/GFX for PAL builds
+- In Repzilon's fork, adjusted intro speed for Super FX 2, keeping original pace for MARIO Chip 1
 - **Kando and Randy were involved so you know it's good**
 
 ## Building
