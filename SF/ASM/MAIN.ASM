@@ -1251,7 +1251,7 @@ printspeclp
 
 	ldx	#0
 	ldy	#0
-	lda	#5 ;9 ;0 ;11			;x position
+	lda	#0 ;9 ;0 ;11			;x position
 	sta.l	m_x1
 	sta	ktpx
 .lp

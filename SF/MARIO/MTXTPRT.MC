@@ -542,29 +542,57 @@ mshowteammate
 	ibt	r0,#14 ; outer box colour
 	lms	r1,[m_x1]
 	lms	r2,[m_y1]
-	iwt	r3,#24
+	iwt	r3,#32
 	iwt	r4,#8+4
-	from	r3
-;	to	r3 ;test
-;	div2
 	mcall	mdrawbox
 	nop
 
-	ibt	r0,#2 ; bar colour
+	;ibt	r0,#2 ; bar colour, set it later because I need r0 soon for math
 	lms	r1,[m_x1]
 	inc	r1
 	inc	r1
 	lms	r2,[m_y1]
 	inc	r2
 	inc	r2
-	lms	r3,[m_z1]
-;	REPT	12	; \
-;	dec	r3		;  | this is a stupid way of doing things
-;	ENDR		; /
-	from	r3
-	to	r3 ;test
-	div2
-	iwt	r4,#8
+	lms	r0,[m_z1]
+	; Max team mate health is 40 HP, but max bar width is 28
+	; A. Compensate for truncation in part C (perfect health will turn into 26, not the expected 28 from school artihmetic)
+	iwt	r3,#0	; r3 is width and acts as accumulator
+	move	r6,#40
+	cmp	r6
+	bne	.notmaxhp
+	nop
+	inc	r3	; r3++ if r0==40
+.notmaxhp
+	move	r6,#20
+	cmp	r6
+	blt	.partb
+	nop
+	inc	r3	; r3++ if r0>=20
+	; B. turn x/40 into 6x/240
+.partb
+	iwt	r6,#6
+	umult	r6	; r0 *= 6
+	; C. Multiply the 240ths by 7/60 to have a health fraction in 28ths
+	; 7/60 = 1/16 + 1/32 + 1/64 + 1/128; 
+	; well, that sum is sligtly bigger in theory, but truncation makes it smaller
+	lsr
+	lsr
+	lsr
+	lsr
+	with	r3
+	add	r0	; w = compensation + (w >> 4)
+	lsr
+	with	r3
+	add	r0	; w += (w >> 5)
+	lsr
+	with	r3
+	add	r0	; w += (w >> 6)
+	lsr
+	with	r3
+	add	r0	; w += (w >> 7)
+	ibt	r0,#2	; set bar colour after all calculations
+	iwt	r4,#8	; bar height parameter
 	mcall	mdrawsolidbox
 	nop
 
