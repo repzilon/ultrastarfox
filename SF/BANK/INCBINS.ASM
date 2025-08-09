@@ -123,15 +123,15 @@ msprites3
 
 	bank	23
 
-	;IFNE	german
-	;inccru	bgcppcr,data\cp-p.pcr
-	;ENDC
-	;IFNE	french
-	;inccru	bgcppcr,data\cp-p.pcr
-	;ENDC
-	;IFEQ	german+french
+	IFNE	german
+	inccru	bgcppcr,data\cp-p.pcr
+	ENDC
+	IFNE	french
+	inccru	bgcppcr,data\cp-p.pcr
+	ENDC
+	IFEQ	german+french
 	inccru	bgcppcr,data\cp.pcr
-	;ENDC
+	ENDC
 
 	inccru	bgtstccr,data\t-st.ccr
 	inccru	bgtspccr,data\t-sp.ccr
