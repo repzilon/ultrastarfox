@@ -13,6 +13,8 @@ Graphic files are located in SF/DATA, palettes in SF/DATA/COL.
 
 Which graphic files gets included to the ROM is defined in SF/BANK/INCBINS.ASM source file.
 
+Should you convert CGX files to a well-known format for editing, make sure your image editor does not alter or rewrite the palette on a whim. The GIMP has a nasty habit of rewriting the palette, whereas Adobe Photoshop does not.
+
 ## Role of OBJ-1*.CGX
 Training/Scramble/Stage/Clear in large font are displayed through series of macro invocations in SF/ASM/SPRITES.ASM between lines 450 and 500 approximately, one invocation per letter. Look for the GERMAN conditional assembly directive. In OBJ-1.CGX or OBJ-1-G.CGX, you will find tiles for those messages. Tiles are numbered starting with 0, horizontally from left to right, just like the Western reading order. Either file is 4 bits per pixel.
 
