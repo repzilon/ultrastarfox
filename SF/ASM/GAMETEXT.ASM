@@ -17,7 +17,8 @@ peppytxt	txt	14,<PEPPY>
 falcotxt	txt	14,<FALCO>
 miyutxt		txt	14,<MIYU>
 faytxt		txt	14,<FAY>
-deadtxt	txt	14,<. . . . . .>
+deadtxt		txt	14,<. . .>
+deadfemtxt	txt	14,<. . .>
 stagetxt	txt	14,<ETAPPE>
 	ENDC
 
@@ -28,7 +29,7 @@ totalscoretxt	txt	14,<POINTAGE TOTAL>		;french total score
 slashtxt	txt	14,</>
 percenttxt	txt	14,<POURCENTAGE>
 bonustxt	txt	14,<BONI UN CRÉDIT>
-teamtxt	txt	14,<ÉTAT DES ÉQUIPIERS>
+teamtxt	txt	14,<ÉTAT DES ÉQUIPIERS ET ÉQUIPIÈRES>
 percenttxt2	txt	14,<%>
 perfecttxt	txt	14,<PARFAIT//>
 slippytxt	txt	14,<SLIPPY>
@@ -37,6 +38,7 @@ falcotxt	txt	14,<FALCO>
 miyutxt		txt	14,<MIYU>
 faytxt		txt	14,<FAY>
 deadtxt		txt	14,<MORT>
+deadfemtxt	txt	14,<MORTE>
 stagetxt	txt	14,<ETAPE>
 	ENDC
 
@@ -55,7 +57,8 @@ peppytxt	txt	14,<PEPPY>
 falcotxt	txt	14,<FALCO>
 miyutxt		txt	14,<MIYU>
 faytxt		txt	14,<FAY>
-deadtxt	txt	14,<DOWN>
+deadtxt		txt	14,<DOWN>
+deadfemtxt	txt	14,<DOWN>
 stagetxt	txt	14,<STAGE>
 	ENDC
 	
@@ -74,7 +77,8 @@ peppytxt	txt	14,<PEPPY>
 falcotxt	txt	14,<FALCO>
 miyutxt		txt	14,<MIYU>
 faytxt		txt	14,<FAY>
-deadtxt	txt	14,<MUERTO>
+deadtxt		txt	14,<CAÍDO>
+deadfemtxt	txt	14,<CAÍDA>
 stagetxt	txt	14,<ETAPA>
 	ENDC
 
@@ -96,7 +100,8 @@ peppytxt	txt	14,<PEPPY>
 falcotxt	txt	14,<FALCO>
 miyutxt		txt	14,<MIYU>
 faytxt		txt	14,<FAY>
-deadtxt	txt	14,<DOWN> ; SUNLITNOTE fix this if you get the teammate shield bars figured out
+deadtxt		txt	14,<DOWN>
+deadfemtxt	txt	14,<DOWN>
 stagetxt	txt	14,<STAGE>
 	ENDC
 	ENDC

@@ -1,6 +1,6 @@
 	global	font0wid,font0fon,font0trn
 	global	fontdata
-	global	perfecttxt,teamtxt,deadtxt,slippytxt,peppytxt,falcotxt
+	global	perfecttxt,teamtxt,deadtxt,deadfemtxt,slippytxt,peppytxt,falcotxt
 	global	miyutxt,faytxt
 	global	pausetxt,messages,totalscoretxt,scoretxt,slashtxt,percenttxt,percenttxt2,stagetxt
 	global	bonustxt

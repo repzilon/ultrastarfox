@@ -1025,7 +1025,7 @@ makeendobj2	sta	kval1
 ;----------------------------------------------------------------------------------------------
 nametxt	dw	peppytxt&WM,falcotxt&WM,slippytxt&WM,miyutxt&WM,faytxt&WM ; Name text for Peppy, Falco, and Slippy
 namepos	dw	0,48,92,147,199 ; Screen positions for names
-deadnamepos	dw	0,48,97,147,190 ; Screen positions for "IS DOWN" text if teammate(s) are down
+deadnamepos	dw	2,50,97,143,188 ; Screen positions for "IS DOWN" text if teammate(s) are down
 namegfxpos
 	db	0,11*8 ; Position for Peppy name gfx
 	db	6,11*8 ; Position for Falco name gfx
@@ -1243,10 +1243,15 @@ printspeclp
 
 ;----------------
 	a16
-	IFEQ	GERMAN
-	clrmes	teamtxt,48,69		;print "shield of team mate"
-	ELSEIF ; german = 1
-	clrmes	teamtxt,16,69		;print "shield of team mate"
+	;print "shield of team mate"
+	IFNE	GERMAN
+	clrmes	teamtxt,16,69
+	ENDC
+	IFNE	FRENCH
+	clrmes	teamtxt,8,69
+	ENDC
+	IFEQ	GERMAN+FRENCH
+	clrmes	teamtxt,48,69
 	ENDC
 
 	ldx	#0
@@ -1304,7 +1309,15 @@ printspeclp
 	sta.l	m_x1
 	lda	#151
 	sta.l	m_y1
+	cpx	#6
+	beq	.deadfem
+	cpx	#8
+	beq	.deadfem
 	lda	#deadtxt&WM
+	bra .printdead
+.deadfem
+	lda	#deadfemtxt&WM
+.printdead
 	sta.l	m_txtdata
 	a8
 	lda	#mprintstr>>16
@@ -1340,19 +1353,18 @@ printspeclp
 	cpx	#2
 	beq	.falco
 	cpx	#4
-	beq	.miyu
+	beq	.slippy
 	cpx	#6
-	beq	.fay
-	lda	#facedata&WM+640*15 ; slippy?
- 	bra	.writeit
+	beq	.miyu
+	lda	#facedata&WM+640*face_fay1
+	bra	.writeit
 .bunny	lda	#facedata&WM+640*face_peppy1
- 	bra	.writeit
+	bra	.writeit
 .falco	lda	#facedata&WM+640*face_falco1
 	bra	.writeit
-; no idea if this will work
-.miyu	lda	#facedata&WM+640*11 ; miyu?
+.slippy	lda	#facedata&WM+640*face_slippy1
 	bra	.writeit
-.fay	lda	#facedata&WM+640*13 ; fay?
+.miyu	lda	#facedata&WM+640*face_miyu1
 .writeit
 	sta.l	m_faceptr
 

@@ -215,10 +215,16 @@ face_falco1		equ	9
 face_falco2		equ	10
 face_slippy1	equ	11
 face_slippy2	equ	12
-face_pepper1	equ	13
-face_pepper2	equ	14
-face_andross1	equ	15
-face_andross2	equ	16
+face_miyu1		equ	13
+face_miyu2		equ	14
+face_fay1		equ	15
+face_fay2		equ	16
+face_robfx1		equ	17
+face_robfx2		equ	18
+;face_pepper1	equ	13	; values from main branch
+;face_pepper2	equ	14
+;face_andross1	equ	15
+;face_andross2	equ	16
 
 ;Comms Static
 face_anyone		equ	24	; vanilla: 17
