@@ -21,20 +21,16 @@ hyperspacerumbletab
 	incfile	STRAT\pcstrats.asm
 	incfile	STRAT\pstrats.asm
 	incfile	ASM\strings.asm
-	IFEQ	msu1+mouseon
+	IFEQ	msu1+mouseon+rumble
 	incfile	STRAT\gb2strat.asm
 	ENDC
 	bankend	11
 
+	IFNE	msu1!mouseon!rumble
 	bank	34
-	IFNE	msu1
 	incfile	STRAT\gb2strat.asm
-	ELSEIF
-	IFNE	mouseon
-	incfile	STRAT\gb2strat.asm
-	ENDC
-	ENDC
 	bankend	34
+	ENDC
 
 	include	INC\tail.inc
 

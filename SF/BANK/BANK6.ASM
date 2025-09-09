@@ -29,8 +29,16 @@
 	incfile	MARIO\mhofs.mc		;Kristers .mc files
 	mario	off
 
+	IFEQ	rumble
 	incfile	STRAT\gstrats.asm
+	ENDC
 	bankend	6
+
+	IFNE	rumble
+	bank	35
+	incfile	STRAT\gstrats.asm
+	bankend	35
+	ENDC
 
 	include	INC\tail.inc
 

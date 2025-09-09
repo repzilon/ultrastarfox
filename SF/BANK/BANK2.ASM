@@ -119,12 +119,12 @@ planetdmapos2	dw	100
 	incfile	ASM\nmi.asm
 	incfile	ASM\draw.asm
 	incfile	ASM\endseq.asm
-	IFEQ	msu1+mouseon
+	IFEQ	msu1+mouseon+rumble
 	incfile	ASM\cont.asm
 	ENDC
 	bankend	31
 
-	IFNE	msu1!mouseon	; equivalent to C #if defined(msu1) || defined(mouseon)
+	IFNE	msu1!mouseon!rumble	; equivalent to C #if defined(msu1) || defined(mouseon)  || defined(rumble)
 	bank	33
 	IFNE	msu1
 	incfile	ASM\sound.asm
