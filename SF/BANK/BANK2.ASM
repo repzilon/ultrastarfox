@@ -125,12 +125,12 @@ planetdmapos2	dw	100
 	bankend	31
 
 	IFNE	msu1!mouseon!rumble	; equivalent to C #if defined(msu1) || defined(mouseon)  || defined(rumble)
-	bank	33
+	bank	35
 	IFNE	msu1
 	incfile	ASM\sound.asm
 	ENDC
 	incfile	ASM\cont.asm
-	bankend	33
+	bankend	35
 	ENDC
 
 ;------------------------------------------------------------------

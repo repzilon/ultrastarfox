@@ -35,9 +35,9 @@
 	bankend	6
 
 	IFNE	rumble
-	bank	35
+	bank	32
 	incfile	STRAT\gstrats.asm
-	bankend	35
+	bankend	32
 	ENDC
 
 	include	INC\tail.inc
