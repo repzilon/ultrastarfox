@@ -21,8 +21,16 @@ hyperspacerumbletab
 	incfile	STRAT\pcstrats.asm
 	incfile	STRAT\pstrats.asm
 	incfile	ASM\strings.asm
+	IFEQ	msu1
 	incfile	STRAT\gb2strat.asm
+	ENDC
 	bankend	11
+
+	bank	34
+	IFNE	msu1
+	incfile	STRAT\gb2strat.asm
+	ENDC
+	bankend	34
 
 	include	INC\tail.inc
 

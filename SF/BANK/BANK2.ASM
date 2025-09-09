@@ -101,10 +101,16 @@ planetdmapos2	dw	100
 	incfile	ASM\sprites.asm
 	incfile	ASM\continue.asm
 	incfile	ASM\world.asm
+	IFEQ	msu1
 	incfile	ASM\sound.asm
+	ENDC
 	bankend	3
 
-
+	IFNE	msu1
+	bank	33
+	incfile	ASM\sound.asm
+	bankend	33
+	ENDC
 
 	IFNE	FASTROM
 	org	$9f8000+$3db0,$8000*$1f+$3db0
