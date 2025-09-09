@@ -21,7 +21,7 @@ hyperspacerumbletab
 	incfile	STRAT\pcstrats.asm
 	incfile	STRAT\pstrats.asm
 	incfile	ASM\strings.asm
-	IFEQ	msu1
+	IFEQ	msu1+mouseon
 	incfile	STRAT\gb2strat.asm
 	ENDC
 	bankend	11
@@ -29,6 +29,10 @@ hyperspacerumbletab
 	bank	34
 	IFNE	msu1
 	incfile	STRAT\gb2strat.asm
+	ELSEIF
+	IFNE	mouseon
+	incfile	STRAT\gb2strat.asm
+	ENDC
 	ENDC
 	bankend	34
 

@@ -106,12 +106,6 @@ planetdmapos2	dw	100
 	ENDC
 	bankend	3
 
-	IFNE	msu1
-	bank	33
-	incfile	ASM\sound.asm
-	bankend	33
-	ENDC
-
 	IFNE	FASTROM
 	org	$9f8000+$3db0,$8000*$1f+$3db0
 	ELSEIF
@@ -125,8 +119,19 @@ planetdmapos2	dw	100
 	incfile	ASM\nmi.asm
 	incfile	ASM\draw.asm
 	incfile	ASM\endseq.asm
+	IFEQ	msu1+mouseon
 	incfile	ASM\cont.asm
+	ENDC
 	bankend	31
+
+	IFNE	msu1!mouseon	; equivalent to C #if defined(msu1) || defined(mouseon)
+	bank	33
+	IFNE	msu1
+	incfile	ASM\sound.asm
+	ENDC
+	incfile	ASM\cont.asm
+	bankend	33
+	ENDC
 
 ;------------------------------------------------------------------
 
