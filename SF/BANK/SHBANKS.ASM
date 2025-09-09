@@ -47,9 +47,18 @@ ops_bgmlen	equ	*-ops_bgm
 sector_y	incbinfile	snd\sgbgmj.bin
 sector_ylen	equ	*-sector_y
 
+	IFEQ	hipolyarwing
 	incshapes	SHAPES\shapes6.asm
 	incshapes	SHAPES\shapes7.asm
+	ENDC
 	bankend	16
+
+	IFNE	hipolyarwing
+	bank	32
+	incshapes	SHAPES\shapes6.asm
+	incshapes	SHAPES\shapes7.asm
+	bankend	32
+	ENDC
 
 ;------------------------------------------------------------------
 	bank	17
