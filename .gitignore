@@ -50,6 +50,7 @@
 *.PCR
 SF/DATA/COL/*.PAC
 SF/DATA/COL/ALLCOLS.COL
+SF/MSG/*.MSG
 
 # Object files
 *.sob
