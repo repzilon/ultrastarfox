@@ -8,6 +8,10 @@ CFLAGS_OPTIM := -O2 -pipe -fomit-frame-pointer
 CFLAGS_WARN := -W -Wall -Werror=format-security
 #CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
 #CXXFLAGS_WARN := $(CFLAGS_WARN)
+INSTALL_FLAGS := -CS
+ifneq (,$(wildcard /etc/alpine-release))
+	INSTALL_FLAGS = -p
+endif 
 
 all: bgconv/bin/palconv mugconv/foxchr bgconv/bin/sf_crunch bgconv/bin/superfamiconv mugconv/superfamiconv/superfamiconv cgx2fx fx2cgx fontconv/foxfont
 
@@ -90,10 +94,10 @@ SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv: SuperFamiconv-$(SFCONV_
 	$(MAKE) -C SuperFamiconv-$(SFCONV_VER)
 
 bgconv/bin/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv
-	install -CS ./SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv ./bgconv/bin
+	install $(INSTALL_FLAGS) ./SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv ./bgconv/bin
 
 mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv
-	install -CS ./SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv ./mugconv/superfamiconv
+	install $(INSTALL_FLAGS) ./SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv ./mugconv/superfamiconv
 
 romExtender2: extend_src/romExtenderv2.c
 	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) extend_src/romExtenderv2.c -o romExtender2
