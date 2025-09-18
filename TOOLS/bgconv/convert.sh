@@ -1,4 +1,18 @@
-#! /bin/bash
+#! /bin/sh
+
+running_shell=$(ps -cp "$$" -o command="")
+
+pause() {
+	case "$running_shell" in 
+		bash|-bash)
+			printf "%s " "Press any key to continue..."
+			read -n1 -r key
+			;;
+		*)	printf "%s " "Press Enter to continue..."
+			read -r key
+			;;
+	esac
+}
 
 echo "======"
 echo "Star Fox Background Maker 9000"
@@ -43,7 +57,7 @@ echo "After verifying, press any key to pad the palette file to 0x200 bytes and 
 echo "======"
 echo " "
 
-read -n1 -r -p "Press any key to continue..." key
+pause
 
 python3 bin/padpal.py ${outfile}.pal
 rm -rf ${outfile}.pal
@@ -65,7 +79,7 @@ echo " "
 echo "If you ARE using ultrastarfox 2.0+, you can now close this script. (press CTRL + C)"
 echo "!!!!!!"
 
-read -n1 -r -p "Press any key to continue..." key
+pause
 
 bin/sf_crunch ${outfile}.cgx ${outfile}.ccr
 bin/sf_crunch ${outfile}.scr ${outfile}.pcr
@@ -76,4 +90,4 @@ echo "GFX crunch successful!"
 echo "======"
 echo " "
 
-read -n1 -r -p "Press any key to continue..." key
+pause

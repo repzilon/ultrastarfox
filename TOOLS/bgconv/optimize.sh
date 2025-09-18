@@ -1,4 +1,18 @@
-#! /bin/bash
+#! /bin/sh
+
+running_shell=$(ps -cp "$$" -o command="")
+
+pause() {
+	case "$running_shell" in 
+		bash|-bash)
+			printf "%s " "Press any key to continue..."
+			read -n1 -r key
+			;;
+		*)	printf "%s " "Press Enter to continue..."
+			read -r key
+			;;
+	esac
+}
 
 echo "======"
 echo "Star Fox Background Optimizer 9000"
@@ -36,14 +50,14 @@ echo "PNG to CGX/SCR conversion complete!"
 echo "======"
 echo " "
 
-read -n1 -r -p "Press any key to continue..." key
+pause
 
 echo " "
 echo "!!!!!!"
 echo "Do you want to crunch the new gfx data? if yes, press any key, if no, close script"
 echo "!!!!!!"
 
-read -n1 -r -p "Press any key to continue..." key
+pause
 
 bin/sf_crunch ${outfile}.cgx ${outfile}.ccr
 bin/sf_crunch ${outfile}.scr ${outfile}.pcr
@@ -54,4 +68,4 @@ echo "GFX crunch successful!"
 echo "======"
 echo " "
 
-read -n1 -r -p "Press any key to continue..." key
+pause
