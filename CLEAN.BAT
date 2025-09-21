@@ -1,5 +1,5 @@
 cls
-set path=%path%;c:\bin
+set path=D:\starfox.ult\bin;c:\bin;%path%
 cd sf
 @echo off
 echo Cleaning...
