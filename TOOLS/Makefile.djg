@@ -23,6 +23,7 @@ DESTBIN := ..$(DIRSEP)bin$(DIRSEP)
 #SRC_FOXFONT := Fontconv/foxfont_source/Foxfont.c
 #SRC_INCCOL := inccol_src/inccol.c
 #SRC_MAKECOL := inccol_src/Makecol.c
+#SRC_APENDCOL := inccol_src/apendcol.c
 #SRC_MAPDEC := mapdec_src/argonautmapdecoder.c
 #SRC_CGX2FX := cgx2fx_fx2cgx_src/Cgx2fx.c
 #SRC_FX2CGX := cgx2fx_fx2cgx_src/Fx2cgx.c
@@ -33,11 +34,12 @@ SRC_EXTEND := extend~1/romExt~1.c
 SRC_FOXFONT := Fontconv/foxfon~1/Foxfont.c
 SRC_INCCOL := inccol~1/inccol.c
 SRC_MAKECOL := inccol~1/Makecol.c
+SRC_APENDCOL := inccol~1/apendcol.c
 SRC_MAPDEC := mapdec~1/argona~1.c
 SRC_CGX2FX := cgx2fx~1/Cgx2fx.c
 SRC_FX2CGX := cgx2fx~1/Fx2cgx.c
 
-all: $(DESTBIN)CHRMAP.EXE $(DESTBIN)CRU.EXE $(DESTBIN)EXTEND.EXE $(DESTBIN)FON.EXE $(DESTBIN)INCCOL.EXE $(DESTBIN)MAKECOL.EXE $(DESTBIN)MAPDEC.EXE cgx2fx.exe $(DESTBIN)cgx2fx.exe fx2cgx.exe
+all: $(DESTBIN)CHRMAP.EXE $(DESTBIN)CRU.EXE $(DESTBIN)EXTEND.EXE $(DESTBIN)FON.EXE $(DESTBIN)INCCOL.EXE $(DESTBIN)MAKECOL.EXE $(DESTBIN)APENDCOL.EXE $(DESTBIN)MAPDEC.EXE cgx2fx.exe $(DESTBIN)cgx2fx.exe fx2cgx.exe
 
 $(DESTBIN)CHRMAP.EXE: $(SRC_CHRMAP)
 	$(COMPILE) $(SRC_CHRMAP) -o $(DESTBIN)CHRMAP.EXE
@@ -57,6 +59,9 @@ $(DESTBIN)INCCOL.EXE: $(SRC_INCCOL)
 $(DESTBIN)MAKECOL.EXE: $(SRC_MAKECOL)
 	$(COMPILE) $(SRC_MAKECOL) -o $(DESTBIN)MAKECOL.EXE
 
+$(DESTBIN)APENDCOL.EXE: $(SRC_APENDCOL)
+	$(COMPILE) $(SRC_APENDCOL) -o $(DESTBIN)APENDCOL.EXE
+
 $(DESTBIN)MAPDEC.EXE: $(SRC_MAPDEC)
 	$(COMPILE) $(SRC_MAPDEC) -o $(DESTBIN)MAPDEC.EXE
 
@@ -74,9 +79,11 @@ fx2cgx.exe: $(SRC_FX2CGX)
 
 # Do not delete existing DJGPP executables inside BIN with clean,
 # as they are needed for almost every UltraStarfox user.
+# APENDCOL.EXE is an added executable in Repzilon's fork.
 clean:
 	$(RM) cgx2fx.exe
 	$(RM) fx2cgx.exe
+	$(RM) $(DESTBIN)APENDCOL.EXE
 
 distclean: clean
 	$(RM) $(DESTBIN)CHRMAP.EXE

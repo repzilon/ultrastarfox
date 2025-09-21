@@ -39,7 +39,7 @@ FONT=FON
 MAPDEC=MAPDEC
 
 # ALLCOLS palette stripper
-MC=MAKECOL
+MC=APENDCOL
 
 # Script Tokenizer
 CHRMAP=CHRMAP
