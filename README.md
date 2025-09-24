@@ -62,9 +62,9 @@ Go [here](#building) to jump straight to the building instructions.
 
 ## Building
 
-### Building on Windows
+### Building on 21st century Windows
 
-Requirements: Microsoft Windows
+Requirements: Microsoft Windows (for 9x, see below)
 
 Download repo as ZIP and extract somewhere, or clone the repo with git via the command line.  
 
@@ -75,6 +75,32 @@ To build ROM with Logging, run ``build to log.cmd``.
 To clean, run ``clean.cmd``.  
 
 After building, a debug symbol map will be created at ``SYMBOLS.TXT``, and a bank space report at ``BANKS.CSV``.  
+
+### Building on Windows 9x or DOS
+
+**NOTE: this was tested in a Windows 98 virtual machine made with VirtualBox.**
+
+Requirements: Microsoft Windows 95 or 98
+
+Download repo as ZIP, extract somewhere using short path names and rename folder to ``starfox.ult``. Then, edit the ``*.BAT`` files inside to correct the path to ``starfox.ult``.
+
+To build ROM, run ``BUILD.BAT``.
+
+To build ROM with Logging, run ``BLDTOLOG.BAT``.
+
+To clean, run ``CLEAN.BAT``.
+
+After building, a debug symbol map will be created at ``SYMBOLS.TXT``, and a bank space report at ``BANKS.CSV``.
+
+#### Building tools with DJGPP (Repzilon's fork only)
+
+Requirements: Microsoft Windows 95 or 98
+
+Go to DJGPP Zip picker at https://www.delorie.com/djgpp/zip-picker.html . Select MS-DOS, OpenDOS, PC-DOS in the operating system, to also get CWSDPMI. Download then extract ZIP files as directed in the Zip picker.
+
+Ensure DJGPP environment variables are loaded in the DOS prompt.
+
+Then, in the DOS prompt, go to the ``starfox.ult\TOOLS`` subdirectory and invoke ``make -f Makefile.djg``
 
 ### Building on Linux
 
