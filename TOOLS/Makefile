@@ -1,4 +1,4 @@
-## Tools Makefile intended to run modern host systems (macOS, Linux)
+## Tools Makefile intended to run modern *nix host systems (macOS, Linux)
 
 SFCONV_VER := 0.11.0
 SFCONV_OUT := build/release
@@ -13,7 +13,7 @@ ifneq (,$(wildcard /etc/alpine-release))
 	INSTALL_FLAGS = -p
 endif 
 
-all: bgconv/bin/palconv mugconv/foxchr bgconv/bin/sf_crunch bgconv/bin/superfamiconv mugconv/superfamiconv/superfamiconv cgx2fx fx2cgx fontconv/foxfont
+all: bgconv/bin/palconv mugconv/foxchr bgconv/bin/sf_crunch sf_decrunch bgconv/bin/superfamiconv mugconv/superfamiconv/superfamiconv cgx2fx fx2cgx fontconv/foxfont
 
 sink: romExtender2 inccol argonautmapdec fxedit2 chrmap
 
@@ -31,6 +31,7 @@ clean-tools:
 	rm -f cgx2fx
 	rm -f fx2cgx
 	rm -f fontconv/foxfont
+	rm -f sf_decrunch
 
 clean-sink:
 	rm -f romExtender2 
@@ -50,6 +51,7 @@ nowindows:
 	rm -f palconv.exe
 	rm -f palconv_win64.exe
 	rm -f sf_crunch.exe
+	rm -f sf_decrunch.exe
 	rm -f bgconv/bin/palconv.exe
 	rm -f bgconv/bin/sf_crunch.exe
 	rm -f bgconv/bin/superfamiconv.exe
@@ -72,8 +74,11 @@ bgconv/bin/palconv: palconv_src/palconv.c
 bgconv/bin/sf_crunch: cru_src/sf_crunch_mod.c
 	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) cru_src/sf_crunch_mod.c -o bgconv/bin/sf_crunch
 
+sf_decrunch: cru_src/sf_decrunch.c
+	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) cru_src/sf_decrunch.c -o sf_decrunch
+
 mugconv/foxchr: mugconv/foxchr_source/foxchr.c mugconv/foxchr_source/foxchr.h
-	$(CC) $(CFLAGS_OPTIM) -pipe $(CFLAGS_WARN) mugconv/foxchr_source/foxchr.c -o mugconv/foxchr
+	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) mugconv/foxchr_source/foxchr.c -o mugconv/foxchr
 
 cgx2fx: cgx2fx_fx2cgx_src/cgx2fx.c
 	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) cgx2fx_fx2cgx_src/cgx2fx.c -o cgx2fx

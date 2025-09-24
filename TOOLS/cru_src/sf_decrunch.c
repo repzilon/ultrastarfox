@@ -1,5 +1,5 @@
 //
-//  sf_decrunch.cpp
+//  sf_decrunch.c
 //  sf_decrunch
 //
 //  Created by everything8215 on 7/28/20.
@@ -8,8 +8,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-using namespace std;
 
 // 64k should be enough for anything
 unsigned char src[0x10000]; // source buffer

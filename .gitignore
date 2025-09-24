@@ -92,6 +92,7 @@ TOOLS/fxedit2
 TOOLS/inccol
 TOOLS/romExtender2
 TOOLS/chrmap
+TOOLS/sf_decrunch
 
 # Removed Windows executables
 dosbox-x.exe
@@ -106,6 +107,7 @@ TOOLS/mugconv/superfamiconv/superfamiconv.exe
 TOOLS/palconv.exe
 TOOLS/palconv_win64.exe
 TOOLS/sf_crunch.exe
+TOOLS/sf_decrunch.exe
 usb2snes-cli.exe
 flips.exe
 
