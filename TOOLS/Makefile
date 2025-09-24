@@ -12,6 +12,7 @@ INSTALL_FLAGS := -CS
 ifneq (,$(wildcard /etc/alpine-release))
 	INSTALL_FLAGS = -p
 endif 
+COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN)
 
 all: bgconv/bin/palconv mugconv/foxchr bgconv/bin/sf_crunch sf_decrunch bgconv/bin/superfamiconv mugconv/superfamiconv/superfamiconv cgx2fx fx2cgx fontconv/foxfont
 
@@ -69,25 +70,25 @@ mrproper: distclean nowindows permissions
 	rm -f SuperFamiconv-*.tar.gz
 
 bgconv/bin/palconv: palconv_src/palconv.c
-	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) palconv_src/palconv.c -o bgconv/bin/palconv
+	$(COMPILE) palconv_src/palconv.c -o bgconv/bin/palconv
 
 bgconv/bin/sf_crunch: cru_src/sf_crunch_mod.c
-	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) cru_src/sf_crunch_mod.c -o bgconv/bin/sf_crunch
+	$(COMPILE) cru_src/sf_crunch_mod.c -o bgconv/bin/sf_crunch
 
 sf_decrunch: cru_src/sf_decrunch.c
-	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) cru_src/sf_decrunch.c -o sf_decrunch
+	$(COMPILE) cru_src/sf_decrunch.c -o sf_decrunch
 
 mugconv/foxchr: mugconv/foxchr_source/foxchr.c mugconv/foxchr_source/foxchr.h
-	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) mugconv/foxchr_source/foxchr.c -o mugconv/foxchr
+	$(COMPILE) mugconv/foxchr_source/foxchr.c -o mugconv/foxchr
 
 cgx2fx: cgx2fx_fx2cgx_src/cgx2fx.c
-	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) cgx2fx_fx2cgx_src/cgx2fx.c -o cgx2fx
+	$(COMPILE) cgx2fx_fx2cgx_src/cgx2fx.c -o cgx2fx
 
 fx2cgx: cgx2fx_fx2cgx_src/fx2cgx.c
-	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) cgx2fx_fx2cgx_src/fx2cgx.c -o fx2cgx
+	$(COMPILE) cgx2fx_fx2cgx_src/fx2cgx.c -o fx2cgx
 
 fontconv/foxfont: fontconv/foxfont_source/foxfont.c fontconv/foxfont_source/foxfont.h
-	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) fontconv/foxfont_source/foxfont.c -o fontconv/foxfont
+	$(COMPILE) fontconv/foxfont_source/foxfont.c -o fontconv/foxfont
 
 SuperFamiconv-$(SFCONV_VER).tar.gz:
 	curl https://codeload.github.com/Optiroc/SuperFamiconv/tar.gz/refs/tags/v$(SFCONV_VER) -o SuperFamiconv-$(SFCONV_VER).tar.gz
@@ -105,18 +106,18 @@ mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/s
 	install $(INSTALL_FLAGS) ./SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv ./mugconv/superfamiconv
 
 romExtender2: extend_src/romExtenderv2.c
-	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) extend_src/romExtenderv2.c -o romExtender2
+	$(COMPILE) extend_src/romExtenderv2.c -o romExtender2
 
 inccol: inccol_src/inccol.c
-	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) inccol_src/inccol.c -o inccol
+	$(COMPILE) inccol_src/inccol.c -o inccol
 
 argonautmapdec: mapdec_src/argonautmapdecoder.c
-	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) mapdec_src/argonautmapdecoder.c -o argonautmapdec
+	$(COMPILE) mapdec_src/argonautmapdecoder.c -o argonautmapdec
 
 fxedit2: unmerge_src/fxedit_v2.c
-	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) unmerge_src/fxedit_v2.c -o fxedit2
+	$(COMPILE) unmerge_src/fxedit_v2.c -o fxedit2
 
 chrmap: chrmap_src/chrmap.c
-	$(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) chrmap_src/chrmap.c -o chrmap
+	$(COMPILE) chrmap_src/chrmap.c -o chrmap
 
 .PHONY: all sink kitchensink clean distclean nowindows permissions mrproper
