@@ -16,7 +16,7 @@ COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN)
 
 all: bgconv/bin/palconv mugconv/foxchr bgconv/bin/sf_crunch sf_decrunch bgconv/bin/superfamiconv mugconv/superfamiconv/superfamiconv cgx2fx fx2cgx fontconv/foxfont
 
-sink: romExtender2 inccol argonautmapdec fxedit2 chrmap
+sink: romExtender2 inccol argonautmapdec unmerge chrmap
 
 kitchensink: all sink
 
@@ -38,7 +38,7 @@ clean-sink:
 	rm -f romExtender2 
 	rm -f inccol 
 	rm -f argonautmapdec 
-	rm -f fxedit2
+	rm -f unmerge
 	rm -f chrmap
 
 clean: clean-tools clean-sink clean-superfamiconv
@@ -61,6 +61,7 @@ nowindows:
 	rm -f cgx2fx_win.exe
 	rm -f fx2cgx_win.exe
 	rm -f fontconv/foxfont.exe
+	rm -f unmerge.exe
 
 permissions:
 	chmod -x *.* */*.* */*/*.*
@@ -114,8 +115,8 @@ inccol: inccol_src/inccol.c
 argonautmapdec: mapdec_src/argonautmapdecoder.c
 	$(COMPILE) mapdec_src/argonautmapdecoder.c -o argonautmapdec
 
-fxedit2: unmerge_src/fxedit_v2.c
-	$(COMPILE) unmerge_src/fxedit_v2.c -o fxedit2
+unmerge: unmerge_src/fxedit_v2.c
+	$(COMPILE) unmerge_src/fxedit_v2.c -o unmerge
 
 chrmap: chrmap_src/chrmap.c
 	$(COMPILE) chrmap_src/chrmap.c -o chrmap
