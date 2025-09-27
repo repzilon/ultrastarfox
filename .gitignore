@@ -50,6 +50,7 @@
 *.PCR
 SF/DATA/COL/*.PAC
 SF/DATA/COL/ALLCOLS.COL
+SF/MSG/*.MSG
 
 # Object files
 *.sob
@@ -88,9 +89,11 @@ TOOLS/fontconv/foxfont
 usb2snes-cli.bin
 TOOLS/argonautmapdec
 TOOLS/fxedit2
+TOOLS/unmerge
 TOOLS/inccol
 TOOLS/romExtender2
 TOOLS/chrmap
+TOOLS/sf_decrunch
 
 # Removed Windows executables
 dosbox-x.exe
@@ -105,6 +108,8 @@ TOOLS/mugconv/superfamiconv/superfamiconv.exe
 TOOLS/palconv.exe
 TOOLS/palconv_win64.exe
 TOOLS/sf_crunch.exe
+TOOLS/sf_decrunch.exe
+TOOLS/unmerge.exe
 usb2snes-cli.exe
 flips.exe
 

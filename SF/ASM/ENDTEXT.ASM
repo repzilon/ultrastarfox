@@ -133,10 +133,16 @@
 	STRING	bossgentxt_level1[8]="ROUTE 1"
 	STRING	bossgentxt_level2[8]="ROUTE 2"
 	STRING	bossgentxt_level3[8]="ROUTE 3"
+	STRING	bossgentxt_venom[6]="VENOM"
+	ifne	msu1	; we need 22 bytes, removing captions saves 24
+	STRING	bossgentxt_name[2]=" "
+	STRING	bossgentxt_size[2]=" "
+	STRING	bossgentxt_weapon[2]=" "
+	elseif
 	STRING	bossgentxt_name[10]="NOM    - "
 	STRING	bossgentxt_size[10]="TAILLE - "
-	STRING	bossgentxt_venom[6]="VENOM"
 	STRING	bossgentxt_weapon[10]="ARME   - "
+	endc
 	ENDC
 
 	IFNE	JAPANESE

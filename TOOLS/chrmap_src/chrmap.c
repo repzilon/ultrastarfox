@@ -348,7 +348,7 @@ int main(int argc, char *argv[]) {
     if (argc < 4 || argc > 5) {
         fprintf(stderr,
             "Star Fox (2) Character Mapper v1.0\n"
-            "Usage: chrmap mode charmap.txt input.txt [output.txt]\n", argv[0]);
+            "Usage: %s mode charmap.txt input.txt [output.txt]\n", argv[0]);
         fprintf(stderr,
             "\nMode options:\n--tokenize - tokenizes input file based on charmap file definitions.\n"
             "--detokenize - detokenizes file based on charmap file definitions.\n"

@@ -87,6 +87,8 @@ abort_vn
 
 	public	bgandpcr
 	inccru	bgandpcr,data\and.pcr
+	public	bgandccr
+	inccru	bgandccr,data\and.ccr
 	incfile	STRAT\istrats.asm
 	incfile	STRAT\d3strats.asm
 	IFNE	MSU1

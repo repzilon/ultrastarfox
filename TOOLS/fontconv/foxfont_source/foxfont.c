@@ -194,7 +194,7 @@ FILE * openBitmap(char *fileName, unsigned char *bppOut)
 
 	// get filesize for error detection
 	fseek(fpBitmap, 0, SEEK_END);
-	int fileSize = ftell(fpBitmap);
+	unsigned int fileSize = (unsigned int)ftell(fpBitmap);
 	fseek(fpBitmap, 0, SEEK_SET);
 
 	BMP_FILE_HEADER bmp_header;

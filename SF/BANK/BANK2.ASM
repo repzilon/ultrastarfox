@@ -101,10 +101,10 @@ planetdmapos2	dw	100
 	incfile	ASM\sprites.asm
 	incfile	ASM\continue.asm
 	incfile	ASM\world.asm
+	IFEQ	msu1
 	incfile	ASM\sound.asm
+	ENDC
 	bankend	3
-
-
 
 	IFNE	FASTROM
 	org	$9f8000+$3db0,$8000*$1f+$3db0
@@ -119,8 +119,19 @@ planetdmapos2	dw	100
 	incfile	ASM\nmi.asm
 	incfile	ASM\draw.asm
 	incfile	ASM\endseq.asm
+	IFEQ	msu1+mouseon+rumble
 	incfile	ASM\cont.asm
+	ENDC
 	bankend	31
+
+	IFNE	msu1!mouseon!rumble	; equivalent to C #if defined(msu1) || defined(mouseon)  || defined(rumble)
+	bank	35
+	IFNE	msu1
+	incfile	ASM\sound.asm
+	ENDC
+	incfile	ASM\cont.asm
+	bankend	35
+	ENDC
 
 ;------------------------------------------------------------------
 

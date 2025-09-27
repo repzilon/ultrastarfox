@@ -1,0 +1,110 @@
+## Makefile for DOS tools built with DJGPP
+## Intended for GNU make (especially its DJGPP port)
+
+CC := gcc
+CXX := gpp
+# Note : you cannot use -pipe with DOS
+CFLAGS_OPTIM := -O2 -fomit-frame-pointer -march=pentium3 -s
+CFLAGS_WARN := -W -Wall -Werror=format-security
+#CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
+#CXXFLAGS_WARN := $(CFLAGS_WARN)
+
+COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN)
+# Note: "del" must be lowercase even in DOS
+RM := del
+DIRSEP := \\
+DESTBIN := ..$(DIRSEP)bin$(DIRSEP)
+
+# Long file paths not recognized in DOS
+# TODO : Add an if for environment
+#SRC_CHRMAP := chrmap_src/Chrmap.c
+#SRC_SFCRUNCH := cru_src/sf_crunch_mod.c
+#SRC_SFDECRUNCH := cru_src/sf_decrunch.c
+#SRC_EXTEND := extend_src/romExtenderv2.c
+#SRC_FOXFONT := Fontconv/foxfont_source/Foxfont.c
+#SRC_INCCOL := inccol_src/inccol.c
+#SRC_MAKECOL := inccol_src/Makecol.c
+#SRC_APENDCOL := inccol_src/apendcol.c
+#SRC_MAPDEC := mapdec_src/argonautmapdecoder.c
+#SRC_CGX2FX := cgx2fx_fx2cgx_src/Cgx2fx.c
+#SRC_FX2CGX := cgx2fx_fx2cgx_src/Fx2cgx.c
+# 8.3 paths for DOS (short names as shown in Windows 98)
+SRC_CHRMAP := chrmap~1/Chrmap.c
+SRC_SFCRUNCH := cru_src/sf_cru~1.c
+SRC_SFDECRUNCH := cru_src/sf_dec~1.c
+SRC_EXTEND := extend~1/romExt~1.c
+SRC_FOXFONT := Fontconv/foxfon~1/Foxfont.c
+SRC_INCCOL := inccol~1/inccol.c
+SRC_MAKECOL := inccol~1/Makecol.c
+SRC_APENDCOL := inccol~1/apendcol.c
+SRC_MAPDEC := mapdec~1/argona~1.c
+SRC_CGX2FX := cgx2fx~1/Cgx2fx.c
+SRC_FX2CGX := cgx2fx~1/Fx2cgx.c
+
+all: $(DESTBIN)CHRMAP.EXE $(DESTBIN)CRU.EXE $(DESTBIN)EXTEND.EXE $(DESTBIN)FON.EXE $(DESTBIN)INCCOL.EXE $(DESTBIN)MAKECOL.EXE $(DESTBIN)APENDCOL.EXE $(DESTBIN)MAPDEC.EXE cgx2fx.exe $(DESTBIN)cgx2fx.exe fx2cgx.exe
+
+$(DESTBIN)CHRMAP.EXE: $(SRC_CHRMAP)
+	$(COMPILE) $(SRC_CHRMAP) -o $(DESTBIN)CHRMAP.EXE
+
+$(DESTBIN)CRU.EXE: $(SRC_SFCRUNCH)
+	$(COMPILE) $(SRC_SFCRUNCH) -o $(DESTBIN)CRU.EXE
+
+# TODO: have a portable way to copy file in DOS/DJGPP, Windows and *nix
+CRU.EXE: $(SRC_SFCRUNCH)
+	$(COMPILE) $(SRC_SFCRUNCH) -o CRU.EXE
+
+$(DESTBIN)EXTEND.EXE: $(SRC_EXTEND)
+	$(COMPILE) $(SRC_EXTEND) -o $(DESTBIN)EXTEND.EXE
+
+$(DESTBIN)FON.EXE: $(SRC_FOXFONT)
+	$(COMPILE) $(SRC_FOXFONT) -o $(DESTBIN)FON.EXE
+
+$(DESTBIN)INCCOL.EXE: $(SRC_INCCOL)
+	$(COMPILE) $(SRC_INCCOL) -o $(DESTBIN)INCCOL.EXE
+
+$(DESTBIN)MAKECOL.EXE: $(SRC_MAKECOL)
+	$(COMPILE) $(SRC_MAKECOL) -o $(DESTBIN)MAKECOL.EXE
+
+$(DESTBIN)APENDCOL.EXE: $(SRC_APENDCOL)
+	$(COMPILE) $(SRC_APENDCOL) -o $(DESTBIN)APENDCOL.EXE
+
+$(DESTBIN)MAPDEC.EXE: $(SRC_MAPDEC)
+	$(COMPILE) $(SRC_MAPDEC) -o $(DESTBIN)MAPDEC.EXE
+
+# Source for $(DESTBIN)SFCHECK.EXE is at https://www.github.com/Optiroc/SuperFamicheck/
+# 4 C++ files. The static C++ library explains why the DOS binary is so big.
+
+# TODO: have a portable way to copy file in DOS/DJGPP, Windows and *nix
+cgx2fx.exe: $(SRC_CGX2FX)
+	$(COMPILE) $(SRC_CGX2FX) -o cgx2fx.exe
+
+$(DESTBIN)cgx2fx.exe: $(SRC_CGX2FX)
+	$(COMPILE) $(SRC_CGX2FX) -o $(DESTBIN)cgx2fx.exe
+
+fx2cgx.exe: $(SRC_FX2CGX)
+	$(COMPILE) $(SRC_FX2CGX) -o fx2cgx.exe
+
+DECRU.EXE: $(SRC_SFDERUNCH)
+	$(COMPILE) $(SRC_SFDECRUNCH) -o DECRU.EXE
+
+# Do not delete existing DJGPP executables inside BIN with clean,
+# as they are needed for almost every UltraStarfox user.
+# APENDCOL.EXE is an added executable in Repzilon's fork.
+clean:
+	$(RM) cgx2fx.exe
+	$(RM) fx2cgx.exe
+	$(RM) $(DESTBIN)APENDCOL.EXE
+	$(RM) CRU.EXE
+	$(RM) DECRU.EXE
+
+distclean: clean
+	$(RM) $(DESTBIN)CHRMAP.EXE
+	$(RM) $(DESTBIN)CRU.EXE
+	$(RM) $(DESTBIN)EXTEND.EXE
+	$(RM) $(DESTBIN)FON.EXE
+	$(RM) $(DESTBIN)INCCOL.EXE
+	$(RM) $(DESTBIN)MAKECOL.EXE
+	$(RM) $(DESTBIN)MAPDEC.EXE
+	$(RM) $(DESTBIN)cgx2fx.exe
+
+.PHONY: all clean distclean

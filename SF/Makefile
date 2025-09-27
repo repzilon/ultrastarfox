@@ -18,7 +18,7 @@ LOPTS=-b30 -h1024 -t7d -z -l2048
 # ROM Extender
 EXTEND=EXTEND
 # Extended size in Mbits, byte to pad with
-EXTOPTS= 16 ff
+EXTOPTS= --auto ff
 
 # Checksum Fixer
 CHECK=SFCHECK
@@ -40,7 +40,7 @@ FONT=FON
 MAPDEC=MAPDEC
 
 # ALLCOLS palette stripper
-MC=MAKECOL
+MC=APENDCOL
 
 # Script Tokenizer
 CHRMAP=CHRMAP
