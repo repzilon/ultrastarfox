@@ -161,7 +161,7 @@ void write_bin_file(const char *output_filename) {
     }
 
     if (fwrite(binbuf, sizeof(unchar), BINMAX, file) != BINMAX) {
-        fprintf(stderr, "Error writing .BIN file\n");
+        fputs("Error writing .BIN file\n", stderr);
         fclose(file);
         exit(EXIT_FAILURE);
     }

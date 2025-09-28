@@ -57,7 +57,7 @@ void read_bin_file(const char *input_filename) {
     }
 
     if (fread(binbuf, sizeof(unchar), BINMAX, file) != BINMAX) {
-        fprintf(stderr, "Error reading input file\n");
+        fputs("Error reading input file\n", stderr);
         fclose(file);
         exit(EXIT_FAILURE);
     }

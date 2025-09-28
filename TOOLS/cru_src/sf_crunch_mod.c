@@ -188,12 +188,11 @@ int main(int argc, const char* argv[]) {
     
     // print help message
     if (argc != 3) {
-        printf(
+        puts(
             "sf_crunch v0.01\n"
             "Compression utility for Star Fox / Star Fox 2\n"
             "by everything8215 (everything8215@gmail.com)\n"
             "usage: sf_crunch input.cgx output.ccr\n"
-            "\n"
         );
         return 0;
     }
@@ -217,7 +216,7 @@ int main(int argc, const char* argv[]) {
     s_length = (int)ftell(i_file);
     
     if (s_length >= 0x10000) {
-        printf("unable to decompress files longer than 64k\n");
+        puts("unable to decompress files longer than 64k");
         return 0;
     }
     

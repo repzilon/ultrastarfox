@@ -7,7 +7,7 @@ void copyData(FILE *source, FILE *destination, long startOffset, long endOffset)
     char *buffer = (char *)malloc(dataSize);
     
     if (buffer == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
+        fputs("Memory allocation failed\n", stderr);
         exit(EXIT_FAILURE);
     }
 
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 
     FILE *destinationFile = fopen("col.tmp", "wb");
     if (destinationFile == NULL) {
-        fprintf(stderr, "Error creating output file: col.tmp\n");
+        fputs("Error creating output file: col.tmp\n", stderr);
         fclose(sourceFile);
         return EXIT_FAILURE;
     }

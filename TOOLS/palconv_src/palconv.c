@@ -311,7 +311,7 @@ int main(int argc, char *argv[]) {
 		}else if (strcmp(argv[3], "help") == 0) {
 			printf("Usage: %s input_file output_file type\nTypes: col2scl scl2col scl2pal pal2scl pal2col help\n", argv[0]);
 		}else {
-            printf("Invalid input type\n");
+            puts("Invalid input type");
     	}
 
     fclose(input);

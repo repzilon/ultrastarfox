@@ -66,6 +66,9 @@ SF/CONFIG/RELEASE.INC
 # macOS stuff
 .DS_Store
 
+# Office document locks
+docs/~$*.od?
+
 # Downloaded SuperFamiconv
 TOOLS/SuperFamiconv-*.tar.gz
 TOOLS/SuperFamiconv-*/

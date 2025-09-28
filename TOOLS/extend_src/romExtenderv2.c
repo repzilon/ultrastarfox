@@ -24,10 +24,10 @@ int main(int argc, char* argv[]) {
     long int actualPadByte = strtol(padByte, NULL, 16);
 
     if (currentFile == NULL) {
-        fprintf(stderr, "Error opening file");
+        fputs("Error opening file\n", stderr);
         return 1;
     } else if (strtol(padByte, NULL, 16) > 0xff) {
-        fprintf(stderr, "Error: Pad byte too large");
+        fputs("Error: Pad byte too large\n", stderr);
         return 1;
     }
 
@@ -54,7 +54,7 @@ int main(int argc, char* argv[]) {
 
         if (romData == NULL) {
             fclose(currentFile);
-            fprintf(stderr, "Error allocating memory");
+            fputs("Error allocating memory\n", stderr);
             return 1;
         }
 
@@ -70,7 +70,7 @@ int main(int argc, char* argv[]) {
         // Write the modified ROM data back to the file
         currentFile = fopen(romFile, "wb");
         if (currentFile == NULL) {
-            fprintf(stderr, "Error opening file for writing");
+            fputs("Error opening file for writing\n", stderr);
             free(romData);
             return 1;
         }
