@@ -7,8 +7,8 @@
 int main(int argc, char *argv[])
 {
 	if (argc < 2){
-		printf("* " CLI_FILEDESCRIPTION_STR " " CLI_FILEVERSION_STR " *\n\n");
-		printf("USAGE: foxchr graphics.cgx\n");
+		puts("* " CLI_FILEDESCRIPTION_STR " " CLI_FILEVERSION_STR " *\n");
+		puts("USAGE: foxchr graphics.cgx");
 		exit(EX_USAGE);
 	}
 
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 	// convert horizontal format to vertical format and save to disk
 	convertHoriz2Vert(fpInput, outputFileName);
 
-	printf("PROGRAM ERROR: Foxchr ended unexpectedly.\n");
+	puts("PROGRAM ERROR: Foxchr ended unexpectedly.");
 	exit(EX_SOFTWARE);
 }
 
@@ -154,7 +154,7 @@ char * createOutputFileName(char * inputFileName)
 	strncpy(outputFileName + NOEXTLEN + strlen(EXT_SCR), EXT_CGX, strlen(EXT_CGX));
 
 	if (strlen(inputFileName) != strlen(outputFileName) - strlen(EXT_SCR)) {
-		printf("PROGRAM ERROR: outputFileName is different length than inputFileName\n");
+		puts("PROGRAM ERROR: outputFileName is different length than inputFileName");
 		exit(EX_SOFTWARE);
 	}
 

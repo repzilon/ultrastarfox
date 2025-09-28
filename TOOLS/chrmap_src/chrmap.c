@@ -302,7 +302,7 @@ void validate_bracketed_tokens(FILE *in) {
     int inside_token = 0;
     int numLines = 1;
     int numErrors = 0;
-    printf("==BRACKETED TOKEN VALIDATION MODE==\n");
+    puts("==BRACKETED TOKEN VALIDATION MODE==");
     while ((c = fgetc(in)) != EOF) {
         if (c == '\n') numLines++;
         if (!inside_token && c == MULTICHAR_CLOSING) {
@@ -338,7 +338,7 @@ void validate_bracketed_tokens(FILE *in) {
     }
         printf("%d line(s) processed.\n%d Error(s) detected.\n", numLines, numErrors);
             if (!numErrors) {
-                printf("File is valid!\n");
+                puts("File is valid!");
             }
 }
 
@@ -349,20 +349,17 @@ int main(int argc, char *argv[]) {
         fprintf(stderr,
             "Star Fox (2) Character Mapper v1.0\n"
             "Usage: %s mode charmap.txt input.txt [output.txt]\n", argv[0]);
-        fprintf(stderr,
-            "\nMode options:\n--tokenize - tokenizes input file based on charmap file definitions.\n"
+        fputs("\nMode options:\n--tokenize - tokenizes input file based on charmap file definitions.\n"
             "--detokenize - detokenizes file based on charmap file definitions.\n"
             "--detokenize-sf2j - detokenizes input file based on charmap file definitions,\n"
             "skipping the first 2 words of each line. (for Japanese Star Fox 2)\n"
-            "--validate - scan input file for bracketed token errors.\n");
-        fprintf(stderr,
-            "\nExample charmap text file:\n"
+            "--validate - scan input file for bracketed token errors.\n", stderr);
+        fputs("\nExample charmap text file:\n"
             "// token byte = \"c\" or \"[name]\"\n"
             "0x11 = \"~\" // quoted single UTF-8 character\n"
-            "0x7E = \"[em]\" // bracketed token symbol\n");
-        fprintf(stderr,
-            "\nThe input file's text to be operated upon must must be contained within " STR(OPENING_DELIMITER) " and " STR(CLOSING_DELIMITER) ".\n"
-            "If no output file is specified, output will be written to stdout.\n");
+            "0x7E = \"[em]\" // bracketed token symbol\n", stderr);
+        fputs("\nThe input file's text to be operated upon must must be contained within " STR(OPENING_DELIMITER) " and " STR(CLOSING_DELIMITER) ".\n"
+            "If no output file is specified, output will be written to stdout.\n", stderr);
         return 1;
     }
 

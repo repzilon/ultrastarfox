@@ -178,13 +178,12 @@ int main(int argc, const char* argv[]) {
     
     // print help message
     if (argc < 3) {
-        printf(
+        puts(
             "sf_decrunch v0.01\n"
             "Decompression utility for Star Fox / Star Fox 2\n"
             "by everything8215 (everything8215@gmail.com)\n"
             "usage: sf_decrunch input.ccr [offset] output.cgx\n"
             "offset is END of crunched data (defaults to end of file)\n"
-            "\n"
         );
         return 0;
     }

@@ -9,7 +9,7 @@ void copyData(FILE *source, FILE *destination, long startOffset, long endOffset)
     char *buffer = (char *)malloc(dataSize);
     
     if (buffer == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
+        fputs("Memory allocation failed\n", stderr);
         exit(EXIT_FAILURE);
     }
 
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 
     FILE *destinationFile = fopen("col.tmp", "wb");
     if (destinationFile == NULL) {
-        fprintf(stderr, "Error creating output file: col.tmp\n");
+        fputs("Error creating output file: col.tmp\n", stderr);
         fclose(sourceFile);
         return EXIT_FAILURE;
     }
@@ -49,12 +49,12 @@ int main(int argc, char *argv[]) {
 
     // Execute commands from MC.BAT internally so Zortech Make can actually catch errors
     if (system("copy /b allcols.col col2.tmp") != 0) {
-        fprintf(stderr, "Error executing: copy /b allcols.col col2.tmp\n");
+        fputs("Error executing: copy /b allcols.col col2.tmp\n", stderr);
         return EXIT_FAILURE;
     }
 
     if (system("copy /b col2.tmp+col.tmp allcols.col") != 0) {
-        fprintf(stderr, "Error executing: copy /b col2.tmp+col.tmp allcols.col\n");
+        fputs("Error executing: copy /b col2.tmp+col.tmp allcols.col\n", stderr);
         return EXIT_FAILURE;
     }
 

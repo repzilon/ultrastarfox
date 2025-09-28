@@ -7,8 +7,8 @@
 int main(int argc, char *argv[])
 {
 	if (argc < 2){
-		printf("* " CLI_FILEDESCRIPTION_STR " " CLI_FILEVERSION_STR " *\n\n");
-		printf("USAGE: foxfont 8or4bit_56x240_font.bmp\n");
+		puts("* " CLI_FILEDESCRIPTION_STR " " CLI_FILEVERSION_STR " *\n");
+		puts("USAGE: foxfont 8or4bit_56x240_font.bmp");
 		exit(EX_USAGE);
 	}
 
@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 	// convert 8bpp or 4bpp to 2bpp and save to disk
 	convertBMP2Fon(fpBitmap, outputFileName, bpp);
 
-	printf("PROGRAM ERROR: Foxfont ended unexpectedly.\n");
+	puts("PROGRAM ERROR: Foxfont ended unexpectedly.");
 	exit(EX_SOFTWARE);
 }
 
@@ -269,7 +269,7 @@ FILE * openBitmap(char *fileName, unsigned char *bppOut)
 
 	// after the palette is the pixel data, this should match .offset
 	if (ftell(fpBitmap) != bmp_header.offset) {
-		printf("NOTICE: bitmap header offset value does not match pixel start address.\n");
+		puts("NOTICE: bitmap header offset value does not match pixel start address.");
 		fseek(fpBitmap, bmp_header.offset, SEEK_SET);
 	}
 
@@ -305,7 +305,7 @@ char * createOutputFileName(char * inputFileName)
 	strncpy(outputFileName + NOEXTLEN, EXT_FON, EXT_LEN);
 
 	if (strlen(inputFileName) != strlen(outputFileName)) {
-		printf("PROGRAM ERROR: outputFileName is different length than inputFileName\n");
+		puts("PROGRAM ERROR: outputFileName is different length than inputFileName");
 		exit(EX_SOFTWARE);
 	}
 
