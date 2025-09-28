@@ -240,7 +240,7 @@ stratsfrozen
 	beq	.msuchkfail
 	bne	.msuchkpass
 .msuchkfail
-	kandoprint	4,15,nomsutxt
+	;kandoprint	4,15,nomsutxt
 .msuchkpass
 	ENDC
 

@@ -351,7 +351,7 @@ friendstart3go_strat
 	s_set_vartobeobj	boostobj,x
 	boost_sprite
 	IFNE	RUMBLE
-	s_queue_rumble_table		partyboost
+	s_queue_rumble_table		partyboostrumbletab
 	ENDC
 	trigse			$32
 .nb
