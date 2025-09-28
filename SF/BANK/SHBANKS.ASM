@@ -54,10 +54,10 @@ sector_ylen	equ	*-sector_y
 	bankend	16
 
 	IFNE	hipolyarwing
-	bank	33
+	bank	36
 	incshapes	SHAPES\shapes6.asm
 	incshapes	SHAPES\shapes7.asm
-	bankend	33
+	bankend	36
 	ENDC
 
 ;------------------------------------------------------------------

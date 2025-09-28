@@ -27,9 +27,9 @@ hyperspacerumbletab
 	bankend	11
 
 	IFNE	msu1!mouseon!rumble
-	bank	34
+	bank	37
 	incfile	STRAT\gb2strat.asm
-	bankend	34
+	bankend	37
 	ENDC
 
 	include	INC\tail.inc

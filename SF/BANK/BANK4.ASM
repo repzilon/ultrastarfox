@@ -28,9 +28,9 @@
 	incfile	PATH\paths.asm
 	bankend	4
 
-	bank	34
+	bank	35
 	incfile	STRAT\d2strats.asm
-	bankend	34
+	bankend	35
 ;------------------------------------------------------------------
 
 

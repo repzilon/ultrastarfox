@@ -187,12 +187,12 @@ msprites3
 	ENDC
 	bankend	23
 
-	bank	36
+	bank	32
 facedata	incbin	data\face.cgx
 	inccru	allcolscru,data\col\allcols.pac	
 	inccru	dogpcr,data\dog.pcr
 	inccru	bgmccr,data\m.ccr
-	bankend	36
+	bankend	32
 
 ;------------------------------------------------------------------
 

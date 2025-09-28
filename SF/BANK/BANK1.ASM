@@ -49,9 +49,9 @@ mariocodelen	=	*-mariobegin
 
 	bankend	1
 
-	bank	33
+	bank	34
 	incfile	ASM\fontdata.asm
-	bankend	33
+	bankend	34
 
 	include	INC\tail.inc
 

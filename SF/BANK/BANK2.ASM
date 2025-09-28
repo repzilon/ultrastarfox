@@ -85,7 +85,9 @@ xroutinesreport ; TAIL will report X routines free
 	incfile	ASM\main.asm
 	incfile	ASM\game.asm
 	incfile	ASM\windows.asm
+	IFEQ	msu1+mouseon+rumble
 	inccru	bgf1pcr,data\f-1.pcr
+	ENDC
 	bankend	2
 
 
@@ -125,12 +127,13 @@ planetdmapos2	dw	100
 	bankend	31
 
 	IFNE	msu1!mouseon!rumble	; equivalent to C #if defined(msu1) || defined(mouseon)  || defined(rumble)
-	bank	35
+	bank	38
 	IFNE	msu1
 	incfile	ASM\sound.asm
 	ENDC
+	inccru	bgf1pcr,data\f-1.pcr
 	incfile	ASM\cont.asm
-	bankend	35
+	bankend	38
 	ENDC
 
 ;------------------------------------------------------------------
