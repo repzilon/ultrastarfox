@@ -1,33 +1,98 @@
-CC := cc
-CFLAGS_OPTIM := -O2 -pipe -fomit-frame-pointer
+# RobFX Makefile for GNU Make and native compilation
+
+# Use spaces ONLY to indent inside conditionals
+ifneq ($(strip ${DJGPP}),)
+  CC := gcc
+  # Note : you cannot use -pipe with DOS
+  CFLAGS_OPTIM := -O2 -fomit-frame-pointer -march=pentium3 -s
+  CFLAGS_WARN := -W -Wall -Werror=format-security
+  # Note: "del" must be lowercase even in DOS
+  RM := del
+  CP := copy /y
+  DIRSEP := \\
+  EXE := .EXE
+  QUAD := i686-pc-dos-djgpp
+  # 8.3 paths for DOS (short names as shown in Windows 98)
+  SRC_CHRMAP := ../chrmap~1/Chrmap.c
+  SRC_SFCRUNCH := ../cru_src/sf_cru~1.c
+  SRC_SFDECRUNCH := ../cru_src/sf_dec~1.c
+  SRC_EXTEND := ../extend~1/romExt~1.c
+  SRC_FOXFONT := ../Fontconv/foxfon~1/Foxfont.c
+  SRC_INCCOL := ../inccol~1/inccol.c
+  SRC_MAKECOL := ../inccol~1/Makecol.c
+  SRC_APENDCOL := ../inccol~1/apendcol.c
+  SRC_MAPDEC := ../mapdec~1/argona~1.c
+  SRC_CGX2FX := ../cgx2fx~1/Cgx2fx.c
+  SRC_FX2CGX := ../cgx2fx~1/Fx2cgx.c
+  SRC_PALCONV := ../palcon~1/palconv.c
+  SRC_FOXCHR := ../mugconv/foxchr~1/foxchr.c
+  SRC_UNMERGE := ../unmerg~1/fxedit~1.c
+else
+  CC := cc
+  CFLAGS_OPTIM := -O2 -pipe -fomit-frame-pointer
+  # I really mean an NT-based Windows here
+  ifeq (${OS},Windows_NT)
+    RM := del /q
+    CP := copy /y
+    DIRSEP := \\
+    EXE := .exe
+    QUAD := ${PROCESSOR_ARCHITECTURE}-pc-winnt
+  else
+    # *nix assumed here
+    RM := rm -f
+    ifneq (,$(wildcard /etc/alpine-release))
+      CP := install -p
+    else
+      CP := install -CS
+    endif
+    DIRSEP := /
+    EXE :=
+    QUAD := $(shell uname -m)-unknown-$(shell uname)
+  endif
+  # Long file names for other operating systems
+  SRC_CHRMAP := ../chrmap_src/Chrmap.c
+  SRC_SFCRUNCH := ../cru_src/sf_crunch_mod.c
+  SRC_SFDECRUNCH := ../cru_src/sf_decrunch.c
+  SRC_EXTEND := ../extend_src/romExtenderv2.c
+  SRC_FOXFONT := ../Fontconv/foxfont_source/Foxfont.c
+  SRC_INCCOL := ../inccol_src/inccol.c
+  SRC_MAKECOL := ../inccol_src/Makecol.c
+  SRC_APENDCOL := ../inccol_src/apendcol.c
+  SRC_MAPDEC := ../mapdec_src/argonautmapdecoder.c
+  SRC_CGX2FX := ../cgx2fx_fx2cgx_src/Cgx2fx.c
+  SRC_FX2CGX := ../cgx2fx_fx2cgx_src/Fx2cgx.c
+  SRC_PALCONV := ../palconv_src/palconv.c
+  SRC_FOXCHR := ../mugconv/foxchr_source/foxchr.c
+  SRC_UNMERGE := ../unmerge_src/fxedit_v2.c
+endif
+
 CFLAGS_WARN := -W -Wall -Werror=format-security
+COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) -DROBFX -DQUAD=$(QUAD)
 
-COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN)
+ROBFXB_SOURCES := robfx.c $(SRC_CHRMAP) $(SRC_SFCRUNCH) $(SRC_EXTEND) $(SRC_FOXFONT) $(SRC_INCCOL) $(SRC_MAKECOL) $(SRC_APENDCOL) $(SRC_MAPDEC) $(SRC_CGX2FX)
+ROBFXT_SOURCES := robfx.c $(SRC_PALCONV) $(SRC_SFCRUNCH) $(SRC_SFDECRUNCH) $(SRC_FOXCHR) $(SRC_CGX2FX) $(SRC_FX2CGX) $(SRC_FOXFONT)
+ROBFXS_SOURCES := robfx.c $(SRC_EXTEND) $(SRC_INCCOL) $(SRC_MAPDEC) $(SRC_UNMERGE) $(SRC_CHRMAP)
 
-ROBFXB_SOURCES := robfx.c ../chrmap_src/chrmap.c ../cru_src/sf_crunch_mod.c ../extend_src/romExtenderv2.c ../fontconv/foxfont_source/foxfont.c ../inccol_src/inccol.c ../inccol_src/makecol.c ../inccol_src/apendcol.c ../mapdec_src/argonautmapdecoder.c ../cgx2fx_fx2cgx_src/cgx2fx.c
-ROBFXT_SOURCES := robfx.c ../palconv_src/palconv.c ../cru_src/sf_crunch_mod.c ../cru_src/sf_decrunch.c ../mugconv/foxchr_source/foxchr.c ../cgx2fx_fx2cgx_src/cgx2fx.c ../cgx2fx_fx2cgx_src/fx2cgx.c ../fontconv/foxfont_source/foxfont.c
-# "romExtender2", "inccol", "argonautmapdecoder", "unmerge", "chrmap"
-ROBFXS_SOURCES := robfx.c ../extend_src/romExtenderv2.c ../inccol_src/inccol.c ../mapdec_src/argonautmapdecoder.c ../unmerge_src/fxedit_v2.c ../chrmap_src/chrmap.c
+all: robfxb$(EXE) robfxt$(EXE)
 
-all: robfxb robfxt
+kitchensink: all robfxs$(EXE)
 
-kitchensink: all robfxs
-
+# Commands to build targets (BELOW) must be indented with tabs, never spaces
 # Numbers below for DROBFX_EDITION_C are ASCII codes of B, T and S
 
-robfxb: $(ROBFXB_SOURCES)
-	$(COMPILE) -DROBFX -DROBFX_EDITION_C=66 $(ROBFXB_SOURCES) -o $@
+robfxb$(EXE): $(ROBFXB_SOURCES)
+	$(COMPILE) -DROBFX_EDITION_C=66 $(ROBFXB_SOURCES) -o $@
 
-robfxt: $(ROBFXT_SOURCES)
-	$(COMPILE) -DROBFX -DROBFX_EDITION_C=84 $(ROBFXT_SOURCES) -o $@
+robfxt$(EXE): $(ROBFXT_SOURCES)
+	$(COMPILE) -DROBFX_EDITION_C=84 $(ROBFXT_SOURCES) -o $@
 
-robfxs: $(ROBFXS_SOURCES)
-	$(COMPILE) -DROBFX -DROBFX_EDITION_C=83 $(ROBFXS_SOURCES) -o $@
+robfxs$(EXE): $(ROBFXS_SOURCES)
+	$(COMPILE) -DROBFX_EDITION_C=83 $(ROBFXS_SOURCES) -o $@
 
 clean:
-	rm -f robfxb
-	rm -f robfxt
-	rm -f robfxs
-	rm -f robfx
+	$(RM) robfxb$(EXE)
+	$(RM) robfxt$(EXE)
+	$(RM) robfxs$(EXE)
+	$(RM) robfx$(EXE)
 
 .PHONY: all clean kitchensink
