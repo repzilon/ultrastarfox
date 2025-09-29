@@ -31,7 +31,12 @@ void write_cgx_files(const char *output_filename_base);
 void convert_to_cgx(const unchar *ch7_buffer, const char *cgx_filename, size_t start, size_t size);
 void convert_tile_to_cgx(const unchar *ch7_tile, unchar *cgx_tile);
 
-int main(int argc, char *argv[]) {
+#ifdef ROBFX
+int fx2cgx_main(int argc, char** argv)
+#else
+int main(int argc, char *argv[])
+#endif
+{
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <input_bin>\n", argv[0]);
         return EXIT_FAILURE;

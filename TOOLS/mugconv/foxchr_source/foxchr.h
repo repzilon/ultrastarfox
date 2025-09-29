@@ -38,6 +38,6 @@
 // -------- function declarations --------- //
 
 FILE * openSnes(char *fileName);
-char * createOutputFileName(char *);
+char * chr_createOutputFileName(char *);
 void convertHoriz2Vert(FILE *, char *);
 

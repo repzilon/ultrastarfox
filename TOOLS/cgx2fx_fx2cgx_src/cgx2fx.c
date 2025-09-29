@@ -31,7 +31,12 @@ void reverse_chunks(unchar *buffer, size_t buffer_size);
 void convert_to_bin();
 void write_bin_file(const char *output_filename);
 
-int main(int argc, char *argv[]) {
+#ifdef ROBFX
+int cgx2fx_main(int argc, char** argv)
+#else
+int main(int argc, char *argv[])
+#endif
+{
     if (argc != 4) {
         fprintf(stderr, "Usage: %s <input_cgx1> <input_cgx2> <output_bin>\n", argv[0]);
         return EXIT_FAILURE;

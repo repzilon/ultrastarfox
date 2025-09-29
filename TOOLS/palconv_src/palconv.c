@@ -277,7 +277,12 @@ void convertPALtoSCL(FILE *input, FILE *output) {
     fwrite(buffer, sizeof(unsigned char), 0x200, output);
 }
 
-int main(int argc, char *argv[]) {
+#ifdef ROBFX
+int palconv_main(int argc, char** argv)
+#else
+int main(int argc, char *argv[])
+#endif
+{
     if (argc != 4) {
         printf("Usage: %s input_file output_file type\nTypes: col2scl scl2col scl2pal pal2scl pal2col help\n", argv[0]);
         return 1;

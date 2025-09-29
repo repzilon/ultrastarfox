@@ -102,7 +102,11 @@ void Insert_FX()
 	//fwrite(buffer,1,0x18000,image);
 }
 
-int main(int argc, char**argv)
+#ifdef ROBFX
+int unmerge_main(int argc, char** argv)
+#else
+int main(int argc, char** argv)
+#endif
 {
 	// SUNLITFIX add help text so it doesn't crash with no arguments supplied
 	if (argv[1] == NULL){

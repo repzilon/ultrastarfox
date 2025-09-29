@@ -97,6 +97,7 @@ TOOLS/inccol
 TOOLS/romExtender2
 TOOLS/chrmap
 TOOLS/sf_decrunch
+TOOLS/robfx_src/robfx*
 
 # Removed Windows executables
 dosbox-x.exe

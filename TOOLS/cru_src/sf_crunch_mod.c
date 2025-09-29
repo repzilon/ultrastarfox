@@ -12,12 +12,12 @@
 // 64k should be enough for anything
 unsigned char src[0x10000]; // source buffer
 unsigned char dest[0x10000]; // destination buffer
-int s = 0; // source pointer
+int cru_s = 0; // source pointer
 int s_length = 0; // length of decrunched data
 int d = 0; // destination pointer
 
 unsigned int buffer = 0; // 32-bit buffer
-int b = 32; // number of bits left in bit buffer
+int cru_b = 32; // number of bits left in bit buffer
 
 unsigned char raw_buffer[0x10000]; // buffer for uncompressed bytes
 int r = 0;
@@ -30,15 +30,15 @@ void put_buffer() {
     dest[d++] = (unsigned char)(buffer);
     
     buffer = 1;
-    b = 32;
+    cru_b = 32;
 }
 
 void put_bits(int n, int bits) {
-    if (n > b) {
-        n -= b;
+    if (n > cru_b) {
+        n -= cru_b;
         int bits2 = bits;
-        bits >>= b;
-        put_bits(b, bits2);
+        bits >>= cru_b;
+        put_bits(cru_b, bits2);
         put_buffer();
     }
     for (int i = 0; i < n; i++) {
@@ -46,10 +46,10 @@ void put_bits(int n, int bits) {
         buffer |= (bits & 1);
         bits >>= 1;
     }
-    b -= n;
+    cru_b -= n;
 }
 
-void put_raw() {
+void crunch_put_raw() {
     
     if (r == 0) return;
     for (int i = 0; i < r; i++) put_bits(8, raw_buffer[i]);
@@ -74,7 +74,7 @@ void put_raw() {
     r = 0;
 }
 
-void put_lzw(int run, int offset) {
+void crunch_put_lzw(int run, int offset) {
 
     // put the offset
     if (run == 2) {
@@ -127,18 +127,18 @@ void put_lzw(int run, int offset) {
 
 void crunch() {
     
-    while (d < 0x10000 && s < s_length) {
+    while (d < 0x10000 && cru_s < s_length) {
         // find the longest sequence that matches the decompression buffer
         int run_max = 0;
         int offset_max = 0;
-        for (int s1 = s + 1; s1 < s_length; s1++) {
+        for (int s1 = cru_s + 1; s1 < s_length; s1++) {
             int run = 0;
 
-            while ((s1 + run < s_length) && (src[s1 + run] == src[s + run]) && run < 255) run++;
+            while ((s1 + run < s_length) && (src[s1 + run] == src[cru_s + run]) && run < 255) run++;
 
             if (run <= run_max) continue;
             
-            int offset = s1 - s;
+            int offset = s1 - cru_s;
 
             if (run < 2) continue;
             
@@ -156,27 +156,27 @@ void crunch() {
         if (run_max) {
             if (r) {
                 // write string of raw data
-                put_raw();
+                crunch_put_raw();
                 
             } else {
                 put_bits(3, 0);
             }
             
             // put lzw data
-            put_lzw(run_max, offset_max);
-            s += run_max;
+            crunch_put_lzw(run_max, offset_max);
+            cru_s += run_max;
             
         } else {
             // add to string of raw data
-            raw_buffer[r++] = src[s++];
+            raw_buffer[r++] = src[cru_s++];
         }
     }
 
     // write leftover string of raw data
-    if (r) put_raw();
+    if (r) crunch_put_raw();
     
     // put the "suffix"
-    if (b == 0) put_buffer();
+    if (cru_b == 0) put_buffer();
     put_buffer();
     
     // write the decrunched length
@@ -184,8 +184,12 @@ void crunch() {
     put_buffer();
 }
 
-int main(int argc, const char* argv[]) {
-    
+#ifdef ROBFX
+int sfcrunch_main(int argc, char** argv)
+#else
+int main(int argc, const char* argv[])
+#endif
+{
     // print help message
     if (argc != 3) {
         puts(
