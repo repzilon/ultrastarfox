@@ -92,17 +92,18 @@ void output_usage()
 	//puts("BUGS\n\t\n");
 }
 
-char* get_applet_name(const char* candidate)
+const char* get_applet_name(const char* candidate)
 {
+	const char* realCandidate = (strncmp(candidate, "./", 2) == 0) ? &candidate[2] : candidate;
 	for (byte i = 0; i < kAppletCount; i++) {
-		if (strcasecmp(candidate, kApplets[i]) == 0) {
+		if (strcasecmp(realCandidate, kApplets[i]) == 0) {
 			return kApplets[i];
 		}
 	}
 	return NULL;
 }
 
-int pivot_applet(char* applet_name, byte shift_args, int main_argc, char* argv[])
+int pivot_applet(const char* applet_name, byte shift_args, int main_argc, char* argv[])
 {
 	int new_argc = main_argc - shift_args;
 	char** new_argv = &argv[shift_args];
@@ -165,7 +166,10 @@ int pivot_applet(char* applet_name, byte shift_args, int main_argc, char* argv[]
 
 int main(int argc, char* argv[])
 {
-	char* applet_name = get_applet_name(argv[0]);
+#if DEBUG
+	fprintf(stderr, "RobFX Debug: argc=%d argv[0]=\"%s\"\n", argc, argv[0]);
+#endif
+	const char* applet_name = get_applet_name(argv[0]);
 	char* unknown_name = NULL;
 	byte shift = 0;
 	if ((applet_name == NULL) && (argc >= 2)) {

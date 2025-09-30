@@ -68,6 +68,7 @@ endif
 
 CFLAGS_WARN := -W -Wall -Werror=format-security
 COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) -DROBFX -DQUAD='"$(QUAD)"'
+USFBIN := ..$(DIRSEP)..$(DIRSEP)bin
 
 ROBFXB_SOURCES := robfx.c $(SRC_CHRMAP) $(SRC_SFCRUNCH) $(SRC_EXTEND) $(SRC_FOXFONT) $(SRC_INCCOL) $(SRC_MAKECOL) $(SRC_APENDCOL) $(SRC_MAPDEC) $(SRC_CGX2FX)
 ROBFXT_SOURCES := robfx.c $(SRC_PALCONV) $(SRC_SFCRUNCH) $(SRC_SFDECRUNCH) $(SRC_FOXCHR) $(SRC_CGX2FX) $(SRC_FX2CGX) $(SRC_FOXFONT)
@@ -96,31 +97,48 @@ clean:
 	$(RM) robfx$(EXE)
 
 install: kitchensink
-	$(CP) robfxb$(EXE) ..$(DIRSEP)..$(DIRSEP)bin
+ifneq ($(strip ${DJGPP}),)
+	$(CP) robfxb$(EXE) $(USFBIN)
+endif
 	$(CP) robfxt$(EXE) ..
 	$(CP) robfxs$(EXE) ..
 
 takeover-build: install
-	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)chrmap$(EXE)
-	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)cru$(EXE)
-	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)extend$(EXE)
-	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)fon$(EXE)
-	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)inccol$(EXE)
-	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)makecol$(EXE)
-	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)apendcol$(EXE)
-	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)mapdec$(EXE)
-	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)cgx2fx$(EXE)
+	$(RM) $(USFBIN)$(DIRSEP)chrmap$(EXE)
+	$(RM) $(USFBIN)$(DIRSEP)cru$(EXE)
+	$(RM) $(USFBIN)$(DIRSEP)extend$(EXE)
+	$(RM) $(USFBIN)$(DIRSEP)fon$(EXE)
+	$(RM) $(USFBIN)$(DIRSEP)inccol$(EXE)
+	$(RM) $(USFBIN)$(DIRSEP)makecol$(EXE)
+	$(RM) $(USFBIN)$(DIRSEP)apendcol$(EXE)
+	$(RM) $(USFBIN)$(DIRSEP)mapdec$(EXE)
+	$(RM) $(USFBIN)$(DIRSEP)cgx2fx$(EXE)
 
+# Note: the mix of tabs and spaces under this target is intentional
 takeover-tools: install
 	$(RM) ..$(DIRSEP)cru$(EXE)
 	$(RM) ..$(DIRSEP)decru$(EXE)
 	$(RM) ..$(DIRSEP)cgx2fx$(EXE)
 	$(RM) ..$(DIRSEP)fx2cgx$(EXE)
-# TODO : Complete takeover on other platforms
+ifeq ($(strip ${DJGPP}),)
+	$(RM) ..$(DIRSEP)sf_decrunch$(EXE)
+  ifneq (${OS},Windows_NT)
+	$(RM) ..$(DIRSEP)bgconv$(DIRSEP)bin$(DIRSEP)palconv && ln -s "../../robfxt" ..$(DIRSEP)bgconv$(DIRSEP)bin$(DIRSEP)palconv
+	$(RM) ..$(DIRSEP)bgconv$(DIRSEP)bin$(DIRSEP)sf_crunch && ln -s "../../robfxt" ..$(DIRSEP)bgconv$(DIRSEP)bin$(DIRSEP)sf_crunch
+	$(RM) ..$(DIRSEP)fontconv$(DIRSEP)foxfont && ln -s "../robfxt" ..$(DIRSEP)fontconv$(DIRSEP)foxfont
+	$(RM) ..$(DIRSEP)mugconv$(DIRSEP)foxchr &&  ln -s "../robfxt" ..$(DIRSEP)mugconv$(DIRSEP)foxchr
+  endif
+endif
 
 takeover-sink: install
 ifneq ($(strip ${DJGPP}),)
 	@echo "takeover-sink is empty on DJGPP"
+else
+	$(RM) ..$(DIRSEP)romExtender2$(EXE)
+	$(RM) ..$(DIRSEP)inccol$(EXE)
+	$(RM) ..$(DIRSEP)argonautmapdec$(EXE)
+	$(RM) ..$(DIRSEP)unmerge$(EXE)
+	$(RM) ..$(DIRSEP)chrmap$(EXE)
 endif
 
 ifneq ($(strip ${DJGPP}),)
