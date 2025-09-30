@@ -25,50 +25,50 @@ allroms: SF-U.SFC SF-J.SFC SF-E.SFC SF-G.SFC SF-F.SFC SF-C.SFC
 # The UltraStarFox builds cannot be done in parallel because its build 
 # system can only use the same intermediate directory. Do not replace 
 # make with $(MAKE) for this reason
-SF-U.SFC:
-	cp -f SF/CONFIG/REL_USA.INC SF/CONFIG/RELEASE.INC
+SF-U.SFC: SF/CONFIG/REL_USA.INC
+	cp -f $< SF/CONFIG/RELEASE.INC
 	make -f Makefile
 	mv SF.SFC $@
 
-SF-J.SFC:
-	cp -f SF/CONFIG/REL_JAP.INC SF/CONFIG/RELEASE.INC
+SF-J.SFC: SF/CONFIG/REL_JAP.INC
+	cp -f $< SF/CONFIG/RELEASE.INC
 	make -f Makefile
 	mv SF.SFC $@
 
-SF-E.SFC:
-	cp -f SF/CONFIG/REL_EUR.INC SF/CONFIG/RELEASE.INC
+SF-E.SFC: SF/CONFIG/REL_EUR.INC
+	cp -f $< SF/CONFIG/RELEASE.INC
 	make -f Makefile
 	mv SF.SFC $@
 
-SF-G.SFC:
-	cp -f SF/CONFIG/REL_GER.INC SF/CONFIG/RELEASE.INC
+SF-G.SFC: SF/CONFIG/REL_GER.INC
+	cp -f $< SF/CONFIG/RELEASE.INC
 	make -f Makefile
 	mv SF.SFC $@
 
-SF-F.SFC:
-	cp -f SF/CONFIG/REL_FRA.INC SF/CONFIG/RELEASE.INC
+SF-F.SFC: SF/CONFIG/REL_FRA.INC
+	cp -f $< SF/CONFIG/RELEASE.INC
 	make -f Makefile
 	mv SF.SFC $@
 
-SF-C.SFC:
-	cp -f SF/CONFIG/REL_CAN.INC SF/CONFIG/RELEASE.INC
+SF-C.SFC: SF/CONFIG/REL_CAN.INC
+	cp -f $< SF/CONFIG/RELEASE.INC
 	make -f Makefile
 	mv SF.SFC $@
 
 releases/Release\ $(VER)/USA\ Patches:
-	mkdir -p "releases/Release $(VER)/USA Patches"
+	mkdir -p "$@"
 
 releases/Release\ $(VER)/Japan\ Patches:
-	mkdir -p "releases/Release $(VER)/Japan Patches"
+	mkdir -p "$@"
 
 releases/Release\ $(VER)/PAL\ Patches:
-	mkdir -p "releases/Release $(VER)/PAL Patches"
+	mkdir -p "$@"
 
 flips-latest.tar.gz:
 	curl https://git.disroot.org/Sir_Walrus/Flips/archive/master.tar.gz -o $@
 
 flips/Makefile: flips-latest.tar.gz
-	tar -zxf flips-latest.tar.gz
+	tar -zxf $<
 
 flips/flips: flips/Makefile
 	# Flips is written in C++ but uses CFLAGS for C++ optimization flags
