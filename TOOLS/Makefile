@@ -71,25 +71,25 @@ mrproper: distclean nowindows permissions
 	rm -f SuperFamiconv-*.tar.gz
 
 bgconv/bin/palconv: palconv_src/palconv.c
-	$(COMPILE) palconv_src/palconv.c -o bgconv/bin/palconv
+	$(COMPILE) palconv_src/palconv.c -o $@
 
 bgconv/bin/sf_crunch: cru_src/sf_crunch_mod.c
-	$(COMPILE) cru_src/sf_crunch_mod.c -o bgconv/bin/sf_crunch
+	$(COMPILE) cru_src/sf_crunch_mod.c -o $@
 
 sf_decrunch: cru_src/sf_decrunch.c
-	$(COMPILE) cru_src/sf_decrunch.c -o sf_decrunch
+	$(COMPILE) cru_src/sf_decrunch.c -o $@
 
 mugconv/foxchr: mugconv/foxchr_source/foxchr.c mugconv/foxchr_source/foxchr.h
-	$(COMPILE) mugconv/foxchr_source/foxchr.c -o mugconv/foxchr
+	$(COMPILE) mugconv/foxchr_source/foxchr.c -o $@
 
 cgx2fx: cgx2fx_fx2cgx_src/cgx2fx.c
-	$(COMPILE) cgx2fx_fx2cgx_src/cgx2fx.c -o cgx2fx
+	$(COMPILE) cgx2fx_fx2cgx_src/cgx2fx.c -o $@
 
 fx2cgx: cgx2fx_fx2cgx_src/fx2cgx.c
-	$(COMPILE) cgx2fx_fx2cgx_src/fx2cgx.c -o fx2cgx
+	$(COMPILE) cgx2fx_fx2cgx_src/fx2cgx.c -o $@
 
 fontconv/foxfont: fontconv/foxfont_source/foxfont.c fontconv/foxfont_source/foxfont.h
-	$(COMPILE) fontconv/foxfont_source/foxfont.c -o fontconv/foxfont
+	$(COMPILE) fontconv/foxfont_source/foxfont.c -o $@
 
 SuperFamiconv-$(SFCONV_VER).tar.gz:
 	curl https://codeload.github.com/Optiroc/SuperFamiconv/tar.gz/refs/tags/v$(SFCONV_VER) -o SuperFamiconv-$(SFCONV_VER).tar.gz
@@ -107,18 +107,18 @@ mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/s
 	install $(INSTALL_FLAGS) ./SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv ./mugconv/superfamiconv
 
 romExtender2: extend_src/romExtenderv2.c
-	$(COMPILE) extend_src/romExtenderv2.c -o romExtender2
+	$(COMPILE) extend_src/romExtenderv2.c -o $@
 
 inccol: inccol_src/inccol.c
-	$(COMPILE) inccol_src/inccol.c -o inccol
+	$(COMPILE) inccol_src/inccol.c -o $@
 
 argonautmapdec: mapdec_src/argonautmapdecoder.c
-	$(COMPILE) mapdec_src/argonautmapdecoder.c -o argonautmapdec
+	$(COMPILE) mapdec_src/argonautmapdecoder.c -o $@
 
 unmerge: unmerge_src/fxedit_v2.c
-	$(COMPILE) unmerge_src/fxedit_v2.c -o unmerge
+	$(COMPILE) unmerge_src/fxedit_v2.c -o $@
 
 chrmap: chrmap_src/chrmap.c
-	$(COMPILE) chrmap_src/chrmap.c -o chrmap
+	$(COMPILE) chrmap_src/chrmap.c -o $@
 
 .PHONY: all sink kitchensink clean distclean nowindows permissions mrproper

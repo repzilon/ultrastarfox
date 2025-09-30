@@ -71,47 +71,47 @@ DESTBIN := ..$(DIRSEP)bin$(DIRSEP)
 all: $(DESTBIN)chrmap.exe $(DESTBIN)cru.exe $(DESTBIN)extend.exe $(DESTBIN)fon.exe $(DESTBIN)inccol.exe $(DESTBIN)makecol.exe $(DESTBIN)apendcol.exe $(DESTBIN)mapdec.exe cgx2fx.exe $(DESTBIN)cgx2fx.exe fx2cgx.exe
 
 $(DESTBIN)chrmap.exe: $(SRC_CHRMAP)
-	$(COMPILE) $(SRC_CHRMAP) -o $(DESTBIN)chrmap.exe
+	$(COMPILE) $(SRC_CHRMAP) -o $@
 
 cru.exe: $(SRC_SFCRUNCH)
-	$(COMPILE) $(SRC_SFCRUNCH) -o cru.exe
+	$(COMPILE) $(SRC_SFCRUNCH) -o $@
 
 $(DESTBIN)cru.exe: cru.exe
 	$(CP) cru.exe $(DESTBIN)
 
 $(DESTBIN)extend.exe: $(SRC_EXTEND)
-	$(COMPILE) $(SRC_EXTEND) -o $(DESTBIN)extend.exe
+	$(COMPILE) $(SRC_EXTEND) -o $@
 
 $(DESTBIN)fon.exe: $(SRC_FOXFONT)
-	$(COMPILE) $(SRC_FOXFONT) -o $(DESTBIN)fon.exe
+	$(COMPILE) $(SRC_FOXFONT) -o $@
 
 $(DESTBIN)inccol.exe: $(SRC_INCCOL)
-	$(COMPILE) $(SRC_INCCOL) -o $(DESTBIN)inccol.exe
+	$(COMPILE) $(SRC_INCCOL) -o $@
 
 $(DESTBIN)makecol.exe: $(SRC_MAKECOL)
-	$(COMPILE) $(SRC_MAKECOL) -o $(DESTBIN)makecol.exe
+	$(COMPILE) $(SRC_MAKECOL) -o $@
 
 $(DESTBIN)apendcol.exe: $(SRC_APENDCOL)
-	$(COMPILE) $(SRC_APENDCOL) -o $(DESTBIN)apendcol.exe
+	$(COMPILE) $(SRC_APENDCOL) -o $@
 
 $(DESTBIN)mapdec.exe: $(SRC_MAPDEC)
-	$(COMPILE) $(SRC_MAPDEC) -o $(DESTBIN)mapdec.exe
+	$(COMPILE) $(SRC_MAPDEC) -o $@
 
 # Source for $(DESTBIN)sfcheck.exe is at https://www.github.com/Optiroc/SuperFamicheck/
 # 4 very C++ files. The static C++ library explains why the DOS binary is so big.
 
 # TODO: have a portable way to copy file in DOS/DJGPP, Windows and *nix
 cgx2fx.exe: $(SRC_CGX2FX)
-	$(COMPILE) $(SRC_CGX2FX) -o cgx2fx.exe
+	$(COMPILE) $(SRC_CGX2FX) -o $@
 
 $(DESTBIN)cgx2fx.exe: cgx2fx.exe
 	$(CP) cgx2fx.exe $(DESTBIN)
 
 fx2cgx.exe: $(SRC_FX2CGX)
-	$(COMPILE) $(SRC_FX2CGX) -o fx2cgx.exe
+	$(COMPILE) $(SRC_FX2CGX) -o $@
 
 decru.exe: $(SRC_SFDERUNCH)
-	$(COMPILE) $(SRC_SFDECRUNCH) -o decru.exe
+	$(COMPILE) $(SRC_SFDECRUNCH) -o $@
 
 # Do not delete existing DJGPP executables inside BIN with clean,
 # as they are needed for almost every UltraStarfox user.
