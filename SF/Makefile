@@ -15,7 +15,7 @@ LINK=ARGLINK
 LOPTS=-b30 -h1024 -t7d -z -l2048
 
 # ROM Extender
-EXTEND=EXTEND
+EXTEND=robfxb EXTEND
 # Extended size in Mbits, byte to pad with
 EXTOPTS= --auto ff
 
@@ -24,25 +24,25 @@ CHECK=SFCHECK
 COPTS=-s -f
 
 # FXGfx Interleaver
-MERGE=CGX2FX
+MERGE=robfxb CGX2FX
 
 # Macro to make a FXGfx BIN file
 MAKEBIN= $(MERGE) $** $@
 
 # Graphics Cruncher
-CRU=CRU
+CRU=robfxb CRU
 
 # Font Converter
-FONT=FON
+FONT=robfxb FON
 
 # Argonaut .MAP File Decoder
-MAPDEC=MAPDEC
+MAPDEC=robfxb MAPDEC
 
 # ALLCOLS palette stripper
-MC=APENDCOL
+MC=robfxb APENDCOL
 
 # Script Tokenizer
-CHRMAP=CHRMAP
+CHRMAP=robfxb CHRMAP
 
 #!! If you add/remove a cgx/scr in these two lists, make sure to add/remove the corresponding file.
 

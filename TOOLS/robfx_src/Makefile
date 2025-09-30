@@ -1,4 +1,4 @@
-# RobFX Makefile for GNU Make and native compilation
+## RobFX Makefile for GNU Make and native compilation
 
 # Use spaces ONLY to indent inside conditionals
 ifneq ($(strip ${DJGPP}),)
@@ -67,7 +67,7 @@ else
 endif
 
 CFLAGS_WARN := -W -Wall -Werror=format-security
-COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) -DROBFX -DQUAD=$(QUAD)
+COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) -DROBFX -DQUAD='"$(QUAD)"'
 
 ROBFXB_SOURCES := robfx.c $(SRC_CHRMAP) $(SRC_SFCRUNCH) $(SRC_EXTEND) $(SRC_FOXFONT) $(SRC_INCCOL) $(SRC_MAKECOL) $(SRC_APENDCOL) $(SRC_MAPDEC) $(SRC_CGX2FX)
 ROBFXT_SOURCES := robfx.c $(SRC_PALCONV) $(SRC_SFCRUNCH) $(SRC_SFDECRUNCH) $(SRC_FOXCHR) $(SRC_CGX2FX) $(SRC_FX2CGX) $(SRC_FOXFONT)
@@ -95,4 +95,39 @@ clean:
 	$(RM) robfxs$(EXE)
 	$(RM) robfx$(EXE)
 
-.PHONY: all clean kitchensink
+install: kitchensink
+	$(CP) robfxb$(EXE) ..$(DIRSEP)..$(DIRSEP)bin
+	$(CP) robfxt$(EXE) ..
+	$(CP) robfxs$(EXE) ..
+
+takeover-build: install
+	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)chrmap$(EXE)
+	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)cru$(EXE)
+	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)extend$(EXE)
+	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)fon$(EXE)
+	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)inccol$(EXE)
+	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)makecol$(EXE)
+	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)apendcol$(EXE)
+	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)mapdec$(EXE)
+	$(RM) ..$(DIRSEP)..$(DIRSEP)bin$(DIRSEP)cgx2fx$(EXE)
+
+takeover-tools: install
+	$(RM) ..$(DIRSEP)cru$(EXE)
+	$(RM) ..$(DIRSEP)decru$(EXE)
+	$(RM) ..$(DIRSEP)cgx2fx$(EXE)
+	$(RM) ..$(DIRSEP)fx2cgx$(EXE)
+# TODO : Complete takeover on other platforms
+
+takeover-sink: install
+ifneq ($(strip ${DJGPP}),)
+	@echo "takeover-sink is empty on DJGPP"
+endif
+
+ifneq ($(strip ${DJGPP}),)
+takeover: takeover-build takeover-tools takeover-sink
+else
+takeover: takeover-tools takeover-sink
+endif
+	@echo "RobFX took over"
+
+.PHONY: all clean kitchensink install takeover takeover-build takeover-tools takeover-sink

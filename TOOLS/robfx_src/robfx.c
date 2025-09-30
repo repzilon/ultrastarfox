@@ -50,10 +50,14 @@ typedef unsigned char byte;
 	#error "ROBFX_EDITION_C not defined correctly. Must be either B, T or S, but got " ROBFX_EDITION_C
 #endif
 
+#ifndef QUAD
+	#define QUAD "unknown platform"
+#endif
+
 void output_logo()
 {
-	puts("RobFX UltraStarFox multi-call binary, v0.1 " ROBFX_EDITION " Edition\n"
-		"2025 Repzilon. Incorporates code from many others.\n"
+	puts("RobFX UltraStarFox multi-call binary, v0.1 " ROBFX_EDITION " Edition " QUAD "\n"
+		"2025 Repzilon. Credits: Everything, Phonymike, Segaretro92 and Sunlitspace542.\n"
 	);
 }
 
