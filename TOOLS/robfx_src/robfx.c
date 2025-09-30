@@ -1,3 +1,6 @@
+#include <libgen.h>
+// This one is only to include __GLIBC__ for conditional compilation
+#include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <strings.h>
@@ -56,7 +59,7 @@ typedef unsigned char byte;
 
 void output_logo()
 {
-	puts("RobFX UltraStarFox multi-call binary, v0.1 " ROBFX_EDITION " Edition " QUAD "\n"
+	puts("RobFX UltraStarFox multi-call binary, v0.2 " ROBFX_EDITION " Edition " QUAD "\n"
 		"2025 Repzilon. Credits: Everything, Phonymike, Segaretro92 and Sunlitspace542.\n"
 	);
 }
@@ -81,9 +84,12 @@ void output_usage()
 		}
 		printf("%s", kApplets[i]);
 	}
-	puts(".\n\tCommand names are case-insensitive to accommodate DOS and Windows.");
+	puts(".\n\tCommand names are case-insensitive to accommodate DOS and Windows.\n");
 	//puts("ENVIRONMENT\n\t\n");
-	//puts("EXIT STATUS\n\t\n");
+	puts("EXIT STATUS\n\t0 on command success, 1 when this general help message is shown.\n"
+		"\tNon-zero value is generally returned on command failure, but read the\n"
+		"\tsource code of the individual tools to be sure."
+	);
 	//puts("EXAMPLES\n\t\n");
 	//puts("COMPATIBILITY\n\t\n");
 	//puts("SEE ALSO\n\t\n");
@@ -94,13 +100,28 @@ void output_usage()
 
 const char* get_applet_name(const char* candidate)
 {
-	const char* realCandidate = (strncmp(candidate, "./", 2) == 0) ? &candidate[2] : candidate;
+	// Stupid Glibc having two implementations of basename, the POSIX version being the broken one
+	// Would that also affect uClibc? (__GLIBC__ is also defined under uClibc)
+#ifdef __GLIBC__
+	char* candidateDup = strdup(candidate);
+	char* realCandidate = basename(candidateDup);
+	const char* applet = NULL;
+	for (byte i = 0; (i < kAppletCount) && (applet == NULL); i++) {
+		if (strcasecmp(realCandidate, kApplets[i]) == 0) {
+			applet = kApplets[i];
+		}
+	}
+	free(candidateDup);
+	return applet;
+#else
+	char* realCandidate = basename(candidate);
 	for (byte i = 0; i < kAppletCount; i++) {
 		if (strcasecmp(realCandidate, kApplets[i]) == 0) {
 			return kApplets[i];
 		}
 	}
 	return NULL;
+#endif
 }
 
 int pivot_applet(const char* applet_name, byte shift_args, int main_argc, char* argv[])
