@@ -20,8 +20,8 @@
 typedef unsigned char unchar;
 
 /* Buffers */
-unchar ch7buf[CHRMAX];
-unchar binbuf[BINMAX];
+unchar fc_ch7buf[CHRMAX];
+unchar fc_binbuf[BINMAX];
 
 /* Function prototypes */
 void read_bin_file(const char *input_filename);
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     /* Process the files */
     read_bin_file(input_filename);
     convert_to_ch7();
-    process_chunks(ch7buf, CHRMAX);
+    process_chunks(fc_ch7buf, CHRMAX);
     write_cgx_files(input_filename);
 
     return EXIT_SUCCESS;
@@ -61,7 +61,7 @@ void read_bin_file(const char *input_filename) {
         exit(EXIT_FAILURE);
     }
 
-    if (fread(binbuf, sizeof(unchar), BINMAX, file) != BINMAX) {
+    if (fread(fc_binbuf, sizeof(unchar), BINMAX, file) != BINMAX) {
         fputs("Error reading input file\n", stderr);
         fclose(file);
         exit(EXIT_FAILURE);
@@ -76,7 +76,7 @@ void convert_to_ch7() {
     long n, i, j, k, l, m;
 
     /* Clear the buffer before reconstruction */
-    memset(ch7buf, 0, sizeof(ch7buf));
+    memset(fc_ch7buf, 0, sizeof(fc_ch7buf));
 
     /* De-interleave the low nibbles */
     for (n = 0; n < (64 * 16 * 32); n += (64 * 16 * 16)) {
@@ -85,7 +85,7 @@ void convert_to_ch7() {
                 for (k = j; k < (j + 64 * 16 * 8 * 2); k += (64 * 16 * 8)) {
                     for (l = k; l < (k + 64 * 16); l += 64) {
                         for (m = l; m < (l + 8); m++) {
-                            ch7buf[m] |= binbuf[wcnt++] & 0x0F;
+                            fc_ch7buf[m] |= fc_binbuf[wcnt++] & 0x0F;
                         }
                     }
                 }
@@ -101,7 +101,7 @@ void convert_to_ch7() {
                 for (k = j; k < (j + 64 * 16 * 8 * 2); k += (64 * 16 * 8)) {
                     for (l = k; l < (k + 64 * 16); l += 64) {
                         for (m = l; m < (l + 8); m++, wcnt++) {
-                            ch7buf[m + 0x8000] = (binbuf[wcnt] & 0xF0) >> 4;
+                            fc_ch7buf[m + 0x8000] = (fc_binbuf[wcnt] & 0xF0) >> 4;
                         }
                     }
                 }
@@ -137,8 +137,8 @@ void write_cgx_files(const char *output_filename_base) {
     snprintf(fname_cgx_hi, sizeof(fname_cgx_hi), "%s_hi.CGX", output_filename_base);
 
     /* Convert the two halves of the CH7 buffer to CGX format */
-    convert_to_cgx(ch7buf, fname_cgx_lo, 0, CHRHALF);          // Lower half
-    convert_to_cgx(ch7buf + CHRHALF, fname_cgx_hi, 0, CHRHALF); // Upper half
+    convert_to_cgx(fc_ch7buf, fname_cgx_lo, 0, CHRHALF);          // Lower half
+    convert_to_cgx(fc_ch7buf + CHRHALF, fname_cgx_hi, 0, CHRHALF); // Upper half
 }
 
 /* Function to convert a portion of the CH7 buffer to CGX format and write it to a file */
