@@ -130,9 +130,7 @@ clean-patches:
 	rm -f SF-G.SFC
 	rm -f SF-F.SFC
 	rm -f SF-C.SFC
-	rm -f "releases/Release $(VER)/USA Patches/UltraStarFox*.bps"
-	rm -f "releases/Release $(VER)/Japan Patches/UltraStarFox*.bps"
-	rm -f "releases/Release $(VER)/PAL Patches/UltraStar*.bps"
+	rm -f releases/Release*/*Patches/UltraStarFox*.bps
 
 clean: clean-sf clean-patches clean-flips
 	true

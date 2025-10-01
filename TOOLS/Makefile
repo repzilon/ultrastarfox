@@ -44,9 +44,11 @@ clean-sink:
 clean: clean-tools clean-sink clean-superfamiconv
 	rm -rf SharpUltraStarFoxTools/*/bin/
 	rm -rf SharpUltraStarFoxTools/*/obj/
+	$(MAKE) -C robfx_src clean
 
 distclean: clean-tools clean-sink
 	rm -rf SuperFamiconv-*
+	$(MAKE) -C robfx_src clean
 
 nowindows:
 	rm -f palconv.exe

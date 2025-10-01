@@ -31,12 +31,14 @@ clean-sf:
 clean: clean-sf
 	rm -f usb2snes-cli.bin
 	$(MAKE) -C TOOLS clean
+	$(MAKE) -f Makefile.release clean
 	cd usb2snes-cli && ${HOME}/.cargo/bin/cargo clean && cd ..
 
 distclean: clean-sf
 	rm -f usb2snes-cli.bin
 	rm -rf usb2snes-cli
 	$(MAKE) -C TOOLS distclean
+	$(MAKE) -f Makefile.release distclean
 
 nowindows:
 	rm -f dosbox-x.exe

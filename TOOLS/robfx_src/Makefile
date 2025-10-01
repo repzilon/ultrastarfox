@@ -95,6 +95,9 @@ clean:
 	$(RM) robfxt$(EXE)
 	$(RM) robfxs$(EXE)
 	$(RM) robfx$(EXE)
+	$(RM) $(USFBIN)$(DIRSEP)robfxb$(EXE)
+	$(RM) ..$(DIRSEP)robfxt$(EXE)
+	$(RM) ..$(DIRSEP)robfxs$(EXE)
 
 install: kitchensink
 ifneq ($(strip ${DJGPP}),)
