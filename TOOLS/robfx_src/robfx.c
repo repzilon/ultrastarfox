@@ -1,6 +1,3 @@
-#include <libgen.h>
-// This one is only to include __GLIBC__ for conditional compilation
-#include <limits.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <strings.h>
@@ -100,28 +97,17 @@ void output_usage()
 
 const char* get_applet_name(const char* candidate)
 {
-	// Stupid Glibc having two implementations of basename, the POSIX version being the broken one
-	// Would that also affect uClibc? (__GLIBC__ is also defined under uClibc)
-#ifdef __GLIBC__
-	char* candidateDup = strdup(candidate);
-	char* realCandidate = basename(candidateDup);
-	const char* applet = NULL;
-	for (byte i = 0; (i < kAppletCount) && (applet == NULL); i++) {
-		if (strcasecmp(realCandidate, kApplets[i]) == 0) {
-			applet = kApplets[i];
-		}
-	}
-	free(candidateDup);
-	return applet;
-#else
-	char* realCandidate = basename(candidate);
+	// From https://bug1041962.bmoattachments.org/attachment.cgi?id=8516179
+	// by Natanel Copa, creator of the Alpine Linux distribution
+	// basename's behavior is less than ideal so avoid it
+	const char *p = strrchr(candidate, '/');
+	char* realCandidate = p ? p + 1 : candidate;
 	for (byte i = 0; i < kAppletCount; i++) {
 		if (strcasecmp(realCandidate, kApplets[i]) == 0) {
 			return kApplets[i];
 		}
 	}
 	return NULL;
-#endif
 }
 
 int pivot_applet(const char* applet_name, byte shift_args, int main_argc, char* argv[])
