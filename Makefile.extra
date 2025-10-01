@@ -1,6 +1,15 @@
 SFCONV_VER := 0.11.0
 SFCONV_OUT := build/release
 SFCONV_EXE := TOOLS/SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv
+ifneq (,$(wildcard /etc/alpine-release))
+  INSTALL_FLAGS := -p
+else
+  ifeq ("Darwin",$(shell uname))
+    INSTALL_FLAGS := -CSv
+  else
+    INSTALL_FLAGS := -Cv
+  endif
+endif 
 
 ${HOME}/.cargo/bin/cargo:
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -12,7 +21,7 @@ usb2snes-cli/target/debug/usb2snes-cli: ${HOME}/.cargo/bin/cargo usb2snes-cli/Ca
 	cd usb2snes-cli && ${HOME}/.cargo/bin/cargo build && cd ..
 
 usb2snes-cli.bin: usb2snes-cli/target/debug/usb2snes-cli
-	install -CS ./usb2snes-cli/target/debug/usb2snes-cli ./usb2snes-cli.bin
+	install $(INSTALL_FLAGS) ./usb2snes-cli/target/debug/usb2snes-cli ./usb2snes-cli.bin
 
 SF.SFC:
 	$(MAKE) -f Makefile all

@@ -51,13 +51,17 @@ else
     DIRSEP := \\
   else
     # *nix assumed here
-    MY_NIX := $(shell uname -s)
+    MY_NIX := $(shell uname)
     $(info "$(MY_NIX)")
     RM := rm -f
     ifneq (,$(wildcard /etc/alpine-release))
       CP := install -p
     else
-      CP := install -CS
+      ifeq ("Darwin",$(MY_NIX))
+        CP := install -CSv
+      else
+        CP := install -Cv
+      endif
     endif
     DIRSEP := /
   endif

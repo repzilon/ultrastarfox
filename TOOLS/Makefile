@@ -8,9 +8,14 @@ CFLAGS_OPTIM := -O2 -pipe -fomit-frame-pointer
 CFLAGS_WARN := -W -Wall -Werror=format-security
 #CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
 #CXXFLAGS_WARN := $(CFLAGS_WARN)
-INSTALL_FLAGS := -CS
 ifneq (,$(wildcard /etc/alpine-release))
-	INSTALL_FLAGS = -p
+  INSTALL_FLAGS := -p
+else
+  ifeq ("Darwin",$(shell uname))
+    INSTALL_FLAGS := -CSv
+  else
+    INSTALL_FLAGS := -Cv
+  endif
 endif 
 COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN)
 

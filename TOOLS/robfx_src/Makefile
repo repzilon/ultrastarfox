@@ -43,7 +43,11 @@ else
     ifneq (,$(wildcard /etc/alpine-release))
       CP := install -p
     else
-      CP := install -CS
+      ifeq ("Darwin",$(shell uname))
+        CP := install -CSv
+      else
+        CP := install -Cv
+      endif
     endif
     DIRSEP := /
     EXE :=
