@@ -54,17 +54,17 @@ else
     QUAD := $(shell uname -m)-unknown-$(shell uname)
   endif
   # Long file names for other operating systems
-  SRC_CHRMAP := ../chrmap_src/Chrmap.c
+  SRC_CHRMAP := ../chrmap_src/chrmap.c
   SRC_SFCRUNCH := ../cru_src/sf_crunch_mod.c
   SRC_SFDECRUNCH := ../cru_src/sf_decrunch.c
   SRC_EXTEND := ../extend_src/romExtenderv2.c
-  SRC_FOXFONT := ../Fontconv/foxfont_source/Foxfont.c
+  SRC_FOXFONT := ../fontconv/foxfont_source/foxfont.c
   SRC_INCCOL := ../inccol_src/inccol.c
-  SRC_MAKECOL := ../inccol_src/Makecol.c
+  SRC_MAKECOL := ../inccol_src/makecol.c
   SRC_APENDCOL := ../inccol_src/apendcol.c
   SRC_MAPDEC := ../mapdec_src/argonautmapdecoder.c
-  SRC_CGX2FX := ../cgx2fx_fx2cgx_src/Cgx2fx.c
-  SRC_FX2CGX := ../cgx2fx_fx2cgx_src/Fx2cgx.c
+  SRC_CGX2FX := ../cgx2fx_fx2cgx_src/cgx2fx.c
+  SRC_FX2CGX := ../cgx2fx_fx2cgx_src/fx2cgx.c
   SRC_PALCONV := ../palconv_src/palconv.c
   SRC_FOXCHR := ../mugconv/foxchr_source/foxchr.c
   SRC_UNMERGE := ../unmerge_src/fxedit_v2.c
