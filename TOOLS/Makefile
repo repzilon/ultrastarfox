@@ -128,4 +128,7 @@ unmerge: unmerge_src/fxedit_v2.c
 chrmap: chrmap_src/chrmap.c
 	$(COMPILE) $< -o $@
 
-.PHONY: all sink kitchensink clean distclean nowindows permissions mrproper
+help:
+	@echo "Available targets: all sink kitchensink clean distclean nowindows permissions mrproper"
+
+.PHONY: all sink kitchensink clean distclean nowindows permissions mrproper help

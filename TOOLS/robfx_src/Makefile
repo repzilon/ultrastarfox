@@ -155,4 +155,7 @@ takeover: takeover-tools takeover-sink
 endif
 	@echo "RobFX took over"
 
-.PHONY: all clean kitchensink install takeover takeover-build takeover-tools takeover-sink
+help:
+	@echo "Available targets: all clean kitchensink install takeover"
+
+.PHONY: all clean kitchensink install takeover takeover-build takeover-tools takeover-sink help

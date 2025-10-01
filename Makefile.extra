@@ -88,7 +88,7 @@ lineendings:
 	dos2unix -q -e Makefile.*
 
 prebuild: SF/DATA/CONT-2-F.CGX SF/DATA/MAP-F.CGX SF/DATA/OBJ-1-F.CGX SF/DATA/OBJ-2-F.CGX SF/DATA/FOX-F.CGX SF/DATA/CP-FF.CGX
-	true
+	@echo "French graphics conversion done"
 	
 $(SFCONV_EXE): TOOLS/Makefile
 	$(MAKE) -C TOOLS "bgconv/bin/superfamiconv"
@@ -113,4 +113,7 @@ SF/DATA/CP-FF.CGX: SF/DATA/CP-FF.png $(SFCONV_EXE)
 
 mrproper: distclean nowindows permissions nodosdupes
 
-.PHONY: tools clean distclean nowindows permissions mrproper prebuild lineendings
+help:
+	@echo "Available targets: SF.SFC tools clean distclean nowindows permissions mrproper prebuild lineendings"
+
+.PHONY: tools clean distclean nowindows permissions mrproper prebuild lineendings help

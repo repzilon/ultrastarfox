@@ -142,4 +142,7 @@ distclean: clean-sf clean-patches
 mrproper: distclean
 	rm -f flips-latest.tar.gz
 
-.PHONY: all clean distclean mrproper clean-sf clean-flips clean-patches roms allroms
+help:
+	@echo "Available targets: all clean distclean mrproper roms allroms french"
+
+.PHONY: all clean distclean mrproper clean-sf clean-flips clean-patches roms allroms help

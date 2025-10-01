@@ -136,4 +136,7 @@ distclean: clean
 	$(RM) $(DESTBIN)mapdec.exe
 	$(RM) $(DESTBIN)cgx2fx.exe
 
-.PHONY: all clean distclean
+help:
+	@echo "Available targets: all clean distclean"
+
+.PHONY: all clean distclean help
