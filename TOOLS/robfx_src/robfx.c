@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
-#include <strings.h>
+#include <string.h>
 
 typedef unsigned char byte;
 
