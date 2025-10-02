@@ -50,9 +50,26 @@ typedef unsigned char byte;
 	#error "ROBFX_EDITION_C not defined correctly. Must be either B, T or S, but got " ROBFX_EDITION_C
 #endif
 
-#ifndef QUAD
+// Detect target libc at build time
+#ifndef TRIPLET
 	#define QUAD "unknown platform"
+#elif defined(__DJGPP__)
+	#define TARGETLIBC "djgpp"
+#elif defined(__linux__)
+	#ifdef __UCLIBC__
+		#define TARGETLIBC "uclibc"
+	#elif defined(__GLIBC__)
+		#define TARGETLIBC "gnu"
+	#else
+		#define TARGETLIBC "musl"
+	#endif
 #endif
+#ifdef TARGETLIBC
+	#define QUAD TRIPLET "-" TARGETLIBC
+#elif !defined(QUAD)
+	#define QUAD TRIPLET
+#endif
+// TODO : Rename folder in DOS
 
 void output_logo()
 {
@@ -73,7 +90,7 @@ void output_usage()
 		"\treplaces. This program uses the same principle as BusyBox.\n"
 	);
 	//puts("OPTIONS\n\t\n");
-	puts("COMMANDS\n\tCan be one the the following in the " ROBFX_EDITION " edition:");
+	puts("COMMANDS\n\tCan be one of the following in the " ROBFX_EDITION " edition:");
 	printf("\t");
 	for (byte i = 0; i < kAppletCount; i++) {
 		if (i > 0) {

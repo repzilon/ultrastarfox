@@ -5,13 +5,12 @@ ifneq ($(strip ${DJGPP}),)
   CC := gcc
   # Note : you cannot use -pipe with DOS
   CFLAGS_OPTIM := -O2 -fomit-frame-pointer -march=pentium3 -s
-  CFLAGS_WARN := -W -Wall -Werror=format-security
   # Note: "del" must be lowercase even in DOS
   RM := del
   CP := copy /y
   DIRSEP := \\
   EXE := .EXE
-  QUAD := i686-pc-dos-djgpp
+  TRIPLET := i686-pc-dos
   # 8.3 paths for DOS (short names as shown in Windows 98)
   SRC_CHRMAP := ../chrmap~1/Chrmap.c
   SRC_SFCRUNCH := ../cru_src/sf_cru~1.c
@@ -36,22 +35,24 @@ else
     CP := copy /y
     DIRSEP := \\
     EXE := .exe
-    QUAD := ${PROCESSOR_ARCHITECTURE}-pc-winnt
+    TRIPLET := ${PROCESSOR_ARCHITECTURE}-pc-winnt
   else
     # *nix assumed here
     RM := rm -f
     ifneq (,$(wildcard /etc/alpine-release))
       CP := install -p
+      FORMFACTOR := alpine
     else
       ifeq ("Darwin",$(shell uname))
         CP := install -CSv
       else
         CP := install -Cv
       endif
+      FORMFACTOR := unknown
     endif
     DIRSEP := /
     EXE :=
-    QUAD := $(shell uname -m)-unknown-$(shell uname)
+    TRIPLET := $(shell uname -m)-$(FORMFACTOR)-$(shell uname)
   endif
   # Long file names for other operating systems
   SRC_CHRMAP := ../chrmap_src/chrmap.c
@@ -71,7 +72,7 @@ else
 endif
 
 CFLAGS_WARN := -W -Wall -Werror=format-security
-COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) -DROBFX -DQUAD='"$(QUAD)"'
+COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN) -DROBFX -DTRIPLET='"$(TRIPLET)"'
 USFBIN := ..$(DIRSEP)..$(DIRSEP)bin
 
 ROBFXB_SOURCES := robfx.c $(SRC_CHRMAP) $(SRC_SFCRUNCH) $(SRC_EXTEND) $(SRC_FOXFONT) $(SRC_INCCOL) $(SRC_MAKECOL) $(SRC_APENDCOL) $(SRC_MAPDEC) $(SRC_CGX2FX)
