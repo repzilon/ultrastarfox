@@ -40,20 +40,20 @@ clean-tools:
 	rm -f sf_decrunch
 
 clean-sink:
-	rm -f romExtender2 
-	rm -f inccol 
-	rm -f argonautmapdec 
+	rm -f romExtender
+	rm -f incco
+	rm -f argonautmapde
 	rm -f unmerge
 	rm -f chrmap
 
 clean: clean-tools clean-sink clean-superfamiconv
 	rm -rf SharpUltraStarFoxTools/*/bin/
 	rm -rf SharpUltraStarFoxTools/*/obj/
-	$(MAKE) -C robfx_src clean
+	$(MAKE) -C robfx.src clean
 
 distclean: clean-tools clean-sink
 	rm -rf SuperFamiconv-*
-	$(MAKE) -C robfx_src clean
+	$(MAKE) -C robfx.src clean
 
 nowindows:
 	rm -f palconv.exe

@@ -63,9 +63,11 @@ permissions:
 	chmod +x 'optionalstuff/textures/sg.rom 09-23-92/'
 	chmod -x */*/*/*.*
 	chmod +x "TOOLS/SuperFamiconv-$(SFCONV_VER)" || true
+	chmod +x TOOLS/*.src
 	chmod -x */*/*.*
 	chmod +x 'optionalstuff/textures/sg.rom 09-23-92/'
 	chmod +x "TOOLS/SuperFamiconv-$(SFCONV_VER)" || true
+	chmod +x TOOLS/*.src
 	chmod +x *.sh */*/*.sh
 
 lineendings:

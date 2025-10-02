@@ -97,10 +97,10 @@ TOOLS/inccol
 TOOLS/romExtender2
 TOOLS/chrmap
 TOOLS/sf_decrunch
-TOOLS/robfx_src/robfxb
-TOOLS/robfx_src/robfxt
-TOOLS/robfx_src/robfxs
-TOOLS/robfx_src/robfx*.exe
+TOOLS/robfx?src/robfxb
+TOOLS/robfx?src/robfxt
+TOOLS/robfx?src/robfxs
+TOOLS/robfx?src/robfx*.exe
 TOOLS/robfxt
 TOOLS/robfxs
 BIN/robfxb
