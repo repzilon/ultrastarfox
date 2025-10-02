@@ -69,7 +69,6 @@ typedef unsigned char byte;
 #elif !defined(QUAD)
 	#define QUAD TRIPLET
 #endif
-// TODO : Rename folder in DOS
 
 void output_logo()
 {

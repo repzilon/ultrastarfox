@@ -10,9 +10,11 @@ Tool porting
 ------------
 - [x] Add a kitchensink target in the TOOLS Makefile
 - [x] Remove duplicated DOS/DJGPP binaries in TOOLS that are also in BIN
-- [ ] Test the Makefiles under Linux
+- [ ] Test the Makefiles under Linux ==WIP==
 - [ ] Provide a Makefile for (cross-)compiling tools on DJGPP. Important: keep the existing executables in the repository so anybody with a modern computer can still build the game without the pain of setting up a cross-compiler. ==WIP==
 - [x] Try to build UltraStarFox on a retro PC/VM
+- [x] Regroup the howe-grown tools into a single executable
+- [ ] Improve compatibility and backport to C ARGLINK_REWRITE from LuigiBlood
 
 Miscellaneous hacks
 -------------------
@@ -21,7 +23,7 @@ Miscellaneous hacks
 - [x] Support 4bpp bitmaps in foxfont
 - [x] Compile updated foxfont for DJGPP
 - [x] Correct timing of the intro sequence when built for 21 MHz Super FX
-- [ ] Code bank reorganisation to fit the base game inside 1 MiB and extras above that boundary ==WIP==
+- [x] Code bank reorganisation to fit the base game inside 1 MiB and extras above that boundary
 - [x] Port buildrelease.cmd to a Makefile and generate localized patches from it
 - [ ] Skip scramble sequence by pressing Start
 - [ ] Better boss roll demo through training (background music, select level with controller mode, return to controls screen with Start)
