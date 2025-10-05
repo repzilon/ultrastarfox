@@ -3,8 +3,11 @@
 #include <string.h>
 #include "foxfont.h"
 
-
+#ifdef ROBFX
+int foxfont_main(int argc, char** argv)
+#else
 int main(int argc, char *argv[])
+#endif
 {
 	if (argc < 2){
 		puts("* " CLI_FILEDESCRIPTION_STR " " CLI_FILEVERSION_STR " *\n");
@@ -13,7 +16,7 @@ int main(int argc, char *argv[])
 	}
 
 	// create output filename
-	char *outputFileName = createOutputFileName(argv[1]);
+	char *outputFileName = font_createOutputFileName(argv[1]);
 
 	// verify input bitmap, set file pointer fpBitmap to start of pixel data
 	unsigned char bpp; // used as an 8-bit integer, not a character
@@ -277,7 +280,7 @@ FILE * openBitmap(char *fileName, unsigned char *bppOut)
 	return fpBitmap;
 }
 
-char * createOutputFileName(char * inputFileName)
+char * font_createOutputFileName(char * inputFileName)
 {
 	// length of fileName without the .bmp extension
 	#define NOEXTLEN	(strlen(inputFileName) - EXT_LEN)

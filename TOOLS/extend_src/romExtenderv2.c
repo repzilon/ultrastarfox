@@ -6,7 +6,12 @@ romExtender SF.ROM 16 FF or romExtender SF.ROM --auto FF */
 #include <stdlib.h>
 #include <string.h>
 
-int main(int argc, char* argv[]) {
+#if ROBFX
+int extend_main(int argc, char** argv)
+#else
+int main(int argc, const char* argv[])
+#endif
+{
     // ROM sizes of all released SNES games, from the list at
     // https://docs.google.com/spreadsheets/d/1XH9xKZFQ09lLWfFzo4Y9-1FUAqSTnH6FPrQUINa__Lw/edit?usp=sharing
     const unsigned char kAutoRomMBits[] = { 2,4,8,10,12,16,20,32,48 };

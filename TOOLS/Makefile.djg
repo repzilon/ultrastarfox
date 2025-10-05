@@ -9,102 +9,134 @@ CFLAGS_WARN := -W -Wall -Werror=format-security
 #CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
 #CXXFLAGS_WARN := $(CFLAGS_WARN)
 
+# Use spaces ONLY to indent inside conditionals
+# Long file paths not recognized in DOS
+ifneq ($(strip ${DJGPP}),)
+  $(info "DJGPP environment detected, use 8.3 names")
+  # 8.3 paths for DOS (short names as shown in Windows 98)
+  SRC_CHRMAP := chrmap~1/Chrmap.c
+  SRC_SFCRUNCH := cru_src/sf_cru~1.c
+  SRC_SFDECRUNCH := cru_src/sf_dec~1.c
+  SRC_EXTEND := extend~1/romExt~1.c
+  SRC_FOXFONT := Fontconv/foxfon~1/Foxfont.c
+  SRC_INCCOL := inccol~1/inccol.c
+  SRC_MAKECOL := inccol~1/Makecol.c
+  SRC_APENDCOL := inccol~1/apendcol.c
+  SRC_MAPDEC := mapdec~1/argona~1.c
+  SRC_CGX2FX := cgx2fx~1/Cgx2fx.c
+  SRC_FX2CGX := cgx2fx~1/Fx2cgx.c
+  # Other setup. Note: "del" must be lowercase even in DOS
+  RM := del
+  CP := copy /y
+  DIRSEP := \\
+else
+  $(info "Other envrionment with long file names")
+  SRC_CHRMAP := chrmap_src/Chrmap.c
+  SRC_SFCRUNCH := cru_src/sf_crunch_mod.c
+  SRC_SFDECRUNCH := cru_src/sf_decrunch.c
+  SRC_EXTEND := extend_src/romExtenderv2.c
+  SRC_FOXFONT := Fontconv/foxfont_source/Foxfont.c
+  SRC_INCCOL := inccol_src/inccol.c
+  SRC_MAKECOL := inccol_src/Makecol.c
+  SRC_APENDCOL := inccol_src/apendcol.c
+  SRC_MAPDEC := mapdec_src/argonautmapdecoder.c
+  SRC_CGX2FX := cgx2fx_fx2cgx_src/Cgx2fx.c
+  SRC_FX2CGX := cgx2fx_fx2cgx_src/Fx2cgx.c
+  # Windows 9x, go the DJGPP route please
+  # I really mean an NT-based Windows here
+  ifeq (${OS},Windows_NT)
+    $(info "NT-based Windows")
+    RM := del /q
+    CP := copy /y
+    DIRSEP := \\
+  else
+    # *nix assumed here
+    MY_NIX := $(shell uname)
+    $(info "$(MY_NIX)")
+    RM := rm -f
+    ifneq (,$(wildcard /etc/alpine-release))
+      CP := install -p
+    else
+      ifeq ("Darwin",$(MY_NIX))
+        CP := install -CSv
+      else
+        CP := install -Cv
+      endif
+    endif
+    DIRSEP := /
+  endif
+endif
+
 COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN)
-# Note: "del" must be lowercase even in DOS
-RM := del
-DIRSEP := \\
 DESTBIN := ..$(DIRSEP)bin$(DIRSEP)
 
-# Long file paths not recognized in DOS
-# TODO : Add an if for environment
-#SRC_CHRMAP := chrmap_src/Chrmap.c
-#SRC_SFCRUNCH := cru_src/sf_crunch_mod.c
-#SRC_SFDECRUNCH := cru_src/sf_decrunch.c
-#SRC_EXTEND := extend_src/romExtenderv2.c
-#SRC_FOXFONT := Fontconv/foxfont_source/Foxfont.c
-#SRC_INCCOL := inccol_src/inccol.c
-#SRC_MAKECOL := inccol_src/Makecol.c
-#SRC_APENDCOL := inccol_src/apendcol.c
-#SRC_MAPDEC := mapdec_src/argonautmapdecoder.c
-#SRC_CGX2FX := cgx2fx_fx2cgx_src/Cgx2fx.c
-#SRC_FX2CGX := cgx2fx_fx2cgx_src/Fx2cgx.c
-# 8.3 paths for DOS (short names as shown in Windows 98)
-SRC_CHRMAP := chrmap~1/Chrmap.c
-SRC_SFCRUNCH := cru_src/sf_cru~1.c
-SRC_SFDECRUNCH := cru_src/sf_dec~1.c
-SRC_EXTEND := extend~1/romExt~1.c
-SRC_FOXFONT := Fontconv/foxfon~1/Foxfont.c
-SRC_INCCOL := inccol~1/inccol.c
-SRC_MAKECOL := inccol~1/Makecol.c
-SRC_APENDCOL := inccol~1/apendcol.c
-SRC_MAPDEC := mapdec~1/argona~1.c
-SRC_CGX2FX := cgx2fx~1/Cgx2fx.c
-SRC_FX2CGX := cgx2fx~1/Fx2cgx.c
+# Commands to build targets (BELOW) must be indented with tabs, never spaces
 
-all: $(DESTBIN)CHRMAP.EXE $(DESTBIN)CRU.EXE $(DESTBIN)EXTEND.EXE $(DESTBIN)FON.EXE $(DESTBIN)INCCOL.EXE $(DESTBIN)MAKECOL.EXE $(DESTBIN)APENDCOL.EXE $(DESTBIN)MAPDEC.EXE cgx2fx.exe $(DESTBIN)cgx2fx.exe fx2cgx.exe
+all: $(DESTBIN)chrmap.exe $(DESTBIN)cru.exe $(DESTBIN)extend.exe $(DESTBIN)fon.exe $(DESTBIN)inccol.exe $(DESTBIN)makecol.exe $(DESTBIN)apendcol.exe $(DESTBIN)mapdec.exe cgx2fx.exe $(DESTBIN)cgx2fx.exe fx2cgx.exe
 
-$(DESTBIN)CHRMAP.EXE: $(SRC_CHRMAP)
-	$(COMPILE) $(SRC_CHRMAP) -o $(DESTBIN)CHRMAP.EXE
+$(DESTBIN)chrmap.exe: $(SRC_CHRMAP)
+	$(COMPILE) $< -o $@
 
-$(DESTBIN)CRU.EXE: $(SRC_SFCRUNCH)
-	$(COMPILE) $(SRC_SFCRUNCH) -o $(DESTBIN)CRU.EXE
+cru.exe: $(SRC_SFCRUNCH)
+	$(COMPILE) $< -o $@
 
-# TODO: have a portable way to copy file in DOS/DJGPP, Windows and *nix
-CRU.EXE: $(SRC_SFCRUNCH)
-	$(COMPILE) $(SRC_SFCRUNCH) -o CRU.EXE
+$(DESTBIN)cru.exe: cru.exe
+	$(CP) $@ $(DESTBIN)
 
-$(DESTBIN)EXTEND.EXE: $(SRC_EXTEND)
-	$(COMPILE) $(SRC_EXTEND) -o $(DESTBIN)EXTEND.EXE
+$(DESTBIN)extend.exe: $(SRC_EXTEND)
+	$(COMPILE) $< -o $@
 
-$(DESTBIN)FON.EXE: $(SRC_FOXFONT)
-	$(COMPILE) $(SRC_FOXFONT) -o $(DESTBIN)FON.EXE
+$(DESTBIN)fon.exe: $(SRC_FOXFONT)
+	$(COMPILE) $< -o $@
 
-$(DESTBIN)INCCOL.EXE: $(SRC_INCCOL)
-	$(COMPILE) $(SRC_INCCOL) -o $(DESTBIN)INCCOL.EXE
+$(DESTBIN)inccol.exe: $(SRC_INCCOL)
+	$(COMPILE) $< -o $@
 
-$(DESTBIN)MAKECOL.EXE: $(SRC_MAKECOL)
-	$(COMPILE) $(SRC_MAKECOL) -o $(DESTBIN)MAKECOL.EXE
+$(DESTBIN)makecol.exe: $(SRC_MAKECOL)
+	$(COMPILE) $< -o $@
 
-$(DESTBIN)APENDCOL.EXE: $(SRC_APENDCOL)
-	$(COMPILE) $(SRC_APENDCOL) -o $(DESTBIN)APENDCOL.EXE
+$(DESTBIN)apendcol.exe: $(SRC_APENDCOL)
+	$(COMPILE) $< -o $@
 
-$(DESTBIN)MAPDEC.EXE: $(SRC_MAPDEC)
-	$(COMPILE) $(SRC_MAPDEC) -o $(DESTBIN)MAPDEC.EXE
+$(DESTBIN)mapdec.exe: $(SRC_MAPDEC)
+	$(COMPILE) $< -o $@
 
-# Source for $(DESTBIN)SFCHECK.EXE is at https://www.github.com/Optiroc/SuperFamicheck/
-# 4 C++ files. The static C++ library explains why the DOS binary is so big.
+# Source for $(DESTBIN)sfcheck.exe is at https://www.github.com/Optiroc/SuperFamicheck/
+# 4 very C++ files. The static C++ library explains why the DOS binary is so big.
 
-# TODO: have a portable way to copy file in DOS/DJGPP, Windows and *nix
 cgx2fx.exe: $(SRC_CGX2FX)
-	$(COMPILE) $(SRC_CGX2FX) -o cgx2fx.exe
+	$(COMPILE) $< -o $@
 
-$(DESTBIN)cgx2fx.exe: $(SRC_CGX2FX)
-	$(COMPILE) $(SRC_CGX2FX) -o $(DESTBIN)cgx2fx.exe
+$(DESTBIN)cgx2fx.exe: cgx2fx.exe
+	$(CP) $@ $(DESTBIN)
 
 fx2cgx.exe: $(SRC_FX2CGX)
-	$(COMPILE) $(SRC_FX2CGX) -o fx2cgx.exe
+	$(COMPILE) $< -o $@
 
-DECRU.EXE: $(SRC_SFDERUNCH)
-	$(COMPILE) $(SRC_SFDECRUNCH) -o DECRU.EXE
+decru.exe: $(SRC_SFDERUNCH)
+	$(COMPILE) $< -o $@
 
 # Do not delete existing DJGPP executables inside BIN with clean,
 # as they are needed for almost every UltraStarfox user.
-# APENDCOL.EXE is an added executable in Repzilon's fork.
+# apendcol.exe is an added executable in Repzilon's fork.
 clean:
 	$(RM) cgx2fx.exe
 	$(RM) fx2cgx.exe
-	$(RM) $(DESTBIN)APENDCOL.EXE
-	$(RM) CRU.EXE
-	$(RM) DECRU.EXE
+	$(RM) $(DESTBIN)apendcol.exe
+	$(RM) cru.exe
+	$(RM) decru.exe
 
 distclean: clean
-	$(RM) $(DESTBIN)CHRMAP.EXE
-	$(RM) $(DESTBIN)CRU.EXE
-	$(RM) $(DESTBIN)EXTEND.EXE
-	$(RM) $(DESTBIN)FON.EXE
-	$(RM) $(DESTBIN)INCCOL.EXE
-	$(RM) $(DESTBIN)MAKECOL.EXE
-	$(RM) $(DESTBIN)MAPDEC.EXE
+	$(RM) $(DESTBIN)chrmap.exe
+	$(RM) $(DESTBIN)cru.exe
+	$(RM) $(DESTBIN)extend.exe
+	$(RM) $(DESTBIN)fon.exe
+	$(RM) $(DESTBIN)inccol.exe
+	$(RM) $(DESTBIN)makecol.exe
+	$(RM) $(DESTBIN)mapdec.exe
 	$(RM) $(DESTBIN)cgx2fx.exe
 
-.PHONY: all clean distclean
+help:
+	@echo "Available targets: all clean distclean"
+
+.PHONY: all clean distclean help

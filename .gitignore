@@ -97,6 +97,13 @@ TOOLS/inccol
 TOOLS/romExtender2
 TOOLS/chrmap
 TOOLS/sf_decrunch
+TOOLS/robfx?src/robfxb
+TOOLS/robfx?src/robfxt
+TOOLS/robfx?src/robfxs
+TOOLS/robfx?src/robfx*.exe
+TOOLS/robfxt
+TOOLS/robfxs
+BIN/robfxb
 
 # Removed Windows executables
 dosbox-x.exe
@@ -121,3 +128,6 @@ TOOLS/SharpUltraStarFoxTools/.vs/
 TOOLS/SharpUltraStarFoxTools/*/bin/
 TOOLS/SharpUltraStarFoxTools/*/obj/
 TOOLS/SharpUltraStarFoxTools/*/*.csproj.user
+
+# JetBrains CLion metadata
+TOOLS/.idea

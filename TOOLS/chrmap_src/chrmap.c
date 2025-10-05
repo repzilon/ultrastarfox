@@ -343,8 +343,12 @@ void validate_bracketed_tokens(FILE *in) {
 }
 
 
-
-int main(int argc, char *argv[]) {
+#if ROBFX
+int chrmap_main(int argc, char** argv)
+#else
+int main(int argc, char *argv[])
+#endif
+{
     if (argc < 4 || argc > 5) {
         fprintf(stderr,
             "Star Fox (2) Character Mapper v1.0\n"

@@ -10,80 +10,80 @@
 #include <stdlib.h>
 
 // 64k should be enough for anything
-unsigned char src[0x10000]; // source buffer
-unsigned char dest[0x10000]; // destination buffer
-int s = 0; // source pointer
-int d; // destination pointer
+unsigned char decru_src[0x10000]; // source buffer
+unsigned char decru_dest[0x10000]; // destination buffer
+int decru_s = 0; // source pointer
+int decru_d; // destination pointer
 int d_length = 0; // length of decrunched data
 
-unsigned int buffer; // 32-bit buffer
-int b = 0; // buffer bit offset
+unsigned int decru_buffer; // 32-bit buffer
+int decru_b = 0; // buffer bit offset
 
 void put_byte(unsigned char byte) {
-    if (d == 0) return;
-    dest[--d] = byte;
+    if (decru_d == 0) return;
+    decru_dest[--decru_d] = byte;
 }
 
 void refill_buffer() {
-    buffer = 0;
-    b = 0;
+    decru_buffer = 0;
+    decru_b = 0;
     
-    if (s == 0) return;
-    buffer = src[--s];
-    b += 8;
+    if (decru_s == 0) return;
+    decru_buffer = decru_src[--decru_s];
+    decru_b += 8;
     
-    if (s == 0) return;
-    buffer |= src[--s] << 8;
-    b += 8;
+    if (decru_s == 0) return;
+    decru_buffer |= decru_src[--decru_s] << 8;
+    decru_b += 8;
     
-    if (s == 0) return;
-    buffer |= src[--s] << 16;
-    b += 8;
+    if (decru_s == 0) return;
+    decru_buffer |= decru_src[--decru_s] << 16;
+    decru_b += 8;
     
-    if (s == 0) return;
-    buffer |= src[--s] << 24;
-    b += 8;
+    if (decru_s == 0) return;
+    decru_buffer |= decru_src[--decru_s] << 24;
+    decru_b += 8;
 }
 
 void init_buffer() {
     refill_buffer();
     unsigned int mask = 1;
-    b = 1;
-    while (buffer & ~mask) {
+    decru_b = 1;
+    while (decru_buffer & ~mask) {
         mask <<= 1;
         mask |= 1;
-        b++;
+        decru_b++;
     }
     
     // mask off the last bit
-    buffer &= (mask >> 1);
-    b--;
+    decru_buffer &= (mask >> 1);
+    decru_b--;
 }
 
 int get_bits(int n) {
     int bits = 0;
-    if (n > b) {
-        n -= b;
-        bits = get_bits(b);
+    if (n > decru_b) {
+        n -= decru_b;
+        bits = get_bits(decru_b);
         refill_buffer();
     }
     for (int i = 0; i < n; i++) {
         bits <<= 1;
-        bits |= buffer & 1;
-        buffer >>= 1;
+        bits |= decru_buffer & 1;
+        decru_buffer >>= 1;
     }
-    b -= n;
+    decru_b -= n;
     return bits;
 }
 
-void put_raw(int run) {
+void decrunch_put_raw(int run) {
     // write uncompressed bytes
     while (run--) put_byte(get_bits(8));
 }
 
-void put_lzw(int run, int offset) {
+void decrunch_put_lzw(int run, int offset) {
     // write bytes from destination buffer (lzw)
-    while (run--) put_byte(dest[d + offset - 1]);
+    while (run--) put_byte(decru_dest[decru_d + offset - 1]);
 }
 
 void decrunch_lzw() {
@@ -134,48 +134,52 @@ void decrunch_lzw() {
         }
     }
 
-    put_lzw(run, offset);
+    decrunch_put_lzw(run, offset);
 }
 
 void decrunch() {
 
     // get the decrunched length
-    d_length |= src[--s];
-    d_length |= src[--s] << 8;
-    s -= 2; // skip two bytes
-    d = d_length;
+    d_length |= decru_src[--decru_s];
+    d_length |= decru_src[--decru_s] << 8;
+    decru_s -= 2; // skip two bytes
+    decru_d = d_length;
 
     // initialize the bit buffer
     init_buffer();
     
-    while (d) {
+    while (decru_d) {
         int run = get_bits(3);
         if (run == 0) {
             // compressed, fall through to below
         
         } else if (run < 7) {
             // copy 1 to 6 bytes
-            put_raw(run);
+            decrunch_put_raw(run);
 
         } else if (!get_bits(1)) {
             // copy 7 to 22 bytes
-            put_raw(get_bits(4) + 7);
+            decrunch_put_raw(get_bits(4) + 7);
 
         } else if ((run = get_bits(10))) {
             // copy up to 0x3FF bytes
-            put_raw(run);
+            decrunch_put_raw(run);
 
         } else {
             // copy up to 0x3FFFF bytes
-            put_raw(get_bits(18));
+            decrunch_put_raw(get_bits(18));
 
         }
         decrunch_lzw();
     }
 }
 
-int main(int argc, const char* argv[]) {
-    
+#ifdef ROBFX
+int sfdecrunch_main(int argc, char** argv)
+#else
+int main(int argc, const char* argv[])
+#endif
+{
     // print help message
     if (argc < 3) {
         puts(
@@ -193,7 +197,7 @@ int main(int argc, const char* argv[]) {
     
     //parse arguments
     if (argc == 4) {
-        s = (int)strtol(argv[2], NULL, 0);
+        decru_s = (int)strtol(argv[2], NULL, 0);
         o_filename = argv[3];
     } else {
         o_filename = argv[2];
@@ -206,19 +210,19 @@ int main(int argc, const char* argv[]) {
     }
 
     // get data offset (end of data)
-    if (!s) {
+    if (!decru_s) {
         fseek(i_file, 0, SEEK_END);
-        s = (int)ftell(i_file);
+        decru_s = (int)ftell(i_file);
     }
     
     // copy file to source buffer
-    if (s > 0x10000) {
-        fseek(i_file, s - 0x10000, SEEK_SET);
-        fread(src, 1, 0x10000, i_file);
-        s = 0x10000;
+    if (decru_s > 0x10000) {
+        fseek(i_file, decru_s - 0x10000, SEEK_SET);
+        fread(decru_src, 1, 0x10000, i_file);
+        decru_s = 0x10000;
     } else {
         fseek(i_file, 0, SEEK_SET);
-        fread(src, 1, s, i_file);
+        fread(decru_src, 1, decru_s, i_file);
     }
     fclose(i_file);
 
@@ -227,7 +231,7 @@ int main(int argc, const char* argv[]) {
 
     // write output file
     FILE* o_file = fopen(o_filename, "wb");
-    fwrite(dest, 1, d_length, o_file);
+    fwrite(decru_dest, 1, d_length, o_file);
     fclose(o_file);
 
     return 0;

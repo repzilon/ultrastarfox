@@ -8,9 +8,14 @@ CFLAGS_OPTIM := -O2 -pipe -fomit-frame-pointer
 CFLAGS_WARN := -W -Wall -Werror=format-security
 #CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
 #CXXFLAGS_WARN := $(CFLAGS_WARN)
-INSTALL_FLAGS := -CS
 ifneq (,$(wildcard /etc/alpine-release))
-	INSTALL_FLAGS = -p
+  INSTALL_FLAGS := -p
+else
+  ifeq ("Darwin",$(shell uname))
+    INSTALL_FLAGS := -CSv
+  else
+    INSTALL_FLAGS := -Cv
+  endif
 endif 
 COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN)
 
@@ -35,18 +40,20 @@ clean-tools:
 	rm -f sf_decrunch
 
 clean-sink:
-	rm -f romExtender2 
-	rm -f inccol 
-	rm -f argonautmapdec 
+	rm -f romExtender
+	rm -f incco
+	rm -f argonautmapde
 	rm -f unmerge
 	rm -f chrmap
 
 clean: clean-tools clean-sink clean-superfamiconv
 	rm -rf SharpUltraStarFoxTools/*/bin/
 	rm -rf SharpUltraStarFoxTools/*/obj/
+	$(MAKE) -C robfx.src clean
 
 distclean: clean-tools clean-sink
 	rm -rf SuperFamiconv-*
+	$(MAKE) -C robfx.src clean
 
 nowindows:
 	rm -f palconv.exe
@@ -71,54 +78,57 @@ mrproper: distclean nowindows permissions
 	rm -f SuperFamiconv-*.tar.gz
 
 bgconv/bin/palconv: palconv_src/palconv.c
-	$(COMPILE) palconv_src/palconv.c -o bgconv/bin/palconv
+	$(COMPILE) $< -o $@
 
 bgconv/bin/sf_crunch: cru_src/sf_crunch_mod.c
-	$(COMPILE) cru_src/sf_crunch_mod.c -o bgconv/bin/sf_crunch
+	$(COMPILE) $< -o $@
 
 sf_decrunch: cru_src/sf_decrunch.c
-	$(COMPILE) cru_src/sf_decrunch.c -o sf_decrunch
+	$(COMPILE) $< -o $@
 
 mugconv/foxchr: mugconv/foxchr_source/foxchr.c mugconv/foxchr_source/foxchr.h
-	$(COMPILE) mugconv/foxchr_source/foxchr.c -o mugconv/foxchr
+	$(COMPILE) mugconv/foxchr_source/foxchr.c -o $@
 
 cgx2fx: cgx2fx_fx2cgx_src/cgx2fx.c
-	$(COMPILE) cgx2fx_fx2cgx_src/cgx2fx.c -o cgx2fx
+	$(COMPILE) $< -o $@
 
 fx2cgx: cgx2fx_fx2cgx_src/fx2cgx.c
-	$(COMPILE) cgx2fx_fx2cgx_src/fx2cgx.c -o fx2cgx
+	$(COMPILE) $< -o $@
 
 fontconv/foxfont: fontconv/foxfont_source/foxfont.c fontconv/foxfont_source/foxfont.h
-	$(COMPILE) fontconv/foxfont_source/foxfont.c -o fontconv/foxfont
+	$(COMPILE) fontconv/foxfont_source/foxfont.c -o $@
 
 SuperFamiconv-$(SFCONV_VER).tar.gz:
 	curl https://codeload.github.com/Optiroc/SuperFamiconv/tar.gz/refs/tags/v$(SFCONV_VER) -o SuperFamiconv-$(SFCONV_VER).tar.gz
 
 SuperFamiconv-$(SFCONV_VER)/Makefile: SuperFamiconv-$(SFCONV_VER).tar.gz
-	tar -zxf SuperFamiconv-$(SFCONV_VER).tar.gz
+	tar -zxf $<
 
 SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv: SuperFamiconv-$(SFCONV_VER)/Makefile
 	$(MAKE) -C SuperFamiconv-$(SFCONV_VER)
 
 bgconv/bin/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv
-	install $(INSTALL_FLAGS) ./SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv ./bgconv/bin
+	install $(INSTALL_FLAGS) $< ./bgconv/bin
 
 mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv
-	install $(INSTALL_FLAGS) ./SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv ./mugconv/superfamiconv
+	install $(INSTALL_FLAGS) $< ./mugconv/superfamiconv
 
 romExtender2: extend_src/romExtenderv2.c
-	$(COMPILE) extend_src/romExtenderv2.c -o romExtender2
+	$(COMPILE) $< -o $@
 
 inccol: inccol_src/inccol.c
-	$(COMPILE) inccol_src/inccol.c -o inccol
+	$(COMPILE) $< -o $@
 
 argonautmapdec: mapdec_src/argonautmapdecoder.c
-	$(COMPILE) mapdec_src/argonautmapdecoder.c -o argonautmapdec
+	$(COMPILE) $< -o $@
 
 unmerge: unmerge_src/fxedit_v2.c
-	$(COMPILE) unmerge_src/fxedit_v2.c -o unmerge
+	$(COMPILE) $< -o $@
 
 chrmap: chrmap_src/chrmap.c
-	$(COMPILE) chrmap_src/chrmap.c -o chrmap
+	$(COMPILE) $< -o $@
 
-.PHONY: all sink kitchensink clean distclean nowindows permissions mrproper
+help:
+	@echo "Available targets: all sink kitchensink clean distclean nowindows permissions mrproper"
+
+.PHONY: all sink kitchensink clean distclean nowindows permissions mrproper help

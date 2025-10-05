@@ -3,8 +3,11 @@
 #include <string.h>
 #include "foxchr.h"
 
-
+#ifdef ROBFX
+int foxchr_main(int argc, char** argv)
+#else
 int main(int argc, char *argv[])
+#endif
 {
 	if (argc < 2){
 		puts("* " CLI_FILEDESCRIPTION_STR " " CLI_FILEVERSION_STR " *\n");
@@ -13,7 +16,7 @@ int main(int argc, char *argv[])
 	}
 
 	// create output filename
-	char *outputFileName = createOutputFileName(argv[1]);
+	char *outputFileName = chr_createOutputFileName(argv[1]);
 
 	// verify input file size, create file pointer
 	FILE * fpInput = openSnes(argv[1]);
@@ -128,7 +131,7 @@ FILE * openSnes(char *fileName)
 	return fpInput;
 }
 
-char * createOutputFileName(char * inputFileName)
+char * chr_createOutputFileName(char * inputFileName)
 {
 	// =============================================
 	// check file size to make sure it's not too big

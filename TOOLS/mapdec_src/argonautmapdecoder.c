@@ -62,7 +62,12 @@ void read_byte_sequences_from_file(const char *file_path, const char *output_fil
     fclose(file);
 }
 
-int main(int argc, char *argv[]) {
+#ifdef ROBFX
+int mapdecoder_main(int argc, char** argv)
+#else
+int main(int argc, char *argv[])
+#endif
+{
     if (argc != 3) {
         fprintf(stderr, "Argonaut Software ArgSfx/ArgBug .MAP file decoder\nDecodes Argonaut .MAP linker address map files into a usable symbol listing\nUsage: %s <.MAP file> <output file>\n", argv[0]);
         return EXIT_FAILURE;

@@ -1,6 +1,15 @@
 SFCONV_VER := 0.11.0
 SFCONV_OUT := build/release
 SFCONV_EXE := TOOLS/SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv
+ifneq (,$(wildcard /etc/alpine-release))
+  INSTALL_FLAGS := -p
+else
+  ifeq ("Darwin",$(shell uname))
+    INSTALL_FLAGS := -CSv
+  else
+    INSTALL_FLAGS := -Cv
+  endif
+endif 
 
 ${HOME}/.cargo/bin/cargo:
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -12,7 +21,7 @@ usb2snes-cli/target/debug/usb2snes-cli: ${HOME}/.cargo/bin/cargo usb2snes-cli/Ca
 	cd usb2snes-cli && ${HOME}/.cargo/bin/cargo build && cd ..
 
 usb2snes-cli.bin: usb2snes-cli/target/debug/usb2snes-cli
-	install -CS ./usb2snes-cli/target/debug/usb2snes-cli ./usb2snes-cli.bin
+	install $(INSTALL_FLAGS) ./usb2snes-cli/target/debug/usb2snes-cli ./usb2snes-cli.bin
 
 SF.SFC:
 	$(MAKE) -f Makefile all
@@ -31,12 +40,14 @@ clean-sf:
 clean: clean-sf
 	rm -f usb2snes-cli.bin
 	$(MAKE) -C TOOLS clean
+	$(MAKE) -f Makefile.release clean
 	cd usb2snes-cli && ${HOME}/.cargo/bin/cargo clean && cd ..
 
 distclean: clean-sf
 	rm -f usb2snes-cli.bin
 	rm -rf usb2snes-cli
 	$(MAKE) -C TOOLS distclean
+	$(MAKE) -f Makefile.release distclean
 
 nowindows:
 	rm -f dosbox-x.exe
@@ -48,9 +59,15 @@ nodosdupes: nodosdup.sh
 	sh ./nodosdup.sh
 
 permissions:
+	chmod -x CHANGES *.* */*.*
 	chmod +x 'optionalstuff/textures/sg.rom 09-23-92/'
-	chmod -x CHANGES *.* */*.* */*/*.* */*/*/*.*
+	chmod -x */*/*/*.*
+	chmod +x "TOOLS/SuperFamiconv-$(SFCONV_VER)" || true
+	chmod +x TOOLS/*.src
+	chmod -x */*/*.*
 	chmod +x 'optionalstuff/textures/sg.rom 09-23-92/'
+	chmod +x "TOOLS/SuperFamiconv-$(SFCONV_VER)" || true
+	chmod +x TOOLS/*.src
 	chmod +x *.sh */*/*.sh
 
 lineendings:
@@ -65,27 +82,30 @@ lineendings:
 	unix2dos -q -f SF/DATA/FONT/MOJI_*.TRN
 	unix2dos -q -f SF/*/*.EXT
 	unix2dos -q -f SF/MARIO/*.MC
+	unix2dos -q TOOLS/Makefile.djg
+	unix2dos -q TOOLS/*.bat
 	dos2unix -q -e Makefile TOOLS/Makefile
+	dos2unix -q -e TOOLS/*/Makefile
 	dos2unix -q -e commit.sh TOOLS/*/*.sh
 	dos2unix -q -e Makefile.*
 
-prebuild: SF/DATA/CONT-2-F.CGX SF/DATA/MAP-F.CGX SF/DATA/OBJ-1-F.CGX SF/DATA/OBJ-2-F.CGX SF/DATA/FOX-F.CGX SF/DATA/CP-P.CGX SF/DATA/CP-FF.CGX
-	true
+prebuild: SF/DATA/CONT-2-F.CGX SF/DATA/MAP-F.CGX SF/DATA/OBJ-1-F.CGX SF/DATA/OBJ-2-F.CGX SF/DATA/FOX-F.CGX SF/DATA/CP-FF.CGX
+	@echo "French graphics conversion done"
 	
 $(SFCONV_EXE): TOOLS/Makefile
 	$(MAKE) -C TOOLS "bgconv/bin/superfamiconv"
 
 SF/DATA/CONT-2-F.CGX: SF/DATA/CONT-2-F.png $(SFCONV_EXE)
-	$(SFCONV_EXE) -v -i SF/DATA/CONT-2-F.png -B 4 -R -D -t SF/DATA/CONT-2-F.CGX
+	$(SFCONV_EXE) -v -i SF/DATA/CONT-2-F.png -B 4 -R -D -t $@
 
 SF/DATA/MAP-F.CGX: SF/DATA/MAP-F.png $(SFCONV_EXE)
-	$(SFCONV_EXE) -v -i SF/DATA/MAP-F.png -B 4 -R -D -t SF/DATA/MAP-F.CGX
+	$(SFCONV_EXE) -v -i SF/DATA/MAP-F.png -B 4 -R -D -t $@
 
 SF/DATA/OBJ-1-F.CGX: SF/DATA/OBJ-1-F.png $(SFCONV_EXE)
-	$(SFCONV_EXE) -v -i SF/DATA/OBJ-1-F.png -B 4 -R -D -t SF/DATA/OBJ-1-F.CGX
+	$(SFCONV_EXE) -v -i SF/DATA/OBJ-1-F.png -B 4 -R -D -t $@
 
 SF/DATA/OBJ-2-F.CGX: SF/DATA/OBJ-2-F.png $(SFCONV_EXE)
-	$(SFCONV_EXE) -v -i SF/DATA/OBJ-2-F.png -B 4 -R -D -t SF/DATA/OBJ-2-F.CGX
+	$(SFCONV_EXE) -v -i SF/DATA/OBJ-2-F.png -B 4 -R -D -t $@
 
 SF/DATA/FOX-F.CGX: SF/DATA/FOX-F.png $(SFCONV_EXE)
 	$(SFCONV_EXE) -v -i SF/DATA/FOX-F.png -B 4 -R -D -t SF/DATA/FOX-F.CGX
@@ -94,8 +114,11 @@ SF/DATA/CP-P.CGX: SF/DATA/CP-P.png $(SFCONV_EXE)
 	$(SFCONV_EXE) -v -i SF/DATA/CP-P.png -B 4 -R -D -t SF/DATA/CP-P.CGX
 
 SF/DATA/CP-FF.CGX: SF/DATA/CP-FF.png $(SFCONV_EXE)
-	$(SFCONV_EXE) -v -i SF/DATA/CP-FF.png -B 4 -R -D -t SF/DATA/CP-FF.CGX
+	$(SFCONV_EXE) -v -i SF/DATA/CP-FF.png -B 4 -R -D -t $@
 
 mrproper: distclean nowindows permissions nodosdupes
 
-.PHONY: tools clean distclean nowindows permissions mrproper prebuild lineendings
+help:
+	@echo "Available targets: SF.SFC tools clean distclean nowindows permissions mrproper prebuild lineendings"
+
+.PHONY: tools clean distclean nowindows permissions mrproper prebuild lineendings help

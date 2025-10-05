@@ -21,8 +21,8 @@
 typedef unsigned char unchar;
 
 /* Buffers */
-unchar ch7buf[CHRMAX];
-unchar binbuf[BINMAX];
+unchar cf_ch7buf[CHRMAX];
+unchar cf_binbuf[BINMAX];
 
 /* Function prototypes */
 void process_cgx_file(const char *cgx_filename, unchar *ch7_buffer, size_t ch7_offset);
@@ -31,7 +31,12 @@ void reverse_chunks(unchar *buffer, size_t buffer_size);
 void convert_to_bin();
 void write_bin_file(const char *output_filename);
 
-int main(int argc, char *argv[]) {
+#ifdef ROBFX
+int cgx2fx_main(int argc, char** argv)
+#else
+int main(int argc, char *argv[])
+#endif
+{
     if (argc != 4) {
         fprintf(stderr, "Usage: %s <input_cgx1> <input_cgx2> <output_bin>\n", argv[0]);
         return EXIT_FAILURE;
@@ -44,11 +49,11 @@ int main(int argc, char *argv[]) {
     const char *output_bin = argv[3];
 
     /* Process both CGX files into the in-memory CH7 buffer */
-    process_cgx_file(input_cgx1, ch7buf, 0);          // Fill the first half of ch7buf
-    process_cgx_file(input_cgx2, ch7buf + CHRHALF, 0); // Fill the second half of ch7buf
+    process_cgx_file(input_cgx1, cf_ch7buf, 0);          // Fill the first half of ch7buf
+    process_cgx_file(input_cgx2, cf_ch7buf + CHRHALF, 0); // Fill the second half of ch7buf
 
     /* Reverse swapped chunks in the CH7 buffer */
-    reverse_chunks(ch7buf, CHRMAX);
+    reverse_chunks(cf_ch7buf, CHRMAX);
 
     /* Convert the CH7 buffer back to CPC format... you mean BIN */
     convert_to_bin();
@@ -127,7 +132,7 @@ void convert_to_bin() {
                 for (k = j; k < (j + 64 * 16 * 8 * 2); k += (64 * 16 * 8)) {
                     for (l = k; l < (k + 64 * 16); l += 64) {
                         for (m = l; m < (l + 8); m++) {
-                            binbuf[wcnt++] = ch7buf[m] & 0x0F;
+                            cf_binbuf[wcnt++] = cf_ch7buf[m] & 0x0F;
                         }
                     }
                 }
@@ -143,7 +148,7 @@ void convert_to_bin() {
                 for (k = j; k < (j + 64 * 16 * 8 * 2); k += (64 * 16 * 8)) {
                     for (l = k; l < (k + 64 * 16); l += 64) {
                         for (m = l; m < (l + 8); m++, wcnt++) {
-                            binbuf[wcnt] |= (ch7buf[m + 0x8000] & 0x0F) << 4;
+                            cf_binbuf[wcnt] |= (cf_ch7buf[m + 0x8000] & 0x0F) << 4;
                         }
                     }
                 }
@@ -160,7 +165,7 @@ void write_bin_file(const char *output_filename) {
         exit(EXIT_FAILURE);
     }
 
-    if (fwrite(binbuf, sizeof(unchar), BINMAX, file) != BINMAX) {
+    if (fwrite(cf_binbuf, sizeof(unchar), BINMAX, file) != BINMAX) {
         fputs("Error writing .BIN file\n", stderr);
         fclose(file);
         exit(EXIT_FAILURE);
