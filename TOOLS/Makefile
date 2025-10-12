@@ -53,9 +53,9 @@ clean-tools:
 	rm -f sf_decrunch
 
 clean-sink:
-	rm -f romExtender
-	rm -f incco
-	rm -f argonautmapde
+	rm -f romExtender2
+	rm -f inccol
+	rm -f argonautmapdec
 	rm -f unmerge
 	rm -f chrmap
 
