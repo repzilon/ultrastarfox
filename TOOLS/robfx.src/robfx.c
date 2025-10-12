@@ -117,7 +117,7 @@ const char* get_applet_name(const char* candidate)
 	// by Natanel Copa, creator of the Alpine Linux distribution
 	// basename's behavior is less than ideal so avoid it
 	const char *p = strrchr(candidate, '/');
-	char* realCandidate = p ? p + 1 : candidate;
+	const char* realCandidate = p ? p + 1 : candidate;
 	for (byte i = 0; i < kAppletCount; i++) {
 		if (strcasecmp(realCandidate, kApplets[i]) == 0) {
 			return kApplets[i];

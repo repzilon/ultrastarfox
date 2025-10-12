@@ -5,9 +5,14 @@ SFCONV_OUT := build/release
 CC := cc
 # Does -march=native also work on Clang?
 CFLAGS_OPTIM := -O2 -pipe -fomit-frame-pointer
-CFLAGS_WARN := -W -Wall -Werror=format-security
+CFLAGS_WARN := -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -Werror=format-security \
+-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 \
+-fstrict-flex-arrays=3 \
+-fstack-protector-strong \
+-fno-delete-null-pointer-checks -fno-strict-overflow -fno-strict-aliasing -ftrivial-auto-var-init=zero \
+-Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion
 #CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
-#CXXFLAGS_WARN := $(CFLAGS_WARN)
+#CXXFLAGS_WARN := $(CFLAGS_WARN) -D_GLIBCXX_ASSERTIONS
 ifneq (,$(wildcard /etc/alpine-release))
   INSTALL_FLAGS := -p
 else
@@ -16,7 +21,15 @@ else
   else
     INSTALL_FLAGS := -Cv
   endif
-endif 
+endif
+# FIXME : On Linux, add the following to CFLAGS_WARN
+#-Wl,-z,nodlopen -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -Wl,--no-copy-dt-needed-entries \
+# FIXME : With GCC, add the following to CFLAGS_WARN
+#-fstack-clash-protection -Wtrampolines -fzero-init-padding-bits=all -Wbidi-chars=any
+# FIXME : On x86_64, add the following to CFLAGS_WARN
+#-fcf-protection=full
+# FIXME : On aarch64, add the following to CFLAGS_WARN
+#-mbranch-protection=standard
 COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN)
 
 all: bgconv/bin/palconv mugconv/foxchr bgconv/bin/sf_crunch sf_decrunch bgconv/bin/superfamiconv mugconv/superfamiconv/superfamiconv cgx2fx fx2cgx fontconv/foxfont

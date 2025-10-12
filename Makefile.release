@@ -1,10 +1,16 @@
 VER := 2.2
 # flips make-macos.sh fails to build and also uses ricer optimization flags
-# Introduce saner flags
+# Introduce saner optimization flags and hardening ones too
+# https://best.openssf.org/Compiler-Hardening-Guides/Compiler-Options-Hardening-Guide-for-C-and-C++.html
 CFLAGS_OPTIM := -O2 -pipe -fomit-frame-pointer
-CFLAGS_WARN := -W -Wall -Werror=format-security
+CFLAGS_WARN := -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -Werror=format-security \
+-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 \
+-fstrict-flex-arrays=3 \
+-fstack-protector-strong \
+-fno-delete-null-pointer-checks -fno-strict-overflow -fno-strict-aliasing -ftrivial-auto-var-init=zero \
+-Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion
 CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
-CXXFLAGS_WARN := $(CFLAGS_WARN)
+CXXFLAGS_WARN := $(CFLAGS_WARN) -D_GLIBCXX_ASSERTIONS
 
 all: releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ $(VER).bps releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 2)\ $(VER).bps releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ $(VER).bps releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe)\ (Rev\ 1)\ $(VER).bps releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Germany)\ $(VER).bps
 	sha256sum SF-*.SFC
