@@ -73,10 +73,11 @@ endif
 
 CFLAGS_WARN := -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -Werror=format-security \
 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 \
--fstrict-flex-arrays=3 \
 -fstack-protector-strong \
--fno-delete-null-pointer-checks -fno-strict-overflow -fno-strict-aliasing -ftrivial-auto-var-init=zero \
+-fno-delete-null-pointer-checks -fno-strict-overflow -fno-strict-aliasing \
 -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion
+# FIXME : DJGPP does not suppport these flags
+# -fstrict-flex-arrays=3 -ftrivial-auto-var-init=zero
 # FIXME : On Linux, add the following to CFLAGS_WARN
 #-Wl,-z,nodlopen -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -Wl,--as-needed -Wl,--no-copy-dt-needed-entries \
 # FIXME : With GCC, add the following to CFLAGS_WARN

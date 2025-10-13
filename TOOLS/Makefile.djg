@@ -7,11 +7,10 @@ CXX := gpp
 CFLAGS_OPTIM := -O2 -fomit-frame-pointer -march=pentium3 -s
 CFLAGS_WARN := -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -Werror=format-security \
 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 \
--fstrict-flex-arrays=3 \
 -fstack-protector-strong \
--fno-delete-null-pointer-checks -fno-strict-overflow -fno-strict-aliasing -ftrivial-auto-var-init=zero \
+-fno-delete-null-pointer-checks -fno-strict-overflow -fno-strict-aliasing \
 -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion \
--fstack-clash-protection -Wtrampolines -fzero-init-padding-bits=all -Wbidi-chars=any
+-fstack-clash-protection -Wtrampolines
 CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
 CXXFLAGS_WARN := $(CFLAGS_WARN) -D_GLIBCXX_ASSERTIONS
 
