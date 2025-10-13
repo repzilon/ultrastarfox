@@ -42,9 +42,9 @@ else
   SRC_SFDECRUNCH := cru_src/sf_decrunch.c
   SRC_EXTEND := extend_src/romExtenderv2.c
   SRC_FOXFONT := Fontconv/foxfont_source/Foxfont.c
-  SRC_INCCOL := inccol_src/inccol.c
-  SRC_MAKECOL := inccol_src/Makecol.c
-  SRC_APENDCOL := inccol_src/apendcol.c
+  SRC_INCCOL := inccol_makeconv_src/inccol.c
+  SRC_MAKECOL := inccol_makeconv_src/Makecol.c
+  SRC_APENDCOL := inccol_makeconv_src/apendcol.c
   SRC_MAPDEC := mapdec_src/argonautmapdecoder.c
   SRC_CGX2FX := cgx2fx_fx2cgx_src/Cgx2fx.c
   SRC_FX2CGX := cgx2fx_fx2cgx_src/Fx2cgx.c

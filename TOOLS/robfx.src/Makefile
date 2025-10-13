@@ -60,9 +60,9 @@ else
   SRC_SFDECRUNCH := ../cru_src/sf_decrunch.c
   SRC_EXTEND := ../extend_src/romExtenderv2.c
   SRC_FOXFONT := ../fontconv/foxfont_source/foxfont.c
-  SRC_INCCOL := ../inccol_src/inccol.c
-  SRC_MAKECOL := ../inccol_src/makecol.c
-  SRC_APENDCOL := ../inccol_src/apendcol.c
+  SRC_INCCOL := ../inccol_makeconv_src/inccol.c
+  SRC_MAKECOL := ../inccol_makeconv_src/makecol.c
+  SRC_APENDCOL := ../inccol_makeconv_src/apendcol.c
   SRC_MAPDEC := ../mapdec_src/argonautmapdecoder.c
   SRC_CGX2FX := ../cgx2fx_fx2cgx_src/cgx2fx.c
   SRC_FX2CGX := ../cgx2fx_fx2cgx_src/fx2cgx.c

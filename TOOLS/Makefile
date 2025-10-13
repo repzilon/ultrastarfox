@@ -82,6 +82,13 @@ nowindows:
 	rm -f fx2cgx_win.exe
 	rm -f fontconv/foxfont.exe
 	rm -f unmerge.exe
+	rm -f binaries/windows/cgx2fx_win.exe
+	rm -f binaries/windows/fx2cgx_win.exe
+	rm -f binaries/windows/palconv_win64.exe
+	rm -f binaries/windows/sf_crunch.exe
+	rm -f binaries/windows/sf_decrunch.exe
+	rm -f binaries/windows/unmerge.exe
+	rmdir binaries/windows
 
 permissions:
 	chmod -x *.* */*.* */*/*.*
@@ -129,7 +136,7 @@ mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/s
 romExtender2: extend_src/romExtenderv2.c
 	$(COMPILE) $< -o $@
 
-inccol: inccol_src/inccol.c
+inccol: inccol_makeconv_src/inccol.c
 	$(COMPILE) $< -o $@
 
 argonautmapdec: mapdec_src/argonautmapdecoder.c
