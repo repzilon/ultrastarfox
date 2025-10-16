@@ -11,7 +11,7 @@ typedef unsigned char byte;
 	const char* kApplets[] = { "chrmap", "cru", "extend", "fon", "inccol", "makecol", "apendcol", "mapdec", "cgx2fx" };
 
 	// Prototypes
-	#include "../inccol_src/inccol.h"
+	#include "../inccol_makecol_src/inccol.h"
 	int chrmap_main(int argc, char** argv);
 	int sfcrunch_main(int argc, char** argv);
 	int extend_main(int argc, char** argv);
@@ -40,7 +40,7 @@ typedef unsigned char byte;
 	const char* kApplets[] = { "romExtender2", "inccol", "argonautmapdecoder", "unmerge", "chrmap" };
 
 	// Prototypes
-	#include "../inccol_src/inccol.h"
+	#include "../inccol_makecol_src/inccol.h"
 	int chrmap_main(int argc, char** argv);
 	int extend_main(int argc, char** argv);
 	int inccol_main(int argc, char** argv);
