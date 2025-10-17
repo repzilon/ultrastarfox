@@ -181,7 +181,7 @@ mugconv/foxchr: $(BINDIR)/foxchr
 	install $(INSTALL_FLAGS) $< ./mugconv
 
 fontconv/foxfont: $(BINDIR)/foxfont
-	install $(INSTALL_FLAGS) $< ./mugconv
+	install $(INSTALL_FLAGS) $< ./fontconv
 
 SuperFamiconv-$(SFCONV_VER).tar.gz:
 	curl https://codeload.github.com/Optiroc/SuperFamiconv/tar.gz/refs/tags/v$(SFCONV_VER) -o SuperFamiconv-$(SFCONV_VER).tar.gz
