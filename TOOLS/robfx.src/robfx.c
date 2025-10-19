@@ -11,7 +11,7 @@ typedef unsigned char byte;
 	const char* kApplets[] = { "chrmap", "cru", "extend", "fon", "inccol", "makecol", "apendcol", "mapdec", "cgx2fx" };
 
 	// Prototypes
-	#include "../inccol_src/inccol.h"
+	#include "../inccol_makecol_src/inccol.h"
 	int chrmap_main(int argc, char** argv);
 	int sfcrunch_main(int argc, char** argv);
 	int extend_main(int argc, char** argv);
@@ -40,7 +40,7 @@ typedef unsigned char byte;
 	const char* kApplets[] = { "romExtender2", "inccol", "argonautmapdecoder", "unmerge", "chrmap" };
 
 	// Prototypes
-	#include "../inccol_src/inccol.h"
+	#include "../inccol_makecol_src/inccol.h"
 	int chrmap_main(int argc, char** argv);
 	int extend_main(int argc, char** argv);
 	int inccol_main(int argc, char** argv);
@@ -117,7 +117,7 @@ const char* get_applet_name(const char* candidate)
 	// by Natanel Copa, creator of the Alpine Linux distribution
 	// basename's behavior is less than ideal so avoid it
 	const char *p = strrchr(candidate, '/');
-	char* realCandidate = p ? p + 1 : candidate;
+	const char* realCandidate = p ? p + 1 : candidate;
 	for (byte i = 0; i < kAppletCount; i++) {
 		if (strcasecmp(realCandidate, kApplets[i]) == 0) {
 			return kApplets[i];

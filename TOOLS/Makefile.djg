@@ -5,9 +5,14 @@ CC := gcc
 CXX := gpp
 # Note : you cannot use -pipe with DOS
 CFLAGS_OPTIM := -O2 -fomit-frame-pointer -march=pentium3 -s
-CFLAGS_WARN := -W -Wall -Werror=format-security
-#CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
-#CXXFLAGS_WARN := $(CFLAGS_WARN)
+CFLAGS_WARN := -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -Werror=format-security \
+-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 \
+-fstack-protector-strong \
+-fno-delete-null-pointer-checks -fno-strict-overflow -fno-strict-aliasing \
+-Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion \
+-fstack-clash-protection -Wtrampolines
+CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
+CXXFLAGS_WARN := $(CFLAGS_WARN) -D_GLIBCXX_ASSERTIONS
 
 # Use spaces ONLY to indent inside conditionals
 # Long file paths not recognized in DOS
@@ -19,9 +24,9 @@ ifneq ($(strip ${DJGPP}),)
   SRC_SFDECRUNCH := cru_src/sf_dec~1.c
   SRC_EXTEND := extend~1/romExt~1.c
   SRC_FOXFONT := Fontconv/foxfon~1/Foxfont.c
-  SRC_INCCOL := inccol~1/inccol.c
-  SRC_MAKECOL := inccol~1/Makecol.c
-  SRC_APENDCOL := inccol~1/apendcol.c
+  SRC_INCCOL := inccol~2/inccol.c
+  SRC_MAKECOL := inccol~2/Makecol.c
+  SRC_APENDCOL := inccol~2/apendcol.c
   SRC_MAPDEC := mapdec~1/argona~1.c
   SRC_CGX2FX := cgx2fx~1/Cgx2fx.c
   SRC_FX2CGX := cgx2fx~1/Fx2cgx.c
@@ -68,63 +73,88 @@ else
 endif
 
 COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN)
+$(info Compiler and flags: $(COMPILE))
 DESTBIN := ..$(DIRSEP)bin$(DIRSEP)
+BINDIR := binaries$(DIRSEP)msdos$(DIRSEP)
 
 # Commands to build targets (BELOW) must be indented with tabs, never spaces
 
-all: $(DESTBIN)chrmap.exe $(DESTBIN)cru.exe $(DESTBIN)extend.exe $(DESTBIN)fon.exe $(DESTBIN)inccol.exe $(DESTBIN)makecol.exe $(DESTBIN)apendcol.exe $(DESTBIN)mapdec.exe cgx2fx.exe $(DESTBIN)cgx2fx.exe fx2cgx.exe
+all: $(BINDIR)cru.exe $(BINDIR)decru.exe $(BINDIR)cgx2fx.exe $(BINDIR)fx2cgx.exe
 
-$(DESTBIN)chrmap.exe: $(SRC_CHRMAP)
+install: $(DESTBIN)chrmap.exe $(DESTBIN)cru.exe $(DESTBIN)extend.exe $(DESTBIN)fon.exe $(DESTBIN)inccol.exe $(DESTBIN)makecol.exe $(DESTBIN)apendcol.exe $(DESTBIN)mapdec.exe $(DESTBIN)cgx2fx.exe
+
+$(BINDIR)cru.exe: $(SRC_SFCRUNCH)
 	$(COMPILE) $< -o $@
 
-cru.exe: $(SRC_SFCRUNCH)
+$(BINDIR)decru.exe: $(SRC_SFDECRUNCH)
 	$(COMPILE) $< -o $@
 
-$(DESTBIN)cru.exe: cru.exe
-	$(CP) $@ $(DESTBIN)
-
-$(DESTBIN)extend.exe: $(SRC_EXTEND)
+$(BINDIR)cgx2fx.exe: $(SRC_CGX2FX)
 	$(COMPILE) $< -o $@
 
-$(DESTBIN)fon.exe: $(SRC_FOXFONT)
+$(BINDIR)fx2cgx.exe: $(SRC_FX2CGX)
 	$(COMPILE) $< -o $@
 
-$(DESTBIN)inccol.exe: $(SRC_INCCOL)
+$(BINDIR)chrmap.exe: $(SRC_CHRMAP)
 	$(COMPILE) $< -o $@
 
-$(DESTBIN)makecol.exe: $(SRC_MAKECOL)
+$(BINDIR)extend.exe: $(SRC_EXTEND)
 	$(COMPILE) $< -o $@
 
-$(DESTBIN)apendcol.exe: $(SRC_APENDCOL)
+$(BINDIR)fon.exe: $(SRC_FOXFONT)
 	$(COMPILE) $< -o $@
 
-$(DESTBIN)mapdec.exe: $(SRC_MAPDEC)
+$(BINDIR)inccol.exe: $(SRC_INCCOL)
 	$(COMPILE) $< -o $@
 
-# Source for $(DESTBIN)sfcheck.exe is at https://www.github.com/Optiroc/SuperFamicheck/
+$(BINDIR)makecol.exe: $(SRC_MAKECOL)
+	$(COMPILE) $< -o $@
+
+$(BINDIR)apendcol.exe: $(SRC_APENDCOL)
+	$(COMPILE) $< -o $@
+
+$(BINDIR)mapdec.exe: $(SRC_MAPDEC)
+	$(COMPILE) $< -o $@
+
+$(DESTBIN)chrmap.exe: $(BINDIR)chrmap.exe
+	$(CP) $< $(DESTBIN)
+
+$(DESTBIN)cru.exe: $(BINDIR)cru.exe
+	$(CP) $< $(DESTBIN)
+
+$(DESTBIN)extend.exe: $(BINDIR)extend.exe
+	$(CP) $< $(DESTBIN)
+
+$(DESTBIN)fon.exe: $(BINDIR)fon.exe
+	$(CP) $< $(DESTBIN)
+
+$(DESTBIN)inccol.exe: $(BINDIR)inccol.exe
+	$(CP) $< $(DESTBIN)
+
+$(DESTBIN)makecol.exe: $(BINDIR)makecol.exe
+	$(CP) $< $(DESTBIN)
+
+$(DESTBIN)apendcol.exe: $(BINDIR)apendcol.exe
+	$(CP) $< $(DESTBIN)
+
+$(DESTBIN)mapdec.exe: $(BINDIR)mapdec.exe
+	$(CP) $< $(DESTBIN)
+
+$(DESTBIN)cgx2fx.exe: $(BINDIR)cgx2fx.exe
+	$(CP) $< $(DESTBIN)
+
+# Source for $(BINDIR)sfcheck.exe is at https://www.github.com/Optiroc/SuperFamicheck/
 # 4 very C++ files. The static C++ library explains why the DOS binary is so big.
-
-cgx2fx.exe: $(SRC_CGX2FX)
-	$(COMPILE) $< -o $@
-
-$(DESTBIN)cgx2fx.exe: cgx2fx.exe
-	$(CP) $@ $(DESTBIN)
-
-fx2cgx.exe: $(SRC_FX2CGX)
-	$(COMPILE) $< -o $@
-
-decru.exe: $(SRC_SFDERUNCH)
-	$(COMPILE) $< -o $@
 
 # Do not delete existing DJGPP executables inside BIN with clean,
 # as they are needed for almost every UltraStarfox user.
 # apendcol.exe is an added executable in Repzilon's fork.
 clean:
-	$(RM) cgx2fx.exe
-	$(RM) fx2cgx.exe
+	$(RM) $(BINDIR)cgx2fx.exe
+	$(RM) $(BINDIR)fx2cgx.exe
 	$(RM) $(DESTBIN)apendcol.exe
-	$(RM) cru.exe
-	$(RM) decru.exe
+	$(RM) $(BINDIR)cru.exe
+	$(RM) $(BINDIR)decru.exe
 
 distclean: clean
 	$(RM) $(DESTBIN)chrmap.exe
@@ -137,6 +167,6 @@ distclean: clean
 	$(RM) $(DESTBIN)cgx2fx.exe
 
 help:
-	@echo "Available targets: all clean distclean"
+	@echo "Available targets: all install clean distclean"
 
-.PHONY: all clean distclean help
+.PHONY: all clean install distclean help

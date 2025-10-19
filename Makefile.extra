@@ -86,7 +86,7 @@ lineendings:
 	unix2dos -q TOOLS/*.bat
 	dos2unix -q -e Makefile TOOLS/Makefile
 	dos2unix -q -e TOOLS/*/Makefile
-	dos2unix -q -e commit.sh TOOLS/*/*.sh
+	dos2unix -q -e *.sh TOOLS/*/*.sh
 	dos2unix -q -e Makefile.*
 
 prebuild: SF/DATA/CONT-2-F.CGX SF/DATA/MAP-F.CGX SF/DATA/OBJ-1-F.CGX SF/DATA/OBJ-2-F.CGX SF/DATA/FOX-F.CGX SF/DATA/CP-FF.CGX

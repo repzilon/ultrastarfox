@@ -43,6 +43,9 @@
 *.csv#
 
 # VSCode stuff
+# Allow settings and tasks and nothing else
+!/.vscode/settings.json
+!/.vsvode/tasks.json
 */.vscode/*
 
 # Files generated during assembly
@@ -85,6 +88,7 @@ TOOLS/bgconv/bin/palconv
 TOOLS/bgconv/bin/sf_crunch
 TOOLS/bgconv/bin/superfamiconv
 TOOLS/mugconv/foxchr
+TOOLS/mugconv/foxfont
 TOOLS/mugconv/superfamiconv/superfamiconv
 TOOLS/cgx2fx
 TOOLS/fx2cgx
@@ -104,6 +108,8 @@ TOOLS/robfx?src/robfx*.exe
 TOOLS/robfxt
 TOOLS/robfxs
 BIN/robfxb
+/TOOLS/binaries/Darwin
+/TOOLS/binaries/Linux
 
 # Removed Windows executables
 dosbox-x.exe
@@ -122,6 +128,7 @@ TOOLS/sf_decrunch.exe
 TOOLS/unmerge.exe
 usb2snes-cli.exe
 flips.exe
+/TOOLS/binaries/windows
 
 # Tools written in C#
 TOOLS/SharpUltraStarFoxTools/.vs/
