@@ -12,7 +12,7 @@ scoretextypos	=	24	; Japan-specific
 ; ROM.INC
 japan	=	1
 pal	=	0
-gamename	=	1
+gamename	=	2
 
 ; LANGUAGE.INC
 JAPANESE	=	1

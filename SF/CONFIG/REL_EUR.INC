@@ -11,7 +11,7 @@ controlsscreenpal	=	1
 ; ROM.INC
 japan	=	0
 pal	=	1
-gamename	=	2
+gamename	=	1
 
 ; LANGUAGE.INC
 JAPANESE	=	0
