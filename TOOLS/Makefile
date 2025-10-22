@@ -1,7 +1,8 @@
 ## Tools Makefile intended to run modern *nix host systems (macOS, Linux)
 
 SFCONV_VER := 0.11.0
-SFCONV_OUT := build/release
+SFCHECK_VER := 1.1.0
+OPTIROC_OUT := build/release
 CC := $(shell which cc)
 CFLAGS_OPTIM := -O2 -pipe -fomit-frame-pointer
 CFLAGS_HARDEN := -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -Werror=format-security \
@@ -51,14 +52,24 @@ $(info Compiler and flags: $(COMPILE))
 
 BINDIR := binaries/$(OS)
 
-all: $(BINDIR)/sf_crunch $(BINDIR)/sf_decrunch $(BINDIR)/cgx2fx $(BINDIR)/fx2cgx $(BINDIR)/foxchr $(BINDIR)/foxfont SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv
+all: $(BINDIR)/sf_crunch $(BINDIR)/sf_decrunch $(BINDIR)/cgx2fx $(BINDIR)/fx2cgx $(BINDIR)/foxchr $(BINDIR)/foxfont SuperFamiconv-$(SFCONV_VER)/$(OPTIROC_OUT)/superfamiconv
 
-sink: $(BINDIR)/romExtender2 $(BINDIR)/inccol $(BINDIR)/argonautmapdec $(BINDIR)/unmerge $(BINDIR)/chrmap
+sink: $(BINDIR)/romExtender2 $(BINDIR)/inccol $(BINDIR)/argonautmapdec $(BINDIR)/unmerge $(BINDIR)/chrmap $(BINDIR)/superfamicheck
 
 kitchensink: all sink
 
+clean-robfx:
+	$(MAKE) -C robfx.src clean
+
+clean-csharp:
+	rm -rf SharpUltraStarFoxTools/*/bin/
+	rm -rf SharpUltraStarFoxTools/*/obj/
+
 clean-superfamiconv:
 	$(MAKE) -C SuperFamiconv-$(SFCONV_VER) clean
+
+clean-sfcheck:
+	$(MAKE) -C sfcheck.src clean
 
 clean-tools:
 	rm -f bgconv/bin/palconv
@@ -89,16 +100,15 @@ clean-sink:
 	rm -f $(BINDIR)/argonautmapdec
 	rm -f $(BINDIR)/unmerge
 	rm -f $(BINDIR)/chrmap
+	rm -f $(BINDIR)/superfamicheck
 
-clean: clean-tools clean-sink clean-superfamiconv
-	rm -rf SharpUltraStarFoxTools/*/bin/
-	rm -rf SharpUltraStarFoxTools/*/obj/
-	$(MAKE) -C robfx.src clean
+clean: clean-tools clean-sink clean-robfx clean-csharp clean-superfamiconv clean-sfcheck
 	rmdir $(BINDIR)
 
-distclean: clean-tools clean-sink
+distclean: clean-tools clean-sink clean-robfx clean-csharp
 	rm -rf SuperFamiconv-*
-	$(MAKE) -C robfx.src clean
+	rm -rf sfcheck.src
+	rm -f sfcheck.tgz
 	rmdir $(BINDIR)
 
 nowindows:
@@ -131,7 +141,7 @@ mrproper: distclean nowindows permissions
 	rm -f SuperFamiconv-*.tar.gz
 
 $(BINDIR): binaries
-	mkdir $(BINDIR)
+	mkdir $(BINDIR) || true
 
 $(BINDIR)/palconv: $(BINDIR) palconv_src/palconv.c
 	$(COMPILE) palconv_src/palconv.c -o $@
@@ -189,16 +199,30 @@ SuperFamiconv-$(SFCONV_VER).tar.gz:
 SuperFamiconv-$(SFCONV_VER)/Makefile: SuperFamiconv-$(SFCONV_VER).tar.gz
 	tar -zxf $<
 
-SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv: SuperFamiconv-$(SFCONV_VER)/Makefile
+SuperFamiconv-$(SFCONV_VER)/$(OPTIROC_OUT)/superfamiconv: SuperFamiconv-$(SFCONV_VER)/Makefile
 	$(MAKE) -C SuperFamiconv-$(SFCONV_VER)
 
-bgconv/bin/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv
+bgconv/bin/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(OPTIROC_OUT)/superfamiconv
 	install $(INSTALL_FLAGS) $< ./bgconv/bin
 
-mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(SFCONV_OUT)/superfamiconv
+mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(OPTIROC_OUT)/superfamiconv
 	install $(INSTALL_FLAGS) $< ./mugconv/superfamiconv
+
+# Names are for DJGPP (use this Makefile to download and extract, then build with the DJGPP Makefile)
+sfcheck.tgz:
+	curl https://codeload.github.com/Optiroc/SuperFamicheck/tar.gz/refs/tags/v$(SFCHECK_VER) -o $@
+
+sfcheck.src/Makefile: sfcheck.tgz
+	tar -zxf $<
+	mv SuperFamicheck-$(SFCHECK_VER) sfcheck.src
+
+sfcheck.src/$(OPTIROC_OUT)/superfamicheck: sfcheck.src/Makefile
+	$(MAKE) -C sfcheck.src
+
+$(BINDIR)/superfamicheck: sfcheck.src/$(OPTIROC_OUT)/superfamicheck
+	install $(INSTALL_FLAGS) $< $(BINDIR)
 
 help:
 	@echo "Available targets: all sink kitchensink install clean distclean nowindows permissions mrproper"
 
-.PHONY: all sink kitchensink install clean distclean nowindows permissions mrproper help
+.PHONY: all sink kitchensink install clean distclean nowindows permissions mrproper help clean-robfx clean-superfamiconv clean-tools clean-sink clean-sfcheck clean-csharp

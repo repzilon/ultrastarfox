@@ -5,14 +5,15 @@ CC := gcc
 CXX := gpp
 # Note : you cannot use -pipe with DOS
 CFLAGS_OPTIM := -O2 -fomit-frame-pointer -march=pentium3 -s
-CFLAGS_WARN := -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -Werror=format-security \
+CFLAGS_HARDEN := -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -Werror=format-security \
 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 \
 -fstack-protector-strong \
 -fno-delete-null-pointer-checks -fno-strict-overflow -fno-strict-aliasing \
 -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion \
 -fstack-clash-protection -Wtrampolines
-CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
-CXXFLAGS_WARN := $(CFLAGS_WARN) -D_GLIBCXX_ASSERTIONS
+# -fvisibility=hidden is unavailable on static linking systems (DOS)
+CXXFLAGS_OPTIM := $(CFLAGS_OPTIM)
+CXXFLAGS_HARDEN := $(CFLAGS_HARDEN) -D_GLIBCXX_ASSERTIONS
 
 # Use spaces ONLY to indent inside conditionals
 # Long file paths not recognized in DOS
@@ -30,6 +31,7 @@ ifneq ($(strip ${DJGPP}),)
   SRC_MAPDEC := mapdec~1/argona~1.c
   SRC_CGX2FX := cgx2fx~1/Cgx2fx.c
   SRC_FX2CGX := cgx2fx~1/Fx2cgx.c
+  SRC_SFCHECK := sfcheck.src/src/sfcRom.cpp sfcheck.src/src/superf~1.cpp
   # Other setup. Note: "del" must be lowercase even in DOS
   RM := del
   CP := copy /y
@@ -47,6 +49,7 @@ else
   SRC_MAPDEC := mapdec_src/argonautmapdecoder.c
   SRC_CGX2FX := cgx2fx_fx2cgx_src/Cgx2fx.c
   SRC_FX2CGX := cgx2fx_fx2cgx_src/Fx2cgx.c
+  SRC_SFCHECK := sfcheck.src/src/sfcRom.cpp sfcheck.src/src/superfamicheck.cpp
   # Windows 9x, go the DJGPP route please
   # I really mean an NT-based Windows here
   ifeq (${OS},Windows_NT)
@@ -72,7 +75,8 @@ else
   endif
 endif
 
-COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_WARN)
+COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_HARDEN)
+CPLUSPLUS := $(CXX) $(CXXFLAGS_OPTIM) $(CXXFLAGS_HARDEN)
 $(info Compiler and flags: $(COMPILE))
 DESTBIN := ..$(DIRSEP)bin$(DIRSEP)
 BINDIR := binaries$(DIRSEP)msdos$(DIRSEP)
@@ -81,7 +85,7 @@ BINDIR := binaries$(DIRSEP)msdos$(DIRSEP)
 
 all: $(BINDIR)cru.exe $(BINDIR)decru.exe $(BINDIR)cgx2fx.exe $(BINDIR)fx2cgx.exe
 
-install: $(DESTBIN)chrmap.exe $(DESTBIN)cru.exe $(DESTBIN)extend.exe $(DESTBIN)fon.exe $(DESTBIN)inccol.exe $(DESTBIN)makecol.exe $(DESTBIN)apendcol.exe $(DESTBIN)mapdec.exe $(DESTBIN)cgx2fx.exe
+install: $(DESTBIN)chrmap.exe $(DESTBIN)cru.exe $(DESTBIN)extend.exe $(DESTBIN)fon.exe $(DESTBIN)inccol.exe $(DESTBIN)makecol.exe $(DESTBIN)apendcol.exe $(DESTBIN)mapdec.exe $(DESTBIN)cgx2fx.exe $(DESTBIN)sfcheck.exe
 
 $(BINDIR)cru.exe: $(SRC_SFCRUNCH)
 	$(COMPILE) $< -o $@
@@ -143,8 +147,22 @@ $(DESTBIN)mapdec.exe: $(BINDIR)mapdec.exe
 $(DESTBIN)cgx2fx.exe: $(BINDIR)cgx2fx.exe
 	$(CP) $< $(DESTBIN)
 
-# Source for $(BINDIR)sfcheck.exe is at https://www.github.com/Optiroc/SuperFamicheck/
-# 4 very C++ files. The static C++ library explains why the DOS binary is so big.
+# Source is at https://www.github.com/Optiroc/SuperFamicheck/
+# Makefile (not this Makefile.djg) can download it (invoke make sfcheck.tgz).
+
+# DJGPP offers tar and gzip in its v2gnu directory, but not in the Zip picker
+sfcheck.src$(DIRSEP)src$(DIRSEP)sfcRom.cpp: sfcheck.tgz
+	tar -zxf $<
+	ren superf sfcheck.src
+
+# Don't think CMake works for DJGPP
+# Two C++ source and 2 C++ headers, and using the STL.
+# Mandatory static linking explains why the DOS binary is that big
+$(BINDIR)sfcheck.exe: $(SRC_SFCHECK)
+	$(CPLUSPLUS) $(SRC_SFCHECK) -o $@
+
+$(DESTBIN)sfcheck.exe: $(BINDIR)sfcheck.exe
+	$(CP) $< $(DESTBIN)
 
 # Do not delete existing DJGPP executables inside BIN with clean,
 # as they are needed for almost every UltraStarfox user.
@@ -155,6 +173,7 @@ clean:
 	$(RM) $(DESTBIN)apendcol.exe
 	$(RM) $(BINDIR)cru.exe
 	$(RM) $(BINDIR)decru.exe
+	$(RM) $(BINDIR)sfcheck.exe
 
 distclean: clean
 	$(RM) $(DESTBIN)chrmap.exe
@@ -165,6 +184,7 @@ distclean: clean
 	$(RM) $(DESTBIN)makecol.exe
 	$(RM) $(DESTBIN)mapdec.exe
 	$(RM) $(DESTBIN)cgx2fx.exe
+	$(RM) $(DESTBIN)sfcheck.exe
 
 help:
 	@echo "Available targets: all install clean distclean"

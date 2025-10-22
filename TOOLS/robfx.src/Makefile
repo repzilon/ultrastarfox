@@ -145,6 +145,8 @@ clean:
 	$(RM) $(USFBIN)$(DIRSEP)robfxb$(EXE)
 	$(RM) $(BINDIR)$(DIRSEP)robfxt$(EXE)
 	$(RM) $(BINDIR)$(DIRSEP)robfxs$(EXE)
+	$(RM) ..$(DIRSEP)robfxt$(EXE)
+	$(RM) ..$(DIRSEP)robfxs$(EXE)
 
 # For an unknown reason, mkdir crashes on Windows 98
 $(BINDIR): ..$(DIRSEP)binaries
