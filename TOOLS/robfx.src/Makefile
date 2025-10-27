@@ -5,7 +5,7 @@ ifneq ($(strip ${DJGPP}),)
   CC := gcc
   # Note : you cannot use -pipe with DOS
   CFLAGS_OPTIM := -O2 -fomit-frame-pointer -march=pentium3 -s
-  # Note: "del" must be lowercase even in DOS
+  # Note: "del" must be lower-case even in DOS
   RM := del
   CP := copy /y
   DIRSEP := \\
@@ -171,13 +171,21 @@ takeover-build: install
 	$(RM) $(USFBIN)$(DIRSEP)apendcol$(EXE)
 	$(RM) $(USFBIN)$(DIRSEP)mapdec$(EXE)
 	$(RM) $(USFBIN)$(DIRSEP)cgx2fx$(EXE)
+ifneq ($(strip ${DJGPP}),)
+	$(RM) $(BINDIR)$(DIRSEP)chrmap$(EXE)
+	$(RM) $(BINDIR)$(DIRSEP)extend$(EXE)
+	$(RM) $(BINDIR)$(DIRSEP)fon$(EXE)
+	$(RM) $(BINDIR)$(DIRSEP)inccol$(EXE)
+	$(RM) $(BINDIR)$(DIRSEP)makecol$(EXE)
+	$(RM) $(BINDIR)$(DIRSEP)apendcol$(EXE)
+	$(RM) $(BINDIR)$(DIRSEP)mapdec$(EXE)
+endif
 
 # Note: the mix of tabs and spaces under this target is intentional
 takeover-tools: install
 	$(RM) $(BINDIR)$(DIRSEP)cru$(EXE)
 	$(RM) $(BINDIR)$(DIRSEP)decru$(EXE)
 	$(RM) $(BINDIR)$(DIRSEP)cgx2fx$(EXE)
-	$(RM) $(BINDIR)$(DIRSEP)fx2cgx$(EXE)
 ifeq ($(strip ${DJGPP}),)
 	$(RM) $(BINDIR)$(DIRSEP)sf_decrunch$(EXE)
   ifneq (${OS},Windows_NT)
@@ -186,6 +194,9 @@ ifeq ($(strip ${DJGPP}),)
 	$(RM) ..$(DIRSEP)fontconv$(DIRSEP)foxfont && ln -s "$(BINDIR)/robfxt" ..$(DIRSEP)fontconv$(DIRSEP)foxfont
 	$(RM) ..$(DIRSEP)mugconv$(DIRSEP)foxchr &&  ln -s "$(BINDIR)/robfxt" ..$(DIRSEP)mugconv$(DIRSEP)foxchr
   endif
+else
+	$(RM) $(BINDIR)$(DIRSEP)palconv$(EXE)
+	$(RM) $(BINDIR)$(DIRSEP)foxchr$(EXE)
 endif
 
 takeover-sink: install
