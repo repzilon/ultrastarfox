@@ -52,8 +52,11 @@
 *.CCR
 *.PCR
 SF/DATA/COL/*.PAC
+SF/DATA/COL/*.pac
 SF/DATA/COL/ALLCOLS.COL
+SF/DATA/COL/allcols.col
 SF/MSG/*.MSG
+SF/DATA/FONT/MOJI_*.fon
 
 # Object files
 *.sob
@@ -105,15 +108,12 @@ TOOLS/inccol
 TOOLS/romExtender2
 TOOLS/chrmap
 TOOLS/sf_decrunch
-TOOLS/robfx?src/robfxb
-TOOLS/robfx?src/robfxt
-TOOLS/robfx?src/robfxs
+TOOLS/robfx?src/robfx?
 TOOLS/robfx?src/robfx*.exe
-TOOLS/robfxt
-TOOLS/robfxs
+TOOLS/robfx?
 BIN/robfxb
-/TOOLS/binaries/Darwin
-/TOOLS/binaries/Linux
+TOOLS/binaries/Darwin
+TOOLS/binaries/Linux
 
 # Removed Windows executables
 dosbox-x.exe
@@ -125,14 +125,12 @@ TOOLS/fontconv/foxfont.exe
 TOOLS/fx2cgx_win.exe
 TOOLS/mugconv/foxchr.exe
 TOOLS/mugconv/superfamiconv/superfamiconv.exe
-TOOLS/palconv.exe
-TOOLS/palconv_win64.exe
-TOOLS/sf_crunch.exe
-TOOLS/sf_decrunch.exe
+TOOLS/palconv*.exe
+TOOLS/sf_*crunch.exe
 TOOLS/unmerge.exe
 usb2snes-cli.exe
 flips.exe
-/TOOLS/binaries/windows
+TOOLS/binaries/windows
 
 # Tools written in C#
 TOOLS/SharpUltraStarFoxTools/.vs/
@@ -140,5 +138,7 @@ TOOLS/SharpUltraStarFoxTools/*/bin/
 TOOLS/SharpUltraStarFoxTools/*/obj/
 TOOLS/SharpUltraStarFoxTools/*/*.csproj.user
 
-# JetBrains CLion metadata
+# IDE metadata
 TOOLS/.idea
+SF/.vs
+TOOLS/rh_opt.g*
