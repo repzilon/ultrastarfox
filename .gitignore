@@ -133,12 +133,11 @@ flips.exe
 TOOLS/binaries/windows
 
 # Tools written in C#
-TOOLS/SharpUltraStarFoxTools/.vs/
 TOOLS/SharpUltraStarFoxTools/*/bin/
 TOOLS/SharpUltraStarFoxTools/*/obj/
 TOOLS/SharpUltraStarFoxTools/*/*.csproj.user
 
 # IDE metadata
-TOOLS/.idea
-SF/.vs
+.idea
+.vs
 TOOLS/rh_opt.g*
