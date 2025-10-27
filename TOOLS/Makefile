@@ -103,13 +103,13 @@ clean-sink:
 	rm -f $(BINDIR)/superfamicheck
 
 clean: clean-tools clean-sink clean-robfx clean-csharp clean-superfamiconv clean-sfcheck
-	rmdir $(BINDIR)
+	rmdir $(BINDIR) || true
 
 distclean: clean-tools clean-sink clean-robfx clean-csharp
 	rm -rf SuperFamiconv-*
 	rm -rf sfcheck.src
 	rm -f sfcheck.tgz
-	rmdir $(BINDIR)
+	rmdir $(BINDIR) || true
 
 nowindows:
 	rm -f palconv.exe

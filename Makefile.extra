@@ -46,6 +46,9 @@ clean: clean-sf
 distclean: clean-sf
 	rm -f usb2snes-cli.bin
 	rm -rf usb2snes-cli
+	rm -f *.srm
+	rm -f *.bak
+	rm -f */*.bak
 	$(MAKE) -C TOOLS distclean
 	$(MAKE) -f Makefile.release distclean
 
