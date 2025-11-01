@@ -10,11 +10,11 @@ Tool porting
 ------------
 - [x] Add a kitchensink target in the TOOLS Makefile
 - [x] Remove duplicated DOS/DJGPP binaries in TOOLS that are also in BIN
-- [ ] Test the Makefiles under Linux ==WIP==
+- [x] Test the Makefiles under Linux
 - [ ] Provide a Makefile for (cross-)compiling tools on DJGPP. Important: keep the existing executables in the repository so anybody with a modern computer can still build the game without the pain of setting up a cross-compiler. ==WIP==
 - [x] Try to build UltraStarFox on a retro PC/VM
 - [x] Regroup the howe-grown tools into a single executable
-- [ ] Improve compatibility and backport to C ARGLINK_REWRITE from LuigiBlood
+- [ ] Improve compatibility and backport to C ARGLINK_REWRITE from LuigiBlood ==WIP==
 
 Miscellaneous hacks
 -------------------
@@ -27,6 +27,7 @@ Miscellaneous hacks
 - [x] Port buildrelease.cmd to a Makefile and generate localized patches from it
 - [ ] Skip scramble sequence by pressing Start
 - [ ] Better boss roll demo through training (background music, select level with controller mode, return to controls screen with Start)
+- [ ] Experiment with RNC ProPack (better graphics compression)
 - [ ] MUCH Later: automated bank bin packing
 - [ ] MUCH Later: raise the cap to 24 fps on NTSC by implementing a telecine-inspired approach
 

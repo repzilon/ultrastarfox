@@ -1,6 +1,6 @@
 # UltraStarFox
 
-Star Fox / Starwing source code, modified for ease-of-use and ROMhacking.  
+Star Fox / Starwing source code, modified for ease-of-use and ROM hacking.  
 
 Go [here](#building) to jump straight to the building instructions.  
 
@@ -38,7 +38,7 @@ Go [here](#building) to jump straight to the building instructions.
 - Uses ARGLINK and ARGSFX from Star Fox 2 as linker and assembler instead of SL and SASM
 - Easier creation of wireframe models (replace face3 and face4 with aface3 and aface4 in your shape file)
 - Upload ROM directly to SNES and boot with QUsb2Snes and a SD2SNES/FXPak Pro flash cartridge
-- Easily create patches for your ROMhack with ``buildrelease.cmd``
+- Easily create patches for your ROM hack with ``buildrelease.cmd``
 
 #### Added in Repzilon's fork
 - Modified message font allowing easier translation to any Western or North European language
@@ -47,6 +47,8 @@ Go [here](#building) to jump straight to the building instructions.
 - No soft freeze during ``messagetest`` by skipping lengthy stage briefings
 - Corrected framerate displayed with ``mario_stats3d`` on PAL builds
 - Create *localized* patches with ``Makefile.release`` (extended port of ``buildrelease.cmd``)
+- Integrated multipurpose build tool named RobFX
+- Makefiles for community-made tools
 - (In progress) Boss roll sequence display from training
 
 ### Limits Removed/Increased
@@ -78,7 +80,7 @@ After building, a debug symbol map will be created at ``SYMBOLS.TXT``, and a ban
 
 ### Building on Windows 9x or DOS
 
-**NOTE: this was tested in a Windows 98 virtual machine made with VirtualBox.**
+**NOTE: this was tested in a Windows 98 SE virtual machine made with VirtualBox.**
 
 Requirements: Microsoft Windows 95 or 98
 
@@ -103,15 +105,29 @@ Ensure DJGPP environment variables are loaded in the DOS prompt.
 Then, in the DOS prompt, go to the ``starfox.ult\TOOLS`` subdirectory and invoke ``make -f Makefile.djg``
 
 ### Building on Linux
+Building on Linux was tested with Ubuntu and Alpine distributions. Other distributions will probably work but your mileage may vary.
 
-**NOTE: this was tested on Ubuntu, on both real hardware and with the Windows Subsystem for Linux. YMMV.**  
+#### Ubuntu Linux
+**NOTE: this was tested on real hardware and the Windows Subsystem for Linux.**  
 
-Requirements: Ubuntu (might work with other distros) snap, DOSBox-X, git  
+Requirements: Ubuntu, snap, DOSBox-X, git  
 
-Install snapstore: ``sudo apt install snapd``  
+1. Install snapstore: ``sudo apt install snapd``
+2. Install DOSBox-X from snap: ``sudo snap install dosbox-x``  
 
-Install DOSBox-X from snap: ``sudo snap install dosbox-x``  
+#### Alpine Linux
+**Tested with the 3.21 release inside a Hyper-V virtual machine.**
 
+Requirements: Alpine Linux, gcc, DOSBox-X, git
+
+1. Install development tools: ``doas apk add gcc git sdl2-dev autoconf automake nasm ncurses-dev libpng-dev``
+2. Clone forked DOSBox-X repository: ``git clone https://github.com/repzilon/dosbox-x``
+3. Switch to musl branch: ``git switch musl``
+4. Configure DOSBox-X source: ``./configure --enable-debug --prefix=/usr --enable-sdl2 --disable-dynamic-x86`` . The last option is crucial on **32-bit** x86 Alpine Linux (DOSBox-X will not run otherwise).
+5. Build DOSBox-X from source: ``time nice make -s -j``
+6. Install DOSBox-X: ``doas make install``
+
+#### Cloning UltraStarFox repository and building it (distribution-agnostic)
 Clone repository: ``git clone https://github.com/repzilon/ultrastarfox``  
 
 To build ROM, run ``make``.  
@@ -128,9 +144,8 @@ After building, a debug symbol map will be created at ``SYMBOLS.TXT``, and a ban
 
 Requirements: macOS (tested on Sonoma), DOSBox-X, git
 
-Install Homebrew: ``/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"``
-
-Install DOSBOX-X from Homebrew: ``brew install dosbox-x``
+1. Install Homebrew: ``/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"``
+2. Install DOSBOX-X from Homebrew: ``brew install dosbox-x``
 
 Then, from cloning the repository to building, follow the Linux instructions above.
 
