@@ -52,9 +52,9 @@ $(info Compiler and flags: $(COMPILE))
 
 BINDIR := binaries/$(OS)
 
-all: $(BINDIR)/sf_crunch $(BINDIR)/sf_decrunch $(BINDIR)/cgx2fx $(BINDIR)/fx2cgx $(BINDIR)/foxchr $(BINDIR)/foxfont SuperFamiconv-$(SFCONV_VER)/$(OPTIROC_OUT)/superfamiconv
+all: $(BINDIR)/sf_crunch $(BINDIR)/sf_decrunch $(BINDIR)/cgx2fx $(BINDIR)/fx2cgx $(BINDIR)/foxchr $(BINDIR)/foxfont SuperFamiconv-$(SFCONV_VER)/$(OPTIROC_OUT)/superfamiconv $(BINDIR)/apendcol
 
-sink: $(BINDIR)/romExtender2 $(BINDIR)/inccol $(BINDIR)/argonautmapdec $(BINDIR)/unmerge $(BINDIR)/chrmap $(BINDIR)/superfamicheck
+sink: $(BINDIR)/romExtender2 $(BINDIR)/inccol $(BINDIR)/argonautmapdec $(BINDIR)/unmerge $(BINDIR)/chrmap $(BINDIR)/superfamicheck $(BINDIR)/makecol
 
 kitchensink: all sink
 
@@ -166,6 +166,12 @@ $(BINDIR)/romExtender2: $(BINDIR) extend_src/romExtenderv2.c
 
 $(BINDIR)/inccol: $(BINDIR) inccol_makecol_src/inccol.c
 	$(COMPILE) inccol_makecol_src/inccol.c -o $@
+
+$(BINDIR)/makecol: $(BINDIR) inccol_makecol_src/makecol.c
+	$(COMPILE) inccol_makecol_src/makecol.c -o $@
+
+$(BINDIR)/apendcol: $(BINDIR) inccol_makecol_src/apendcol.c
+	$(COMPILE) inccol_makecol_src/apendcol.c -o $@
 
 $(BINDIR)/argonautmapdec: $(BINDIR) mapdec_src/argonautmapdecoder.c
 	$(COMPILE) mapdec_src/argonautmapdecoder.c -o $@

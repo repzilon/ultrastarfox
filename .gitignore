@@ -55,8 +55,12 @@ SF/DATA/COL/*.PAC
 SF/DATA/COL/*.pac
 SF/DATA/COL/ALLCOLS.COL
 SF/DATA/COL/allcols.col
+SF/DATA/COL/col2.tmp
 SF/MSG/*.MSG
 SF/DATA/FONT/MOJI_*.fon
+SF/allcols.col
+SF/flist.tmp
+symbols.txt
 
 # Object files
 *.sob

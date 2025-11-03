@@ -3,7 +3,9 @@
 #########################
 
 # Detect what we're running on
-ifeq ($(OS),Windows_NT)
+ifneq ($(strip ${DJGPP}),)
+    PLATFORM := djgpp
+else ifeq ($(OS),Windows_NT)
     ifndef MSYSTEM
         # Windows without MSYS2
         PLATFORM := windows
@@ -12,16 +14,15 @@ ifeq ($(OS),Windows_NT)
         PLATFORM := msys2
     endif
 else
-    # Assume Linux/Unix if not Windows
-    PLATFORM := linux
+    # Assume *nix if not Windows
+    PLATFORM := nix
 endif
 
 # Silence the assembler+linker unless an error occurs
 QUIET ?= false
 
-ifeq ($(PLATFORM),windows)
-else
-	UNAME_S := $(shell uname -s)
+ifneq ($(PLATFORM),windows)
+    UNAME_S := $(shell uname)
 endif
 
 # Whether to colorize build messages
@@ -33,107 +34,127 @@ NOANSI=
 # Build MSU-1 data file?
 MSU1 ?= 0
 
+# Use the RobFX integrated multipurpose build tool from Repzilon's fork?
+USEROBFX ?= 0
+
 # Newline character to use (adjust this if newlines aren't working in your terminal)
-ifeq ($(PLATFORM),windows)
-COLOR=1
-NEWLINE=
+# TODO : handle colors on DJGPP
+ifeq ($(PLATFORM),djgpp)
+    DIRSEP=\\
+    EXE=.EXE
+else ifeq ($(PLATFORM),windows)
+    COLOR=1
+    NEWLINE=
+    DIRSEP=\\
+    EXE=.exe
 else ifeq ($(PLATFORM),msys2)
-# If we detect MSYS, handle disabling asssembler ANSI codes internally in INC/HEADER.INC and use the correct newline
-NOANSI=
-NEWLINE=\r\n
-else ifeq ($(PLATFORM),linux)
-NEWLINE=\n
+    # If we detect MSYS, handle disabling asssembler ANSI codes internally in INC/HEADER.INC and use the correct newline
+    NOANSI=
+    NEWLINE=\r\n
+    DIRSEP=/
+    EXE=.exe
+else ifeq ($(PLATFORM),nix)
+    NEWLINE=\n
+    DIRSEP=/
+    EXE=
 endif
 
-# If on Linux, use Wine to run DOSBox-X Headless
+# If on Linux, use Wine to run DOSBox-X headless for Windows, if installed. Otherwise, run the native version
 ifeq ($(UNAME_S),Linux)
-WINE=wine
+    WINE=$(shell which wine)
 else
-WINE=
+    WINE=
 endif
 
 # DOSBox-X Headless DOS userland application emulator executable
-ifeq ($(PLATFORM),windows)
-MSDOS=dosbox-x.exe
+# No need for an emulator on DJGPP, it is already DOS
+ifeq ($(PLATFORM),djgpp)
+    MSDOS=
+else ifeq ($(PLATFORM),windows)
+    MSDOS=dosbox-x.exe -fastlaunch -nolog
+else ifneq ($(WINE),)
+    MSDOS=$(WINE) ./dosbox-x.exe -fastlaunch -nolog
 else
-MSDOS=./dosbox-x
+    MSDOS=$(shell which dosbox-x) -fastlaunch -nolog -showcycles -showrt -set "sdl videodriver=dummy" -set "cpu cycles=max"
 endif
 
 # Assembler
 ASM=$(MSDOS) ARGSFXX.EXE
 # Setup heap for SASM and export symbols for ARGSFX
-ASMFLAGS= $(NOANSI) -e__notitle -e__heap=14400 -z
+ASMFLAGS=$(NOANSI) -m30 -e__notitle -e__heap=14400 -z
 
 # MSU-1 Data file Assembler
 MSUASM=$(MSDOS) SASMX.EXE
-MSUFLAGS= -m30 -e__heap=14400 -e__notitle
+MSUFLAGS=$(NOANSI) -m30 -e__heap=14400 -e__notitle
 
 # Linker
 LINK=$(MSDOS) ARGLINK.EXE
 LOPTS=-b30 -h1024 -t7d -z
 
-# ROM Extender
-ifeq ($(PLATFORM),windows)
-EXTEND=../win_bin/romextender.exe
+ifeq ($(USEROBFX), 1)
+
 else
-EXTEND=../tools/romextender
+# ROM Extender
+    ifeq ($(PLATFORM),windows)
+        EXTEND=../win_bin/romextender.exe
+    else
+        EXTEND=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)romExtender2
+    endif
+
+# Checksum Fixer
+    ifeq ($(PLATFORM),windows)
+        CHECK=.../bin/superfamicheck.exe
+    else
+        CHECK=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)superfamicheck
+    endif
+
+# FXGFX Interleaver
+    ifeq ($(PLATFORM),windows)
+        MERGE=..\win_bin\cgx2fx.exe
+    else
+        MERGE=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)cgx2fx
+    endif
+
+# Graphics Cruncher
+    ifeq ($(PLATFORM),windows)
+        CRU=..\win_bin\sf_crunch.exe
+    else
+        CRU=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)sf_crunch
+    endif
+
+# ALLCOLS Builder
+    ifeq ($(PLATFORM),windows)
+        MC=DATA\COL\MC.BAT
+    else
+        MC=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)apendcol
+    endif
+
+# Font Converter
+    ifeq ($(PLATFORM),windows)
+        FONT=../win_bin/foxfont.exe
+    else
+        FONT=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)foxfont
+    endif
+
+# Argonaut .MAP File Decoder
+    ifeq ($(PLATFORM),windows)
+        MAPDEC=..\win_bin\argonautmapdecoder.exe
+    else
+        MAPDEC=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)argonautmapdec
+    endif
+
+# Script Tokenizer
+    ifeq ($(PLATFORM),windows)
+        CHRMAP=..\win_bin\chrmap.exe
+    else
+        CHRMAP=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)chrmap
+    endif
 endif
 
 # Extended size in Mbits, byte to pad with
-EXTOPTS= 16 ff
+EXTOPTS= --auto ff
 
-# Checksum Fixer
-
-ifeq ($(UNAME_S),Linux)
-CHECK=../bin/superfamicheck_linux
-else
-CHECK=../bin/superfamicheck.exe
-endif
 COPTS=-s -f
-
-# FXGFX Interleaver
-ifeq ($(PLATFORM),windows)
-MERGE=..\win_bin\cgx2fx.exe
-else
-MERGE=../tools/cgx2fx
-endif
-
-
-# Graphics Cruncher
-ifeq ($(PLATFORM),windows)
-CRU=..\win_bin\sf_crunch.exe
-else
-CRU=../tools/sf_crunch
-endif
-
-
-# ALLCOLS Builder
-ifeq ($(PLATFORM),windows)
-MC=DATA\COL\MC.BAT
-else
-MC=DATA/COL/mc.sh
-endif
-
-# Font Converter
-ifeq ($(PLATFORM),windows)
-FONT=../win_bin/foxfont.exe
-else
-FONT=../tools/foxfont
-endif
-
-# Argonaut .MAP File Decoder
-ifeq ($(PLATFORM),windows)
-MAPDEC=..\win_bin\argonautmapdecoder.exe
-else
-MAPDEC=../tools/argonautmapdecoder
-endif
-
-# Script Tokenizer
-ifeq ($(PLATFORM),windows)
-CHRMAP=..\win_bin\chrmap.exe
-else
-CHRMAP=../tools/chrmap
-endif
 
 # USB2SNES CLI Utility
 USB2SNES=../bin/usb2snes-cli.exe
@@ -142,24 +163,36 @@ USB2SNES=../bin/usb2snes-cli.exe
 
 # Print Command
 ifeq ($(PLATFORM),windows)
-PRINT ?= ..\win_bin\printf.exe
+    PRINT ?= ..\win_bin\printf.exe
 else
-PRINT ?= printf
+    PRINT ?= printf
 endif
 
 # Move Command
-ifeq ($(PLATFORM),windows)
-MV=move
+ifeq ($(PLATFORM),djgpp)
+    MV=move
+else ifeq ($(PLATFORM),windows)
+    MV=move
 else
-MV=mv
+    MV=mv
 endif
 
 # Delete Command
-
-ifeq ($(PLATFORM),windows)
-DEL=del
+ifeq ($(PLATFORM),djgpp)
+    DEL=del
+else ifeq ($(PLATFORM),windows)
+    DEL=del
 else
-DEL=rm -rf
+    DEL=rm -rf
+endif
+
+# Touch Command
+ifeq ($(PLATFORM),djgpp)
+    TOUCH=copy NUL
+else ifeq ($(PLATFORM),windows)
+    TOUCH=copy NUL
+else
+    TOUCH=touch
 endif
 
 # File Checksum Calculator
@@ -201,15 +234,22 @@ BANK/%.SOB: BANK/%.ASM
 	$(call print,Assembling:,$<,$@)
 
 ifeq ($(PLATFORM),windows)
-	@$(ASM) -o "$(NOANSI) -m30 $(ASMFLAGS) $(subst /,\,$<) -v$(subst /,\,$@)"
+	@$(ASM) -o "$(ASMFLAGS) $(subst /,\,$<) -v$(subst /,\,$@)"
 else
-	@bash -c '\
-	if [ "$(QUIET)" = "true" ]; then \
-		$(ASM) -o "$(NOANSI) -m30 $(ASMFLAGS) $< -v$@" > /dev/null 2>&1 || \
-		$(ASM) -o "$(NOANSI) -m30 $(ASMFLAGS) $< -v$@"; \
-	else \
-		$(ASM) -o "$(NOANSI) -m30 $(ASMFLAGS) $< -v$@"; \
-	fi'
+    ifneq ($(strip ${MSDOS}),)
+        ifeq ($(QUIET), true)
+	$(ASM) -o "$(ASMFLAGS) $< -v$@" > /dev/null 2> /dev/null || \
+	$(ASM) -o "$(ASMFLAGS) $< -v$@"
+        else
+	$(ASM) -o "$(ASMFLAGS) $< -v$@"
+        endif
+    else
+        ifeq ($(QUIET), true)
+	$(ASM) $(ASMFLAGS) $< -v$@ > /dev/null 2> /dev/null || $(ASM) $(ASMFLAGS) $< -v$@
+        else
+	$(ASM) $(ASMFLAGS) $< -v$@
+        endif
+    endif
 endif
 
 # Recipes to crunch graphics
@@ -226,8 +266,8 @@ DATA/FONT/%.fon: DATA/FONT/%.bmp
 	$(call print,Encoding Font:,$<,$@)
 	@$(FONT) $<
 
-#!! If you add/remove a cgx/scr in these two lists, make sure to add/remove the corresponding file.
 
+#!! If you add/remove a cgx/scr in these two lists, make sure to add/remove the corresponding file.
 # Crunched tilesets
 CCRFILES= DATA/1-3-B.CCR DATA/2-3B.CCR DATA/3-4.CCR DATA/B.CCR DATA/CONT.CCR DATA/DOG.CCR \
  DATA/F-1.CCR DATA/FS-BG3.CCR DATA/MAP-G.CCR DATA/OBJ-2.CCR DATA/SPACE.CCR DATA/T-ST.CCR \
@@ -236,7 +276,8 @@ CCRFILES= DATA/1-3-B.CCR DATA/2-3B.CCR DATA/3-4.CCR DATA/B.CCR DATA/CONT.CCR DAT
  DATA/2-2.CCR DATA/3-2.CCR DATA/B-HOLE.CCR DATA/CONT-2-G.CCR DATA/CP.CCR DATA/E-TEST2.CCR \
  DATA/FOX-G.CCR DATA/LSB.CCR DATA/OBJ-1-G.CCR DATA/OBJ-4.CCR DATA/OOPS.CCR DATA/STARS.CCR \
  DATA/TI-3-US.CCR DATA/2-3.CCR DATA/3-3.CCR DATA/B-M.CCR DATA/CONT-2.CCR DATA/DEMO.CCR \
- DATA/FOX.CCR DATA/M.CCR DATA/OBJ-1.CCR DATA/T-SP.CCR DATA/TI-3.CCR
+ DATA/FOX.CCR DATA/M.CCR DATA/OBJ-1.CCR DATA/T-SP.CCR DATA/TI-3.CCR DATA/CONT-2-F.CCR \
+ DATA/MAP-F.CCR DATA/OBJ-1-F.CCR DATA/OBJ-2-F.CCR DATA/FOX-F.CCR DATA/CP-FF.CCR
 
 # Crunched tilemaps
 PCRFILES= DATA/1-3-B.PCR DATA/2-3.PCR DATA/3-2.PCR DATA/B-HOLE.PCR DATA/CONT.PCR DATA/DOG.PCR \
@@ -245,10 +286,9 @@ PCRFILES= DATA/1-3-B.PCR DATA/2-3.PCR DATA/3-2.PCR DATA/B-HOLE.PCR DATA/CONT.PCR
  DATA/T-SS.PCR DATA/TI-3.PCR DATA/1-4.PCR DATA/2-3H.PCR DATA/3-4.PCR DATA/CONT-2-G.PCR \
  DATA/CP.PCR DATA/E-TEST2.PCR DATA/FS-NI.PCR DATA/M.PCR DATA/OOPS.PCR DATA/STARS.PCR DATA/T-ST.PCR \
  DATA/2-2.PCR DATA/2-4.PCR DATA/AND.PCR DATA/CONT-2.PCR DATA/DEMO.PCR DATA/HOLE-A.PCR DATA/MAP.PCR \
- DATA/T-F-S.PCR DATA/TI-3-G.PCR
+ DATA/T-F-S.PCR DATA/TI-3-G.PCR DATA/MAP-2.PCR DATA/CONT-2-F.PCR
 
 #!! If you add/remove a font, make sure to add/remove the corresponding file.
-
 # Font files converted from bmp
 FONFILES= DATA/FONT/MOJI_0.fon DATA/FONT/MOJI_D.fon
 
@@ -268,7 +308,6 @@ SOBFILES= \
  BANK/SHBANKS.SOB \
  BANK/INCBINS.SOB
 
-#!! If you add/remove/modify a cgx/bin in these two lists, make sure the corresponding files are present here.
 
 # Everything that should be done when make is executed
 all: welcome check-jobs text make-allcols msprites crunch fonts sf.msu sf.sfc donebld
@@ -280,8 +319,10 @@ ifeq ($(PLATFORM),windows)
 	@$(PRINT) "$(GREEN)You're on $(YELLOW)Windows!$(NO_COL)$(NEWLINE)"
 else ifeq ($(PLATFORM),msys2)
 	@$(PRINT) "$(GREEN)You're on $(YELLOW)MSYS2!$(NO_COL)$(NEWLINE)"
-else ifeq ($(PLATFORM),linux)
-	@$(PRINT) "$(GREEN)You're on $(YELLOW)Linux!$(NO_COL)$(NEWLINE)"
+else ifeq ($(PLATFORM),nix)
+	@$(PRINT) "$(GREEN)You're on $(YELLOW)$(UNAME_S)!$(NO_COL)$(NEWLINE)"
+else ifeq ($(PLATFORM),djgpp)
+	@$(PRINT) "$(GREEN)You're on $(YELLOW)DJGPP!$(NO_COL)$(NEWLINE)"
 endif
 
 
@@ -297,89 +338,80 @@ else
 	esac
 endif
 
-# Tokenize German/Japanese script
+# Tokenize localized script
 text:
-ifeq ($(PLATFORM),windows)
-	@$(CHRMAP) --tokenize MSG/chrmapde.dat MSG/GERMAN.INC MSG/GERMAN.MSG
-	@$(CHRMAP) --tokenize MSG/chrmapjp.dat MSG/JAPANESE.INC MSG/JAPANESE.MSG
-else
-	@$(CHRMAP) --tokenize MSG\chrmapde.dat MSG\GERMAN.INC MSG\GERMAN.MSG
-	@$(CHRMAP) --tokenize MSG\chrmapjp.dat MSG\JAPANESE.INC MSG\JAPANESE.MSG
-endif
+	$(call print3,Tokenizing localized scripts...)
+	@$(CHRMAP) --tokenize MSG$(DIRSEP)chrmap15.dat MSG$(DIRSEP)GERMAN.INC MSG$(DIRSEP)GERMAN.MSG
+	@$(CHRMAP) --tokenize MSG$(DIRSEP)chrmap15.dat MSG$(DIRSEP)FRENCH.INC MSG$(DIRSEP)FRENCH.MSG
+	@$(CHRMAP) --tokenize MSG$(DIRSEP)chrmapjp.dat MSG$(DIRSEP)JAPANESE.INC MSG$(DIRSEP)JAPANESE.MSG
 
 # Initialize allcols.col
 init-allcols:
-ifeq ($(PLATFORM),windows)
-	@$(DEL) DATA\COL\allcols.col
-	@copy NUL DATA\COL\allcols.col
-	@copy NUL DATA\COL\col2.tmp
-else
-	@$(DEL) DATA/COL/allcols.col
-	@touch DATA/COL/allcols.col
-	@touch DATA/COL/col2.tmp
-endif
+	@$(DEL) DATA$(DIRSEP)COL$(DIRSEP)allcols.col
+	@$(TOUCH) DATA$(DIRSEP)COL$(DIRSEP)allcols.col
+	@$(TOUCH) DATA$(DIRSEP)COL$(DIRSEP)col2.tmp
 
 
 # List of palette source files
 # Both of these lists must match SF/INC/KALCS.INC's list!!
+DIR_PAL := DATA$(DIRSEP)COL$(DIRSEP)
 ALLCOLS_PALETTES := \
- DATA/COL/OOPS.COL \
- DATA/COL/BG2-A.COL \
- DATA/COL/BG2-B.COL \
- DATA/COL/BG2-C.COL \
- DATA/COL/BG2-D.COL \
- DATA/COL/BG2-E.COL \
- DATA/COL/BG2-F.COL \
- DATA/COL/BG2-G.COL \
- DATA/COL/T-M.COL \
- DATA/COL/T-M-2.COL \
- DATA/COL/T-M-3.COL \
- DATA/COL/T-M-4.COL \
- DATA/COL/B-M.COL \
- DATA/COL/LIGHT.COL \
- DATA/COL/SPACE.COL \
- DATA/COL/STARS.COL \
- DATA/COL/CP.COL \
- DATA/COL/CP-US.COL \
- DATA/COL/CP-USP.COL \
- DATA/COL/CP-P.COL \
- DATA/COL/HOLE.COL \
- DATA/COL/L.COL \
- DATA/COL/E-TEST0.COL \
- DATA/COL/E-TEST.COL \
- DATA/COL/OBJ-1.COL \
- DATA/COL/BG2-E-P.COL
+ $(DIR_PAL)OOPS.COL \
+ $(DIR_PAL)BG2-A.COL \
+ $(DIR_PAL)BG2-B.COL \
+ $(DIR_PAL)BG2-C.COL \
+ $(DIR_PAL)BG2-D.COL \
+ $(DIR_PAL)BG2-E.COL \
+ $(DIR_PAL)BG2-F.COL \
+ $(DIR_PAL)BG2-G.COL \
+ $(DIR_PAL)T-M.COL \
+ $(DIR_PAL)T-M-2.COL \
+ $(DIR_PAL)T-M-3.COL \
+ $(DIR_PAL)T-M-4.COL \
+ $(DIR_PAL)B-M.COL \
+ $(DIR_PAL)LIGHT.COL \
+ $(DIR_PAL)SPACE.COL \
+ $(DIR_PAL)STARS.COL \
+ $(DIR_PAL)CP.COL \
+ $(DIR_PAL)CP-US.COL \
+ $(DIR_PAL)CP-USP.COL \
+ $(DIR_PAL)CP-P.COL \
+ $(DIR_PAL)HOLE.COL \
+ $(DIR_PAL)L.COL \
+ $(DIR_PAL)E-TEST0.COL \
+ $(DIR_PAL)E-TEST.COL \
+ $(DIR_PAL)OBJ-1.COL \
+ $(DIR_PAL)BG2-E-P.COL
 
 # Palettes to include in ALLCOLS
 DATA/COL/allcols.pac: $(ALLCOLS_PALETTES)
 	$(call print3,Building ALLCOLS...)
-
-	@$(MC) OOPS 0 2
-	@$(MC) BG2-A 0 7
-	@$(MC) BG2-B 0 13
-	@$(MC) BG2-C 0 7
-	@$(MC) BG2-D 0 7
-	@$(MC) BG2-E 0 9
-	@$(MC) BG2-F 0 7
-	@$(MC) BG2-G 0 7
-	@$(MC) T-M 0 7
-	@$(MC) T-M-2 0 7
-	@$(MC) T-M-3 0 7
-	@$(MC) T-M-4 0 7
-	@$(MC) B-M 0 7
-	@$(MC) LIGHT 0 7
-	@$(MC) SPACE 0 7
-	@$(MC) STARS 0 7
-	@$(MC) CP 0 7
-	@$(MC) CP-US 0 7
-	@$(MC) CP-USP 0 7
-	@$(MC) CP-P 0 7
-	@$(MC) HOLE 0 7
-	@$(MC) L 0 7
-	@$(MC) E-TEST0 0 7
-	@$(MC) E-TEST 0 7
-	@$(MC) OBJ-1 8 13
-	@$(MC) BG2-E-P 0 9
+	@$(MC) $(DIR_PAL)OOPS.COL 0 2
+	@$(MC) $(DIR_PAL)BG2-A.COL 0 7
+	@$(MC) $(DIR_PAL)BG2-B.COL 0 13
+	@$(MC) $(DIR_PAL)BG2-C.COL 0 7
+	@$(MC) $(DIR_PAL)BG2-D.COL 0 7
+	@$(MC) $(DIR_PAL)BG2-E.COL 0 9
+	@$(MC) $(DIR_PAL)BG2-F.COL 0 7
+	@$(MC) $(DIR_PAL)BG2-G.COL 0 7
+	@$(MC) $(DIR_PAL)T-M.COL 0 7
+	@$(MC) $(DIR_PAL)T-M-2.COL 0 7
+	@$(MC) $(DIR_PAL)T-M-3.COL 0 7
+	@$(MC) $(DIR_PAL)T-M-4.COL 0 7
+	@$(MC) $(DIR_PAL)B-M.COL 0 7
+	@$(MC) $(DIR_PAL)LIGHT.COL 0 7
+	@$(MC) $(DIR_PAL)SPACE.COL 0 7
+	@$(MC) $(DIR_PAL)STARS.COL 0 7
+	@$(MC) $(DIR_PAL)CP.COL 0 7
+	@$(MC) $(DIR_PAL)CP-US.COL 0 7
+	@$(MC) $(DIR_PAL)CP-USP.COL 0 7
+	@$(MC) $(DIR_PAL)CP-P.COL 0 7
+	@$(MC) $(DIR_PAL)HOLE.COL 0 7
+	@$(MC) $(DIR_PAL)L.COL 0 7
+	@$(MC) $(DIR_PAL)E-TEST0.COL 0 7
+	@$(MC) $(DIR_PAL)E-TEST.COL 0 7
+	@$(MC) $(DIR_PAL)OBJ-1.COL 8 13
+	@$(MC) $(DIR_PAL)BG2-E-P.COL 0 9
 
 # Final step: Crunch all palettes into allcols.pac
 	@$(CRU) DATA/COL/allcols.col DATA/COL/allcols.pac
@@ -417,55 +449,61 @@ else
 endif
 
 ifeq ($(PLATFORM),windows)
-	@$(LINK) -o "$(LOPTS) -o$@ @flist.tmp"
+	$(LINK) -o "$(LOPTS) -o$@ @flist.tmp"
 else
-	@bash -c '\
-	if [ "$(QUIET)" = "true" ]; then \
-		$(LINK) -o "$(LOPTS) -o$@ @flist.tmp" > /dev/null 2>&1 || \
-		$(LINK) -o "$(LOPTS) -o$@ @flist.tmp"; \
-	else \
-		$(LINK) -o "$(LOPTS) -o$@ @flist.tmp"; \
-	fi'
+    ifneq ($(strip ${MSDOS}),)
+        ifeq ($(QUIET), true)
+	$(LINK) -o "$(LOPTS) -o$@ @flist.tmp" > /dev/null 2> /dev/null || \
+	$(LINK) -o "$(LOPTS) -o$@ @flist.tmp"
+        else
+	$(LINK) -o "$(LOPTS) -o$@ @flist.tmp"
+        endif
+    else
+        ifeq ($(QUIET), true)
+	$(LINK) $(LOPTS) -o$@ @flist.tmp > /dev/null 2> /dev/null || $(LINK) $(LOPTS) -o$@ @flist.tmp
+        else
+	$(LINK) $(LOPTS) -o$@ @flist.tmp
+        endif
+    endif
 endif
 
 	@$(DEL) flist.tmp
 
 ifeq ($(PLATFORM),windows)
-	@$(EXTEND) $@ $(EXTOPTS)
+	@$(EXTEND) SF.SFC $(EXTOPTS)
 else
 	$(call print2,Extending ROM:,$@)
-	@bash -c '\
-	if [ "$(QUIET)" = "true" ]; then \
-		$(EXTEND) SF.SFC $(EXTOPTS) > /dev/null 2>&1 || \
-		$(EXTEND) SF.SFC $(EXTOPTS); \
-	else \
-		$(EXTEND) SF.SFC $(EXTOPTS); \
-	fi'
+    ifeq ($(QUIET), true)
+	@$(EXTEND) SF.SFC $(EXTOPTS) > /dev/null 2> /dev/null || $(EXTEND) SF.SFC $(EXTOPTS)
+    else
+	@$(EXTEND) SF.SFC $(EXTOPTS)
+    endif
 endif
 
-ifeq ($(PLATFORM),windows)
+ifeq ($(PLATFORM),djgpp)
+	@ren SF.SFC sf.sfc
+	@ren SF.MSU sf.msu
+else ifeq ($(PLATFORM),windows)
 	@ren SF.SFC sf.sfc
 	@ren SF.MSU sf.msu
 else
-	@$(MV) SF.SFC sf.sfc
-	@$(MV) SF.MSU sf.msu
+	@$(MV) SF.SFC sf.sfc || true
+	@$(MV) SF.MSU sf.msu || true
 endif
 ifeq ($(PLATFORM),windows)
 	@$(CHECK) $(COPTS) $@
 else
 	$(call print2,Fixing Checksum:,$@)
-	@bash -c '\
-	if [ "$(QUIET)" = "true" ]; then \
-		$(CHECK) $(COPTS) sf.sfc > /dev/null 2>&1 || \
-		$(CHECK) $(COPTS) sf.sfc; \
-	else \
-		$(CHECK) $(COPTS) sf.sfc; \
-	fi'
+    ifeq ($(QUIET), true)
+	@$(CHECK) $(COPTS) sf.sfc > /dev/null 2> /dev/null || $(CHECK) $(COPTS) sf.sfc
+    else
+	@$(CHECK) $(COPTS) sf.sfc
+    endif
 endif
 
 ifeq ($(PLATFORM),windows)
 	@certutil -hashfile sf.sfc SHA1
-else
+else ifneq ($(PLATFORM),djgpp)
 	@$(SHA1SUM) sf.sfc
 endif
 	@$(PRINT) "${BLINK}Build succeeded.$(NO_COL)$(NEWLINE)"
@@ -474,88 +512,77 @@ endif
 sf.msu:
 ifeq ($(MSU1),1)
 ifeq ($(PLATFORM),windows)
-	@$(MSUASM) -o "$(NOANSI) $(MSUFLAGS) MSUDATA\MSUDATA.ASM -o$@"
+	@$(MSUASM) -o "$(MSUFLAGS) MSUDATA\MSUDATA.ASM -o$@"
 else
-	@bash -c '\
-	if [ "$(QUIET)" = "true" ]; then \
-		$(MSUASM) -o "$(NOANSI) $(MSUFLAGS) MSUDATA\MSUDATA.ASM -o$@" > /dev/null 2>&1 || \
-		$(MSUASM) -o "$(NOANSI) $(MSUFLAGS) MSUDATA\MSUDATA.ASM -o$@"; \
-	else \
-		$(MSUASM) -o "$(NOANSI) $(MSUFLAGS) MSUDATA\MSUDATA.ASM -o$@"; \
-	fi'
+    ifneq ($(strip ${MSDOS}),)
+        ifeq ($(QUIET), true)
+	$(MSUASM) -o "$(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@" > /dev/null 2> /dev/null || \
+	$(MSUASM) -o "$(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@"
+        else
+	$(MSUASM) -o "$(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@"
+        endif
+    else
+        ifeq ($(QUIET), true)
+	$(MSUASM) $(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@ > /dev/null 2> /dev/null || \
+	$(MSUASM) $(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@
+        else
+	$(MSUASM) $(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@
+        endif
+    endif
 endif
 endif
 
 donebld: sf.sfc
-
-ifeq ($(PLATFORM),windows)
-	@copy sf.sfc ..\sf.sfc
+ifeq ($(PLATFORM),djgpp)
+	@copy sf.sfc ..\\sf.sfc
 	@del sf.sfc
-	@copy sf.msu ..\sf.msu
+	@copy sf.msu ..\\sf.msu
 	@del sf.msu
-	@if exist BANKS.CSV $(MV) BANKS.CSV ..\banks.csv
-	@$(MAPDEC) SF.MAP ..\symbols.txt
-	@$(DEL) SF.MAP
-	@$(DEL) MSGS.TXT
-	@$(DEL) MSG\GERMAN.MSG
-	@$(DEL) MSG\JAPANESE.MSG
+	@if exist BANKS.CSV $(MV) BANKS.CSV ..\\banks.csv
+else ifeq ($(PLATFORM),windows)
+	@copy sf.sfc ..\\sf.sfc
+	@del sf.sfc
+	@copy sf.msu ..\\sf.msu
+	@del sf.msu
+	@if exist BANKS.CSV $(MV) BANKS.CSV ..\\banks.csv
 else
 	@$(MV) sf.sfc ../sf.sfc
-	@$(MV) sf.msu ../sf.msu
+	@$(MV) sf.msu ../sf.msu || true
 	@{ [ -f BANKS.CSV ] && $(MV) BANKS.CSV ../banks.csv || true; }
-	@$(MAPDEC) SF.MAP ../symbols.txt
+endif
+	@$(MAPDEC) SF.MAP ..$(DIRSEP)symbols.txt
 	@$(DEL) SF.MAP
 	@$(DEL) MSGS.TXT
-	@$(DEL) MSG/GERMAN.MSG
-	@$(DEL) MSG/JAPANESE.MSG
-endif
+	@$(DEL) MSG$(DIRSEP)FRENCH.MSG
+	@$(DEL) MSG$(DIRSEP)GERMAN.MSG
+	@$(DEL) MSG$(DIRSEP)JAPANESE.MSG
 
 clean:
-
-ifeq ($(PLATFORM),windows)
-	@$(DEL) ..\sf.sfc
-	@$(DEL) ..\banks.csv
-	@$(DEL) BANK\*.SOB
-	@$(DEL) BANK\*.MAP 
+	@$(DEL) ..$(DIRSEP)sf.sfc
+	@$(DEL) ..$(DIRSEP)banks.csv
+	@$(DEL) BANK$(DIRSEP)*.SOB
+	@$(DEL) BANK$(DIRSEP)*.MAP 
 	@$(DEL) *.MAP
-	@$(DEL) MSPRITES\*.BIN
-	@$(DEL) DATA\*.CCR
-	@$(DEL) DATA\*.PCR
-	@$(DEL) DATA\FONT\MOJI_0.fon
-	@$(DEL) DATA\FONT\MOJI_D.fon
-	@$(DEL) DATA\COL\allcols.pac
+	@$(DEL) MSPRITES$(DIRSEP)*.BIN
+	@$(DEL) DATA$(DIRSEP)*.CCR
+	@$(DEL) DATA$(DIRSEP)*.PCR
+	@$(DEL) DATA$(DIRSEP)FONT$(DIRSEP)MOJI_0.fon
+	@$(DEL) DATA$(DIRSEP)FONT$(DIRSEP)MOJI_D.fon
+	@$(DEL) DATA$(DIRSEP)COL$(DIRSEP)allcols.pac
 	@$(DEL) sf.sfc
 	@$(DEL) BANKS.CSV
-	@$(DEL) ..\symbols.txt
-	@$(DEL) MSUDATA\MSUDATA.INC
-	@$(DEL) MSG\GERMAN.MSG
-	@$(DEL) MSG\JAPANESE.MSG
-
-else
-	@$(DEL) ../sf.sfc
-	@$(DEL) ../banks.csv
-	@$(DEL) BANK/*.SOB
-	@$(DEL) BANK/*.MAP *.MAP
-	@$(DEL) MSPRITES/*.BIN
-	@$(DEL) DATA/*.CCR
-	@$(DEL) DATA/*.PCR
-	@$(DEL) DATA/FONT/MOJI_0.fon
-	@$(DEL) DATA/FONT/MOJI_D.fon
-	@$(DEL) DATA/COL/allcols.pac
-	@$(DEL) sf.sfc
-	@$(DEL) BANKS.CSV
-	@$(DEL) ../symbols.txt
-	@$(DEL) MSUDATA/MSUDATA.INC
-	@$(DEL) MSG/GERMAN.MSG
-	@$(DEL) MSG/JAPANESE.MSG
-endif
+	@$(DEL) ..$(DIRSEP)symbols.txt
+	@$(DEL) MSUDATA$(DIRSEP)MSUDATA.INC
+	@$(DEL) MSG$(DIRSEP)FRENCH.MSG
+	@$(DEL) MSG$(DIRSEP)GERMAN.MSG
+	@$(DEL) MSG$(DIRSEP)JAPANESE.MSG
 
 upload:
-	@$(USB2SNES)	--upload ../sf.sfc --path ./sf.sfc
+	@$(USB2SNES) --upload ..$(DIRSEP)sf.sfc --path .$(DIRSEP)sf.sfc
 	@$(PRINT) "$(NEWLINE)"
 
 boot:
-	@$(USB2SNES) --boot ./sf.sfc
+	@$(USB2SNES) --boot .$(DIRSEP)sf.sfc
 	@$(PRINT) "$(NEWLINE)"
 
 ## The great big list of source files to detect changes for and whatnot
