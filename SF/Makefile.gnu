@@ -75,7 +75,8 @@ else ifeq ($(PLATFORM),windows)
 else ifneq ($(WINE),)
     MSDOS=$(WINE) ./dosbox-x.exe -fastlaunch -nolog
 else
-    MSDOS=$(shell which dosbox-x) -fastlaunch -nolog -showcycles -showrt -set "sdl videodriver=dummy" -set "cpu cycles=max"
+    MSDOS=$(shell which dosbox-x) -fastlaunch -nolog
+    #MSDOS=$(shell which dosbox-x) -fastlaunch -nolog -set "sdl videodriver=dummy" -set "cpu cycles=max"
 endif
 
 # Assembler
