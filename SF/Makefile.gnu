@@ -239,9 +239,28 @@ endef
 
 # Function to interleave FXGfx
 #	@$(PRINT) "$(GREEN)Interleaving FXGfx: $(YELLOW)$(1) + $(2) $(GREEN) -> $(BLUE)$@$(NO_COL)$(NEWLINE)"
+ifeq ($(QUIET), true)
+define merge
+	@$(MERGE) MSPRITES/$(1) MSPRITES/$(2) $@ > /dev/null 2> /dev/null || \
+	@$(MERGE) MSPRITES/$(1) MSPRITES/$(2) $@
+endef
+else
 define merge
 	@$(MERGE) MSPRITES/$(1) MSPRITES/$(2) $@
 endef
+endif
+
+DIR_PAL := DATA$(DIRSEP)COL$(DIRSEP)
+ifeq ($(QUIET), true)
+define makecol
+	@$(MC) $(DIR_PAL)$(1).COL $(2) $(3) > /dev/null 2> /dev/null || \
+	@$(MC) $(DIR_PAL)$(1).COL $(2) $(3)
+endef
+else
+define makecol
+	@$(MC) $(DIR_PAL)$(1).COL $(2) $(3)
+endef
+endif
 
 # Recipe to assemble a .ASM file and create a linkable .SOB file
 BANK/%.SOB: BANK/%.ASM
@@ -252,14 +271,14 @@ ifeq ($(PLATFORM),windows)
 else
     ifneq ($(strip ${MSDOS}),)
         ifeq ($(QUIET), true)
-	$(ASM) -o "$(ASMFLAGS) $< -v$@" > /dev/null 2> /dev/null || \
-	$(ASM) -o "$(ASMFLAGS) $< -v$@"
+	@$(ASM) -o "$(ASMFLAGS) $< -v$@" > /dev/null 2> /dev/null || \
+	@$(ASM) -o "$(ASMFLAGS) $< -v$@"
         else
 	$(ASM) -o "$(ASMFLAGS) $< -v$@"
         endif
     else
         ifeq ($(QUIET), true)
-	$(ASM) $(ASMFLAGS) $< -v$@ > /dev/null 2> /dev/null || $(ASM) $(ASMFLAGS) $< -v$@
+	@$(ASM) $(ASMFLAGS) $< -v$@ > /dev/null 2> /dev/null || $(ASM) $(ASMFLAGS) $< -v$@
         else
 	$(ASM) $(ASMFLAGS) $< -v$@
         endif
@@ -269,17 +288,28 @@ endif
 # Recipes to crunch graphics
 DATA/%.CCR: DATA/%.CGX
 #	$(call print,Crunching Tiles:,$<,$@)
+    ifeq ($(QUIET), true)
+	@$(CRU) $< DATA/$*.CCR > /dev/null 2> /dev/null || @$(CRU) $< DATA/$*.CCR
+    else
 	@$(CRU) $< DATA/$*.CCR
+    endif
 
 DATA/%.PCR: DATA/%.SCR
 #	$(call print,Crunching Screen:,$<,$@)
+    ifeq ($(QUIET), true)
+	@$(CRU) $< DATA/$*.PCR > /dev/null 2> /dev/null || @$(CRU) $< DATA/$*.PCR
+    else
 	@$(CRU) $< DATA/$*.PCR
+    endif
 
 # Recipe to convert BMP to FON
 DATA/FONT/%.fon: DATA/FONT/%.bmp
 #	$(call print,Encoding Font:,$<,$@)
+    ifeq ($(QUIET), true)
+	@$(FONT) $< > /dev/null 2> /dev/null || @$(FONT) $<
+    else
 	@$(FONT) $<
-
+    endif
 
 #!! If you add/remove a cgx/scr in these two lists, make sure to add/remove the corresponding file.
 # Crunched tilesets
@@ -370,7 +400,6 @@ init-allcols:
 
 # List of palette source files
 # Both of these lists must match SF/INC/KALCS.INC's list!!
-DIR_PAL := DATA$(DIRSEP)COL$(DIRSEP)
 ALLCOLS_PALETTES := \
  $(DIR_PAL)OOPS.COL \
  $(DIR_PAL)BG2-A.COL \
@@ -402,32 +431,32 @@ ALLCOLS_PALETTES := \
 # Palettes to include in ALLCOLS
 DATA/COL/allcols.pac: $(ALLCOLS_PALETTES)
 	$(call print3,Building ALLCOLS...)
-	@$(MC) $(DIR_PAL)OOPS.COL 0 2
-	@$(MC) $(DIR_PAL)BG2-A.COL 0 7
-	@$(MC) $(DIR_PAL)BG2-B.COL 0 13
-	@$(MC) $(DIR_PAL)BG2-C.COL 0 7
-	@$(MC) $(DIR_PAL)BG2-D.COL 0 7
-	@$(MC) $(DIR_PAL)BG2-E.COL 0 9
-	@$(MC) $(DIR_PAL)BG2-F.COL 0 7
-	@$(MC) $(DIR_PAL)BG2-G.COL 0 7
-	@$(MC) $(DIR_PAL)T-M.COL 0 7
-	@$(MC) $(DIR_PAL)T-M-2.COL 0 7
-	@$(MC) $(DIR_PAL)T-M-3.COL 0 7
-	@$(MC) $(DIR_PAL)T-M-4.COL 0 7
-	@$(MC) $(DIR_PAL)B-M.COL 0 7
-	@$(MC) $(DIR_PAL)LIGHT.COL 0 7
-	@$(MC) $(DIR_PAL)SPACE.COL 0 7
-	@$(MC) $(DIR_PAL)STARS.COL 0 7
-	@$(MC) $(DIR_PAL)CP.COL 0 7
-	@$(MC) $(DIR_PAL)CP-US.COL 0 7
-	@$(MC) $(DIR_PAL)CP-USP.COL 0 7
-	@$(MC) $(DIR_PAL)CP-P.COL 0 7
-	@$(MC) $(DIR_PAL)HOLE.COL 0 7
-	@$(MC) $(DIR_PAL)L.COL 0 7
-	@$(MC) $(DIR_PAL)E-TEST0.COL 0 7
-	@$(MC) $(DIR_PAL)E-TEST.COL 0 7
-	@$(MC) $(DIR_PAL)OBJ-1.COL 8 13
-	@$(MC) $(DIR_PAL)BG2-E-P.COL 0 9
+	$(call makecol,OOPS,0,2)
+	$(call makecol,BG2-A,0,7)
+	$(call makecol,BG2-B,0,13)
+	$(call makecol,BG2-C,0,7)
+	$(call makecol,BG2-D,0,7)
+	$(call makecol,BG2-E,0,9)
+	$(call makecol,BG2-F,0,7)
+	$(call makecol,BG2-G,0,7)
+	$(call makecol,T-M,0,7)
+	$(call makecol,T-M-2,0,7)
+	$(call makecol,T-M-3,0,7)
+	$(call makecol,T-M-4,0,7)
+	$(call makecol,B-M,0,7)
+	$(call makecol,LIGHT,0,7)
+	$(call makecol,SPACE,0,7)
+	$(call makecol,STARS,0,7)
+	$(call makecol,CP,0,7)
+	$(call makecol,CP-US,0,7)
+	$(call makecol,CP-USP,0,7)
+	$(call makecol,CP-P,0,7)
+	$(call makecol,HOLE,0,7)
+	$(call makecol,L,0,7)
+	$(call makecol,E-TEST0,0,7)
+	$(call makecol,E-TEST,0,7)
+	$(call makecol,OBJ-1,8,13)
+	$(call makecol,BG2-E-P,0,9)
 
 # Final step: Crunch all palettes into allcols.pac
 	@$(CRU) allcols.col DATA/COL/allcols.pac
@@ -472,14 +501,14 @@ ifeq ($(PLATFORM),windows)
 else
     ifneq ($(strip ${MSDOS}),)
         ifeq ($(QUIET), true)
-	$(LINK) -o "$(LOPTS) -o$@ @flist.tmp" > /dev/null 2> /dev/null || \
-	$(LINK) -o "$(LOPTS) -o$@ @flist.tmp"
+	@$(LINK) -o "$(LOPTS) -o$@ @flist.tmp" > /dev/null 2> /dev/null || \
+	@$(LINK) -o "$(LOPTS) -o$@ @flist.tmp"
         else
 	$(LINK) -o "$(LOPTS) -o$@ @flist.tmp"
         endif
     else
         ifeq ($(QUIET), true)
-	$(LINK) $(LOPTS) -o$@ @flist.tmp > /dev/null 2> /dev/null || $(LINK) $(LOPTS) -o$@ @flist.tmp
+	@$(LINK) $(LOPTS) -o$@ @flist.tmp > /dev/null 2> /dev/null || $(LINK) $(LOPTS) -o$@ @flist.tmp
         else
 	$(LINK) $(LOPTS) -o$@ @flist.tmp
         endif
@@ -535,15 +564,15 @@ ifeq ($(PLATFORM),windows)
 else
     ifneq ($(strip ${MSDOS}),)
         ifeq ($(QUIET), true)
-	$(MSUASM) -o "$(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@" > /dev/null 2> /dev/null || \
-	$(MSUASM) -o "$(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@"
+	@$(MSUASM) -o "$(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@" > /dev/null 2> /dev/null || \
+	@$(MSUASM) -o "$(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@"
         else
 	$(MSUASM) -o "$(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@"
         endif
     else
         ifeq ($(QUIET), true)
-	$(MSUASM) $(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@ > /dev/null 2> /dev/null || \
-	$(MSUASM) $(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@
+	@$(MSUASM) $(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@ > /dev/null 2> /dev/null || \
+	@$(MSUASM) $(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@
         else
 	$(MSUASM) $(MSUFLAGS) MSUDATA/MSUDATA.ASM -o$@
         endif
