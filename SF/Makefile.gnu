@@ -225,8 +225,8 @@ define print3
 endef
 
 # Function to interleave FXGfx
+#	@$(PRINT) "$(GREEN)Interleaving FXGfx: $(YELLOW)$(1) + $(2) $(GREEN) -> $(BLUE)$@$(NO_COL)$(NEWLINE)"
 define merge
-	@$(PRINT) "$(GREEN)Interleaving FXGfx: $(YELLOW)$(1) + $(2) $(GREEN) -> $(BLUE)$@$(NEWLINE)"
 	@$(MERGE) MSPRITES/$(1) MSPRITES/$(2) $@
 endef
 
@@ -255,16 +255,16 @@ endif
 
 # Recipes to crunch graphics
 DATA/%.CCR: DATA/%.CGX
-	$(call print,Crunching Tiles:,$<,$@)
+#	$(call print,Crunching Tiles:,$<,$@)
 	@$(CRU) $< DATA/$*.CCR
 
 DATA/%.PCR: DATA/%.SCR
-	$(call print,Crunching Screen:,$<,$@)
+#	$(call print,Crunching Screen:,$<,$@)
 	@$(CRU) $< DATA/$*.PCR
 
 # Recipe to convert BMP to FON
 DATA/FONT/%.fon: DATA/FONT/%.bmp
-	$(call print,Encoding Font:,$<,$@)
+#	$(call print,Encoding Font:,$<,$@)
 	@$(FONT) $<
 
 
@@ -314,7 +314,7 @@ SOBFILES= \
 all: welcome check-jobs text make-allcols msprites crunch fonts sf.msu sf.sfc donebld
 
 welcome:
-	@$(PRINT) "$(YELLOW)Welcome to UltraStarFox!!$(NO_COL)$(NEWLINE)"
+	@$(PRINT) "$(YELLOW)Welcome to UltraStarFox (Repzilon's fork)!!$(NO_COL)$(NEWLINE)"
 # Platform Detection
 ifeq ($(PLATFORM),windows)
 	@$(PRINT) "$(GREEN)You're on $(YELLOW)Windows!$(NO_COL)$(NEWLINE)"
@@ -325,7 +325,6 @@ else ifeq ($(PLATFORM),nix)
 else ifeq ($(PLATFORM),djgpp)
 	@$(PRINT) "$(GREEN)You're on $(YELLOW)DJGPP!$(NO_COL)$(NEWLINE)"
 endif
-
 
 # Check for job flags and print a warning
 check-jobs:
@@ -348,9 +347,9 @@ text:
 
 # Initialize allcols.col
 init-allcols:
-	@$(DEL) DATA$(DIRSEP)COL$(DIRSEP)allcols.col
-	@$(TOUCH) DATA$(DIRSEP)COL$(DIRSEP)allcols.col
-	@$(TOUCH) DATA$(DIRSEP)COL$(DIRSEP)col2.tmp
+	@$(DEL) allcols.col
+	@$(TOUCH) allcols.col
+	@$(TOUCH) col2.tmp
 
 
 # List of palette source files
@@ -415,16 +414,18 @@ DATA/COL/allcols.pac: $(ALLCOLS_PALETTES)
 	@$(MC) $(DIR_PAL)BG2-E-P.COL 0 9
 
 # Final step: Crunch all palettes into allcols.pac
-	@$(CRU) DATA/COL/allcols.col DATA/COL/allcols.pac
+	@$(CRU) allcols.col DATA/COL/allcols.pac
 	@$(PRINT) "$(GREEN)Palette crunching complete.$(NO_COL)$(NEWLINE)"
 
 make-allcols: init-allcols DATA/COL/allcols.pac
 
 # FXGFX files to be interleaved
 msprites: MSPRITES/TEX_01.BIN MSPRITES/TEX_23.BIN MSPRITES/TEX_23_A.BIN
+	$(call print3,Crunching all tiles then all screens...)
 
 # MSPRITES .BIN recipes
 MSPRITES/TEX_01.BIN:
+	$(call print3,Interleaving all FXGfx...)
 	$(call merge,tex_0.CGX,tex_1.CGX)
 
 MSPRITES/TEX_23.BIN:
@@ -435,6 +436,7 @@ MSPRITES/TEX_23_A.BIN:
 
 # Crunch all compressible GFX
 crunch: $(CCRFILES) $(PCRFILES)
+	$(call print3,Encoding all fonts...)
 
 # Convert fonts
 fonts: $(FONFILES)

@@ -59,6 +59,7 @@ SF/DATA/COL/col2.tmp
 SF/MSG/*.MSG
 SF/DATA/FONT/MOJI_*.fon
 SF/allcols.col
+SF/col2.tmp
 SF/flist.tmp
 symbols.txt
 
@@ -93,6 +94,7 @@ flips-latest.tar.gz
 # Downloaded SuperFamicheck
 TOOLS/sfcheck.tgz
 TOOLS/sfcheck.src/
+TOOLS/SuperFamicheck-*
 
 # Compiled tools
 TOOLS/bgconv/bin/palconv
