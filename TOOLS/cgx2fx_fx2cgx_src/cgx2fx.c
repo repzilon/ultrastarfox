@@ -2,6 +2,7 @@
 	this is based off of an old internal tool for yoshi's island to convert .ch7 to .cpc (fx interleaved format), now for fx textures.
 	this is basically merge.exe now, which is crazy! - @segaretro92	*/
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,7 +26,7 @@ unchar cf_ch7buf[CHRMAX];
 unchar cf_binbuf[BINMAX];
 
 /* Function prototypes */
-void process_cgx_file(const char *cgx_filename, unchar *ch7_buffer, size_t ch7_offset);
+long process_cgx_file(const char *cgx_filename, unchar *ch7_buffer, size_t ch7_offset);
 void convert_tile_to_ch7(const unchar *cgx_tile, unchar *ch7_tile);
 void reverse_chunks(unchar *buffer, size_t buffer_size);
 void convert_to_bin();
@@ -42,15 +43,15 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-	printf("Interleaving FXGfx data for %s...", argv[2]);
+	//printf("Interleaving FXGfx data for %s...\n", argv[2]);
 
     const char *input_cgx1 = argv[1];
     const char *input_cgx2 = argv[2];
     const char *output_bin = argv[3];
 
     /* Process both CGX files into the in-memory CH7 buffer */
-    process_cgx_file(input_cgx1, cf_ch7buf, 0);          // Fill the first half of ch7buf
-    process_cgx_file(input_cgx2, cf_ch7buf + CHRHALF, 0); // Fill the second half of ch7buf
+    long cgxSizes = process_cgx_file(input_cgx1, cf_ch7buf, 0);       // Fill the first half of ch7buf
+    cgxSizes += process_cgx_file(input_cgx2, cf_ch7buf + CHRHALF, 0); // Fill the second half of ch7buf
 
     /* Reverse swapped chunks in the CH7 buffer */
     reverse_chunks(cf_ch7buf, CHRMAX);
@@ -61,11 +62,13 @@ int main(int argc, char *argv[])
     /* Write the final CPC file, basically FX interleaved */
     write_bin_file(output_bin);
 
+    printf("%11ld%10d %3.0f%% %s + %s => %s\n", cgxSizes, BINMAX, ceil(BINMAX * 100.0 / cgxSizes), input_cgx1, input_cgx2, output_bin);
+
     return EXIT_SUCCESS;
 }
 
 /* Function to process a .CGX file and fill part of the CH7 buffer */
-void process_cgx_file(const char *cgx_filename, unchar *ch7_buffer, size_t ch7_offset) {
+long process_cgx_file(const char *cgx_filename, unchar *ch7_buffer, size_t ch7_offset) {
     FILE *cgx_file = fopen(cgx_filename, "rb");
     if (!cgx_file) {
         perror("Error opening .CGX file");
@@ -74,6 +77,10 @@ void process_cgx_file(const char *cgx_filename, unchar *ch7_buffer, size_t ch7_o
 
     unchar cgx_tile[TILE_SIZE_CGX];
     unchar ch7_tile[TILE_SIZE_CH7];
+
+    fseek(cgx_file, 0, SEEK_END);
+    long filesize = ftell(cgx_file);
+    fseek(cgx_file, 0, SEEK_SET);
 
     size_t bytes_read = 0;
     while (bytes_read < CGX_READ_LIMIT && fread(cgx_tile, 1, TILE_SIZE_CGX, cgx_file) == TILE_SIZE_CGX) {
@@ -84,6 +91,7 @@ void process_cgx_file(const char *cgx_filename, unchar *ch7_buffer, size_t ch7_o
     }
 
     fclose(cgx_file);
+    return filesize;
 }
 
 /* Function to convert a single CGX tile to CH7 format */

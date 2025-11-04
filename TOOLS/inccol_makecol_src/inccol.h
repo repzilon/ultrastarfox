@@ -21,7 +21,7 @@ void copyData(FILE *source, FILE *destination, long startOffset, long endOffset)
     free(buffer);
 }
 
-int inccol_common(int argc, char** argv, const char* destination, const char* mode)
+int inccol_common(int argc, char** argv, const char* destination, const char* mode, long* sourceSize, long* destSize, long* destBegin)
 {
     if (argc != 4) {
         fprintf(stderr, "Usage: %s <file_name> <start_offset> <end_offset>\n", argv[0]);
@@ -45,7 +45,16 @@ int inccol_common(int argc, char** argv, const char* destination, const char* mo
         return EXIT_FAILURE;
     }
 
+    fseek(destinationFile, 0, SEEK_END);
+    *destBegin = ftell(destinationFile);
+    fseek(destinationFile, 0, SEEK_SET);
+
     copyData(sourceFile, destinationFile, startOffset, endOffset);
+
+    fseek(sourceFile, 0, SEEK_END);
+    *sourceSize = ftell(sourceFile);
+    fseek(destinationFile, 0, SEEK_END);
+    *destSize = ftell(destinationFile);
 
     fclose(sourceFile);
     fclose(destinationFile);
