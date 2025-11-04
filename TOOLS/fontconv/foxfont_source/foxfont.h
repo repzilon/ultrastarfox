@@ -37,9 +37,9 @@
 
 // -------- function declarations --------- //
 
-FILE * openBitmap(char *fileName, unsigned char *bppOut);
+FILE * openBitmap(char *, unsigned char *, unsigned int *);
 char * font_createOutputFileName(char *);
-void convertBMP2Fon(FILE *, char *, unsigned char bpp);
+void convertBMP2Fon(FILE *, char *, char *, unsigned char, unsigned int);
 
 // -------- bitmap file structure --------- //
 

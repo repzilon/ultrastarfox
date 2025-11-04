@@ -6,6 +6,7 @@
 //  (everything8215@gmail.com)
 //
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -198,13 +199,13 @@ int main(int argc, const char* argv[])
             "by everything8215 (everything8215@gmail.com)\n"
             "usage: sf_crunch input.cgx output.ccr\n"
         );
-        return 0;
+        return 64;
     }
 	
-	// added by Sunlit, printf's status so it doesn't look weird executed en masse
+	/* added by Sunlit, printf's status so it doesn't look weird executed en masse
     if (argc == 3) {
-        printf("Crunching %s...", argv[2]);
-    }
+        printf("Crunching %s...\n", argv[2]);
+    }// */
     
     const char* i_filename = argv[1];
     const char* o_filename = argv[2];
@@ -212,7 +213,7 @@ int main(int argc, const char* argv[])
     FILE* i_file = fopen(i_filename, "rb");
     if (!i_file) {
         printf("error opening input file: %s\n", i_filename);
-        return 0;
+        return 66;
     }
 
     // get data offset (end of data)
@@ -220,8 +221,8 @@ int main(int argc, const char* argv[])
     s_length = (int)ftell(i_file);
     
     if (s_length >= 0x10000) {
-        puts("unable to decompress files longer than 64k");
-        return 0;
+        puts("unable to compress files longer than 64k");
+        return 65;
     }
     
     // copy file to source buffer
@@ -236,6 +237,9 @@ int main(int argc, const char* argv[])
     FILE* o_file = fopen(o_filename, "wb");
     fwrite(cru_dest, 1, cru_d, o_file);
     fclose(o_file);
+
+    // Added by Repzilon, output stats after compression, like advcancecomp
+    printf("%11d%10d %3.0f%% %s => %s\n", s_length, cru_d, ceil(cru_d * 100.0 / s_length), argv[1], argv[2]);
 
     return 0;
 }

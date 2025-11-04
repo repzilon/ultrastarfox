@@ -1,3 +1,4 @@
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h> // fix by sunlit
 #include <string.h>
@@ -20,16 +21,17 @@ int main(int argc, char *argv[])
 
 	// verify input bitmap, set file pointer fpBitmap to start of pixel data
 	unsigned char bpp; // used as an 8-bit integer, not a character
-	FILE * fpBitmap = openBitmap(argv[1], &bpp);
+	unsigned int bmpSize;
+	FILE * fpBitmap = openBitmap(argv[1], &bpp, &bmpSize);
 
 	// convert 8bpp or 4bpp to 2bpp and save to disk
-	convertBMP2Fon(fpBitmap, outputFileName, bpp);
+	convertBMP2Fon(fpBitmap, argv[1], outputFileName, bpp, bmpSize);
 
 	puts("PROGRAM ERROR: Foxfont ended unexpectedly.");
 	exit(EX_SOFTWARE);
 }
 
-void convertBMP2Fon(FILE * fpBitmap, char * outputFileName, unsigned char bpp)
+void convertBMP2Fon(FILE * fpBitmap, char * inputFileName, char * outputFileName, unsigned char bpp, unsigned int inputSize)
 {
 	// ============================================
 	// flip bitmap pixel data so it's easier to use
@@ -172,17 +174,19 @@ void convertBMP2Fon(FILE * fpBitmap, char * outputFileName, unsigned char bpp)
 
 	// save 2bpp outBuff to output file
 	fwrite(outBuff, 1, BMPWDTH * BMPHGHT / 4, fpFont);
+	fseek(fpFont, 0, SEEK_END);
+	long outputSize = ftell(fpFont);
 	fclose(fpFont);
 
 	// don't need output buffer anymore
 	free(outBuff);
 
-	printf("Foxfont done, output: %s\n", outputFileName);
+	printf("%11u%10ld %3.0f%% %s => %s\n", inputSize, outputSize, ceil(outputSize * 100.0 / inputSize), inputFileName, outputFileName);
 
 	exit(EX_OK);
 }
 
-FILE * openBitmap(char *fileName, unsigned char *bppOut)
+FILE * openBitmap(char *fileName, unsigned char *bppOut, unsigned int *sizeOut)
 {
 	// ==============================================
 	// open fileName and verify bmp header data
@@ -197,7 +201,7 @@ FILE * openBitmap(char *fileName, unsigned char *bppOut)
 
 	// get filesize for error detection
 	fseek(fpBitmap, 0, SEEK_END);
-	unsigned int fileSize = (unsigned int)ftell(fpBitmap);
+	*sizeOut = (unsigned int)ftell(fpBitmap);
 	fseek(fpBitmap, 0, SEEK_SET);
 
 	BMP_FILE_HEADER bmp_header;
@@ -223,20 +227,20 @@ FILE * openBitmap(char *fileName, unsigned char *bppOut)
 		exit(EX_DATAERR);
 	}
 
-	if (fileSize != bmp_header.file_size) {
+	if (*sizeOut != bmp_header.file_size) {
 		printf("ERROR: \"%s\" file size does not match internal header file size.\n", fileName);
 		fclose(fpBitmap);
 		exit(EX_DATAERR);
 	}
 
 	if (bmp_header.bits == 8) {
-		if (fileSize < bmp_header.offset + BMPWDTH*BMPHGHT) {
+		if (*sizeOut < bmp_header.offset + BMPWDTH*BMPHGHT) {
 			printf("ERROR: \"%s\" file too small to hold %dx%d font data.\n", fileName, BMPWDTH, BMPHGHT);
 			fclose(fpBitmap);
 			exit(EX_DATAERR);
 		}
 	} else if (bmp_header.bits == 4) {
-		if (fileSize < bmp_header.offset + (BMPWDTH*BMPHGHT/2)) {
+		if (*sizeOut < bmp_header.offset + (BMPWDTH*BMPHGHT/2)) {
 			printf("ERROR: \"%s\" file too small to hold %dx%d font data.\n", fileName, BMPWDTH, BMPHGHT);
 			fclose(fpBitmap);
 			exit(EX_DATAERR);
