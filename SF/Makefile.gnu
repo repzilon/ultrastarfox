@@ -35,7 +35,7 @@ NOANSI=
 MSU1 ?= 0
 
 # Use the RobFX integrated multipurpose build tool from Repzilon's fork?
-USEROBFX ?= 0
+USEROBFX ?= 1
 
 # Newline character to use (adjust this if newlines aren't working in your terminal)
 # TODO : handle colors on DJGPP
@@ -92,70 +92,83 @@ MSUFLAGS=$(NOANSI) -m30 -e__heap=14400 -e__notitle
 LINK=$(MSDOS) ARGLINK.EXE
 LOPTS=-b30 -h1024 -t7d -z
 
-ifeq ($(USEROBFX), 1)
+DIR_TOOLBIN := ..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)
 
+# Checksum Fixer
+ifeq ($(PLATFORM),windows)
+    CHECK=.../bin/superfamicheck.exe
+else
+    CHECK=$(DIR_TOOLBIN)superfamicheck
+endif
+COPTS=-s -f
+
+ifeq ($(USEROBFX), 1)
+    ifeq ($(PLATFORM),djgpp)
+        ROBFXB=..$(DIRSEP)BIN$(DIRSEP)robfxb$(EXE)
+    else
+        ROBFXB=..$(DIRSEP)TOOLS$(DIRSEP)robfx.src$(DIRSEP)robfxb$(EXE)
+    endif
+
+    EXTEND=$(ROBFXB) extend
+    MERGE=$(ROBFXB) cgx2fx
+    CRU=$(ROBFXB) cru
+    FONT=$(ROBFXB) fon
+    MAPDEC=$(ROBFXB) mapdec
+    MC=$(ROBFXB) apendcol
+    CHRMAP=$(ROBFXB) chrmap
 else
 # ROM Extender
     ifeq ($(PLATFORM),windows)
         EXTEND=../win_bin/romextender.exe
     else
-        EXTEND=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)romExtender2
-    endif
-
-# Checksum Fixer
-    ifeq ($(PLATFORM),windows)
-        CHECK=.../bin/superfamicheck.exe
-    else
-        CHECK=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)superfamicheck
+        EXTEND=$(DIR_TOOLBIN)romExtender2
     endif
 
 # FXGFX Interleaver
     ifeq ($(PLATFORM),windows)
         MERGE=..\win_bin\cgx2fx.exe
     else
-        MERGE=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)cgx2fx
+        MERGE=$(DIR_TOOLBIN)cgx2fx
     endif
 
 # Graphics Cruncher
     ifeq ($(PLATFORM),windows)
         CRU=..\win_bin\sf_crunch.exe
     else
-        CRU=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)sf_crunch
+        CRU=$(DIR_TOOLBIN)sf_crunch
     endif
 
 # ALLCOLS Builder
     ifeq ($(PLATFORM),windows)
         MC=DATA\COL\MC.BAT
     else
-        MC=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)apendcol
+        MC=$(DIR_TOOLBIN)apendcol
     endif
 
 # Font Converter
     ifeq ($(PLATFORM),windows)
         FONT=../win_bin/foxfont.exe
     else
-        FONT=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)foxfont
+        FONT=$(DIR_TOOLBIN)foxfont
     endif
 
 # Argonaut .MAP File Decoder
     ifeq ($(PLATFORM),windows)
         MAPDEC=..\win_bin\argonautmapdecoder.exe
     else
-        MAPDEC=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)argonautmapdec
+        MAPDEC=$(DIR_TOOLBIN)argonautmapdec
     endif
 
 # Script Tokenizer
     ifeq ($(PLATFORM),windows)
         CHRMAP=..\win_bin\chrmap.exe
     else
-        CHRMAP=..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)chrmap
+        CHRMAP=$(DIR_TOOLBIN)chrmap
     endif
 endif
 
 # Extended size in Mbits, byte to pad with
 EXTOPTS= --auto ff
-
-COPTS=-s -f
 
 # USB2SNES CLI Utility
 USB2SNES=../bin/usb2snes-cli.exe
@@ -325,12 +338,15 @@ else ifeq ($(PLATFORM),nix)
 else ifeq ($(PLATFORM),djgpp)
 	@$(PRINT) "$(GREEN)You're on $(YELLOW)DJGPP!$(NO_COL)$(NEWLINE)"
 endif
+ifeq ($(USEROBFX),1)
+	@$(PRINT) "$(GREEN)Introducing the integrated multipurpose build tool, $(YELLOW)RobFX!$(NO_COL)$(NEWLINE)"
+endif
 
 # Check for job flags and print a warning
 check-jobs:
 ifeq ($(PLATFORM), windows)
 else
-	@$(PRINT) "$(GREEN)Checking parallel build jobs...$(NO_COL)$(NEWLINE)"
+	$(call print3,Checking parallel build jobs...)
 	@case "$(MAKEFLAGS)" in \
 		*-j*) \
 			$(PRINT) "$(RED)WARNING: A parallel job count greater than 1 may cause issues!!$(NO_COL)$(NEWLINE)"; \
@@ -415,7 +431,7 @@ DATA/COL/allcols.pac: $(ALLCOLS_PALETTES)
 
 # Final step: Crunch all palettes into allcols.pac
 	@$(CRU) allcols.col DATA/COL/allcols.pac
-	@$(PRINT) "$(GREEN)Palette crunching complete.$(NO_COL)$(NEWLINE)"
+	$(call print3,Palette crunching complete.)
 
 make-allcols: init-allcols DATA/COL/allcols.pac
 
