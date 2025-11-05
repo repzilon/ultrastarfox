@@ -16,14 +16,11 @@ else ifeq ($(OS),Windows_NT)
 else
     # Assume *nix if not Windows
     PLATFORM := nix
+    UNAME_S := $(shell uname)
 endif
 
 # Silence the assembler+linker unless an error occurs
 QUIET ?= false
-
-ifneq ($(PLATFORM),windows)
-    UNAME_S := $(shell uname)
-endif
 
 # Whether to colorize build messages
 COLOR ?= 1
@@ -34,12 +31,13 @@ NOANSI=
 # Build MSU-1 data file?
 MSU1 ?= 0
 
-# Use the RobFX integrated multipurpose build tool from Repzilon's fork?
-USEROBFX ?= 1
+# Use the RobFX integrated multi-purpose build tool from Repzilon's fork?
+USEROBFX ?= 0
 
 # Newline character to use (adjust this if newlines aren't working in your terminal)
 # TODO : handle colors on DJGPP
 ifeq ($(PLATFORM),djgpp)
+	NEWLINE=\r\n
     DIRSEP=\\
     EXE=.EXE
 else ifeq ($(PLATFORM),windows)
@@ -48,7 +46,7 @@ else ifeq ($(PLATFORM),windows)
     DIRSEP=\\
     EXE=.exe
 else ifeq ($(PLATFORM),msys2)
-    # If we detect MSYS, handle disabling asssembler ANSI codes internally in INC/HEADER.INC and use the correct newline
+    # If we detect MSYS, handle disabling assembler ANSI codes internally in INC/HEADER.INC and use the correct newline
     NOANSI=
     NEWLINE=\r\n
     DIRSEP=/
@@ -79,6 +77,26 @@ else
     #MSDOS=$(shell which dosbox-x) -fastlaunch -nolog -set "sdl videodriver=dummy" -set "cpu cycles=max"
 endif
 
+## Common tool directories
+# Essential MS-DOS binaries
+DIR_USFBIN := ..$(DIRSEP)BIN$(DIRSEP)
+# Per-platform community built binaries
+ifeq ($(PLATFORM),djgpp)
+    DIR_TOOLBIN := ..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)msdos$(DIRSEP)
+else ifeq ($(PLATFORM),windows)
+    DIR_TOOLBIN := ..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)windows$(DIRSEP)
+else
+    DIR_TOOLBIN := ..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)
+endif
+# Main toolchain directory, selected per platform
+ifeq ($(PLATFORM),djgpp)
+    DIR_TOOLCHAIN := $(DIR_USFBIN)
+else ifeq ($(PLATFORM),windows)
+    DIR_TOOLCHAIN := ..$(DIRSEP)win_bin$(DIRSEP)
+else
+    DIR_TOOLCHAIN := $(DIR_TOOLBIN)
+endif
+
 # Assembler
 ASM=$(MSDOS) ARGSFXX.EXE
 # Setup heap for SASM and export symbols for ARGSFX
@@ -92,19 +110,19 @@ MSUFLAGS=$(NOANSI) -m30 -e__heap=14400 -e__notitle
 LINK=$(MSDOS) ARGLINK.EXE
 LOPTS=-b30 -h1024 -t7d -z
 
-DIR_TOOLBIN := ..$(DIRSEP)TOOLS$(DIRSEP)binaries$(DIRSEP)$(UNAME_S)$(DIRSEP)
-
 # Checksum Fixer
-ifeq ($(PLATFORM),windows)
-    CHECK=.../bin/superfamicheck.exe
+ifeq ($(PLATFORM),djgpp)
+    CHECK=$(DIR_USFBIN)sfcheck$(EXE)
+else ifeq ($(PLATFORM),windows)
+    CHECK=../bin/superfamicheck$(EXE)
 else
-    CHECK=$(DIR_TOOLBIN)superfamicheck
+    CHECK=$(DIR_TOOLBIN)superfamicheck$(EXE)
 endif
 COPTS=-s -f
 
 ifeq ($(USEROBFX), 1)
     ifeq ($(PLATFORM),djgpp)
-        ROBFXB=..$(DIRSEP)BIN$(DIRSEP)robfxb$(EXE)
+        ROBFXB=$(DIR_USFBIN)robfxb$(EXE)
     else
         ROBFXB=..$(DIRSEP)TOOLS$(DIRSEP)robfx.src$(DIRSEP)robfxb$(EXE)
     endif
@@ -118,53 +136,47 @@ ifeq ($(USEROBFX), 1)
     CHRMAP=$(ROBFXB) chrmap
 else
 # ROM Extender
-    ifeq ($(PLATFORM),windows)
-        EXTEND=../win_bin/romextender.exe
+    ifeq ($(PLATFORM),djgpp)
+        EXTEND=$(DIR_TOOLCHAIN)extend$(EXE)
+    else ifeq ($(PLATFORM),windows)
+        EXTEND=$(DIR_TOOLCHAIN)romextender$(EXE)
     else
-        EXTEND=$(DIR_TOOLBIN)romExtender2
+        EXTEND=$(DIR_TOOLCHAIN)romExtender2$(EXE)
     endif
 
 # FXGFX Interleaver
-    ifeq ($(PLATFORM),windows)
-        MERGE=..\win_bin\cgx2fx.exe
-    else
-        MERGE=$(DIR_TOOLBIN)cgx2fx
-    endif
+    MERGE=$(DIR_TOOLCHAIN)cgx2fx$(EXE)
 
 # Graphics Cruncher
-    ifeq ($(PLATFORM),windows)
-        CRU=..\win_bin\sf_crunch.exe
+    ifeq ($(PLATFORM),djgpp)
+        CRU=$(DIR_TOOLCHAIN)cru$(EXE)
     else
-        CRU=$(DIR_TOOLBIN)sf_crunch
+        CRU=$(DIR_TOOLCHAIN)sf_crunch$(EXE)
     endif
 
 # ALLCOLS Builder
     ifeq ($(PLATFORM),windows)
         MC=DATA\COL\MC.BAT
     else
-        MC=$(DIR_TOOLBIN)apendcol
+        MC=$(DIR_TOOLBIN)apendcol$(EXE)
     endif
 
 # Font Converter
-    ifeq ($(PLATFORM),windows)
-        FONT=../win_bin/foxfont.exe
+    ifeq ($(PLATFORM),djgpp)
+        FONT=$(DIR_TOOLCHAIN)fon$(EXE)
     else
-        FONT=$(DIR_TOOLBIN)foxfont
+        FONT=$(DIR_TOOLCHAIN)foxfont$(EXE)
     endif
 
 # Argonaut .MAP File Decoder
-    ifeq ($(PLATFORM),windows)
-        MAPDEC=..\win_bin\argonautmapdecoder.exe
+    ifeq ($(PLATFORM),djgpp)
+        MAPDEC=$(DIR_TOOLCHAIN)mapdec$(EXE)
     else
-        MAPDEC=$(DIR_TOOLBIN)argonautmapdec
+        MAPDEC=$(DIR_TOOLCHAIN)argonautmapdec$(EXE)
     endif
 
 # Script Tokenizer
-    ifeq ($(PLATFORM),windows)
-        CHRMAP=..\win_bin\chrmap.exe
-    else
-        CHRMAP=$(DIR_TOOLBIN)chrmap
-    endif
+    CHRMAP=$(DIR_TOOLCHAIN)chrmap$(EXE)
 endif
 
 # Extended size in Mbits, byte to pad with
@@ -176,7 +188,9 @@ USB2SNES=../bin/usb2snes-cli.exe
 # Terminal-specific commands
 
 # Print Command
-ifeq ($(PLATFORM),windows)
+ifeq ($(PLATFORM),djgpp)
+    PRINT ?= ..$(DIRSEP)BIN$(DIRSEP)printf.exe
+else ifeq ($(PLATFORM),windows)
     PRINT ?= ..\win_bin\printf.exe
 else
     PRINT ?= printf
@@ -204,6 +218,7 @@ endif
 ifeq ($(PLATFORM),djgpp)
     TOUCH=copy NUL
 else ifeq ($(PLATFORM),windows)
+# FIXME : for Windows NT CMD, a macro doing «type nul >>file & copy file +,,» is needed
     TOUCH=copy NUL
 else
     TOUCH=touch
@@ -285,13 +300,23 @@ else
     endif
 endif
 
+# I have no idea why it is needed with DJGPP for tiles and screens, and
+# not for neither assembly source nor bitmap fonts.
+ifeq ($(PLATFORM),djgpp)
+DATA/%.CGX:
+	true
+
+DATA/%.SCR:
+	true
+endif
+
 # Recipes to crunch graphics
 DATA/%.CCR: DATA/%.CGX
 #	$(call print,Crunching Tiles:,$<,$@)
     ifeq ($(QUIET), true)
 	@$(CRU) $< DATA/$*.CCR > /dev/null 2> /dev/null || @$(CRU) $< DATA/$*.CCR
     else
-	@$(CRU) $< DATA/$*.CCR
+	@$(CRU) $< $@
     endif
 
 DATA/%.PCR: DATA/%.SCR
@@ -374,7 +399,8 @@ endif
 
 # Check for job flags and print a warning
 check-jobs:
-ifeq ($(PLATFORM), windows)
+ifeq ($(PLATFORM), djgpp)
+else ifeq ($(PLATFORM), windows)
 else
 	$(call print3,Checking parallel build jobs...)
 	@case "$(MAKEFLAGS)" in \
@@ -393,10 +419,10 @@ text:
 
 # Initialize allcols.col
 init-allcols:
+	$(call print3,Building ALLCOLS...)
 	@$(DEL) allcols.col
 	@$(TOUCH) allcols.col
 	@$(TOUCH) col2.tmp
-
 
 # List of palette source files
 # Both of these lists must match SF/INC/KALCS.INC's list!!
@@ -430,7 +456,6 @@ ALLCOLS_PALETTES := \
 
 # Palettes to include in ALLCOLS
 DATA/COL/allcols.pac: $(ALLCOLS_PALETTES)
-	$(call print3,Building ALLCOLS...)
 	$(call makecol,OOPS,0,2)
 	$(call makecol,BG2-A,0,7)
 	$(call makecol,BG2-B,0,13)
@@ -459,7 +484,7 @@ DATA/COL/allcols.pac: $(ALLCOLS_PALETTES)
 	$(call makecol,BG2-E-P,0,9)
 
 # Final step: Crunch all palettes into allcols.pac
-	@$(CRU) allcols.col DATA/COL/allcols.pac
+	$(CRU) allcols.col DATA/COL/allcols.pac
 	$(call print3,Palette crunching complete.)
 
 make-allcols: init-allcols DATA/COL/allcols.pac
@@ -605,25 +630,54 @@ endif
 	@$(DEL) MSG$(DIRSEP)GERMAN.MSG
 	@$(DEL) MSG$(DIRSEP)JAPANESE.MSG
 
+# It is miserable I cannot use $(DIRSEP) here and must resort to
+# command duplication
 clean:
-	@$(DEL) ..$(DIRSEP)sf.sfc
-	@$(DEL) ..$(DIRSEP)banks.csv
-	@$(DEL) BANK$(DIRSEP)*.SOB
-	@$(DEL) BANK$(DIRSEP)*.MAP 
+ifeq ($(PLATFORM),djgpp)
+	@$(DEL) ..\sf.sfc
+	@$(DEL) ..\banks.csv
+	@$(DEL) BANK\*.SOB
+	@$(DEL) BANK\*.MAP 
 	@$(DEL) *.MAP
-	@$(DEL) MSPRITES$(DIRSEP)*.BIN
-	@$(DEL) DATA$(DIRSEP)*.CCR
-	@$(DEL) DATA$(DIRSEP)*.PCR
-	@$(DEL) DATA$(DIRSEP)FONT$(DIRSEP)MOJI_0.fon
-	@$(DEL) DATA$(DIRSEP)FONT$(DIRSEP)MOJI_D.fon
-	@$(DEL) DATA$(DIRSEP)COL$(DIRSEP)allcols.pac
+	@$(DEL) MSPRITES\*.BIN
+	@$(DEL) DATA\*.CCR
+	@$(DEL) DATA\*.PCR
+	@$(DEL) DATA\FONT\MOJI_0.fon
+	@$(DEL) DATA\FONT\MOJI_D.fon
+	@$(DEL) DATA\COL\allcols.col
+	@$(DEL) DATA\COL\allcols.pac
+	@$(DEL) DATA\allcols.col
+	@$(DEL) DATA\allcols.pac
 	@$(DEL) sf.sfc
 	@$(DEL) BANKS.CSV
-	@$(DEL) ..$(DIRSEP)symbols.txt
-	@$(DEL) MSUDATA$(DIRSEP)MSUDATA.INC
-	@$(DEL) MSG$(DIRSEP)FRENCH.MSG
-	@$(DEL) MSG$(DIRSEP)GERMAN.MSG
-	@$(DEL) MSG$(DIRSEP)JAPANESE.MSG
+	@$(DEL) ..\symbols.txt
+	@$(DEL) MSUDATA\MSUDATA.INC
+	@$(DEL) MSG\FRENCH.MSG
+	@$(DEL) MSG\GERMAN.MSG
+	@$(DEL) MSG\JAPANESE.MSG
+else
+	@$(DEL) ../sf.sfc
+	@$(DEL) ../banks.csv
+	@$(DEL) BANK/*.SOB
+	@$(DEL) BANK/*.MAP 
+	@$(DEL) *.MAP
+	@$(DEL) MSPRITES/*.BIN
+	@$(DEL) DATA/*.CCR
+	@$(DEL) DATA/*.PCR
+	@$(DEL) DATA/FONT/MOJI_0.fon
+	@$(DEL) DATA/FONT/MOJI_D.fon
+	@$(DEL) DATA/COL/allcols.col
+	@$(DEL) DATA/COL/allcols.pac
+	@$(DEL) DATA/allcols.col
+	@$(DEL) DATA/allcols.pac
+	@$(DEL) sf.sfc
+	@$(DEL) BANKS.CSV
+	@$(DEL) ../symbols.txt
+	@$(DEL) MSUDATA/MSUDATA.INC
+	@$(DEL) MSG/FRENCH.MSG
+	@$(DEL) MSG/GERMAN.MSG
+	@$(DEL) MSG/JAPANESE.MSG
+endif
 
 upload:
 	@$(USB2SNES) --upload ..$(DIRSEP)sf.sfc --path .$(DIRSEP)sf.sfc

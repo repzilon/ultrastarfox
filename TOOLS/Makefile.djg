@@ -9,8 +9,10 @@ CFLAGS_HARDEN := -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -
 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 \
 -fstack-protector-strong \
 -fno-delete-null-pointer-checks -fno-strict-overflow -fno-strict-aliasing \
--Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion \
+-Werror=incompatible-pointer-types -Werror=int-conversion \
 -fstack-clash-protection -Wtrampolines
+# Flags exclusive to C language, not to be used for C++
+CCFLAGS_HARDEN := -Werror=implicit
 # -fvisibility=hidden is unavailable on static linking systems (DOS)
 CXXFLAGS_OPTIM := $(CFLAGS_OPTIM)
 CXXFLAGS_HARDEN := $(CFLAGS_HARDEN) -D_GLIBCXX_ASSERTIONS
@@ -25,13 +27,14 @@ ifneq ($(strip ${DJGPP}),)
   SRC_SFDECRUNCH := cru_src/sf_dec~1.c
   SRC_EXTEND := extend~1/romExt~1.c
   SRC_FOXFONT := Fontconv/foxfon~1/Foxfont.c
-  SRC_INCCOL := inccol~2/inccol.c
-  SRC_MAKECOL := inccol~2/Makecol.c
-  SRC_APENDCOL := inccol~2/apendcol.c
+  SRC_INCCOL := inccol~1/inccol.c
+  SRC_MAKECOL := inccol~1/Makecol.c
+  SRC_APENDCOL := inccol~1/apendcol.c
   SRC_MAPDEC := mapdec~1/argona~1.c
   SRC_CGX2FX := cgx2fx~1/Cgx2fx.c
   SRC_FX2CGX := cgx2fx~1/Fx2cgx.c
   SRC_SFCHECK := sfcheck.src/src/sfcRom.cpp sfcheck.src/src/superf~1.cpp
+  SRC_PRINTF := fbsdprtf.src/printf.c
   # Other setup. Note: "del" must be lowercase even in DOS
   RM := del
   CP := copy /y
@@ -50,6 +53,7 @@ else
   SRC_CGX2FX := cgx2fx_fx2cgx_src/Cgx2fx.c
   SRC_FX2CGX := cgx2fx_fx2cgx_src/Fx2cgx.c
   SRC_SFCHECK := sfcheck.src/src/sfcRom.cpp sfcheck.src/src/superfamicheck.cpp
+  SRC_PRINTF := fbsdprtf.src/printf.c
   # Windows 9x, go the DJGPP route please
   # I really mean an NT-based Windows here
   ifeq (${OS},Windows_NT)
@@ -75,7 +79,7 @@ else
   endif
 endif
 
-COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_HARDEN)
+COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_HARDEN) $(CCFLAGS_HARDEN)
 CPLUSPLUS := $(CXX) $(CXXFLAGS_OPTIM) $(CXXFLAGS_HARDEN)
 $(info Compiler and flags: $(COMPILE))
 DESTBIN := ..$(DIRSEP)bin$(DIRSEP)
@@ -85,7 +89,7 @@ BINDIR := binaries$(DIRSEP)msdos$(DIRSEP)
 
 all: $(BINDIR)cru.exe $(BINDIR)decru.exe $(BINDIR)cgx2fx.exe $(BINDIR)fx2cgx.exe
 
-install: $(DESTBIN)chrmap.exe $(DESTBIN)cru.exe $(DESTBIN)extend.exe $(DESTBIN)fon.exe $(DESTBIN)inccol.exe $(DESTBIN)makecol.exe $(DESTBIN)apendcol.exe $(DESTBIN)mapdec.exe $(DESTBIN)cgx2fx.exe $(DESTBIN)sfcheck.exe
+install: $(DESTBIN)chrmap.exe $(DESTBIN)cru.exe $(DESTBIN)extend.exe $(DESTBIN)fon.exe $(DESTBIN)inccol.exe $(DESTBIN)makecol.exe $(DESTBIN)apendcol.exe $(DESTBIN)mapdec.exe $(DESTBIN)cgx2fx.exe $(DESTBIN)printf.exe $(DESTBIN)sfcheck.exe
 
 $(BINDIR)cru.exe: $(SRC_SFCRUNCH)
 	$(COMPILE) $< -o $@
@@ -120,6 +124,9 @@ $(BINDIR)apendcol.exe: $(SRC_APENDCOL)
 $(BINDIR)mapdec.exe: $(SRC_MAPDEC)
 	$(COMPILE) $< -o $@
 
+$(BINDIR)printf.exe: $(SRC_PRINTF)
+	$(COMPILE) $< -o $@
+
 $(DESTBIN)chrmap.exe: $(BINDIR)chrmap.exe
 	$(CP) $< $(DESTBIN)
 
@@ -145,6 +152,9 @@ $(DESTBIN)mapdec.exe: $(BINDIR)mapdec.exe
 	$(CP) $< $(DESTBIN)
 
 $(DESTBIN)cgx2fx.exe: $(BINDIR)cgx2fx.exe
+	$(CP) $< $(DESTBIN)
+
+$(DESTBIN)printf.exe: $(BINDIR)printf.exe
 	$(CP) $< $(DESTBIN)
 
 # Source is at https://www.github.com/Optiroc/SuperFamicheck/

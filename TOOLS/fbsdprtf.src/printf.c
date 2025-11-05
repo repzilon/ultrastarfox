@@ -39,7 +39,9 @@
 #include <sys/types.h>
 
 #include <ctype.h>
+#ifndef __DJGPP__
 #include <err.h>
+#endif
 #include <errno.h>
 #include <inttypes.h>
 #include <limits.h>
@@ -67,6 +69,14 @@
 	else								\
 		(void)printf(f, func);					\
 } while (0)
+
+#ifdef __DJGPP__
+// It is unfortunate I cannot concatenate in a single call with "printf: " (msg) "\n"
+#define warnx(msg) fputs("printf: ", stderr); fputs((msg), stderr); fputs("\n", stderr)
+#define warnxf(f_, ...) fputs("printf: ", stderr); fprintf(stderr, (f_), ##__VA_ARGS__); fputs("\n", stderr)
+#else
+#define warnxf warnx
+#endif
 
 static int	 asciicode(void);
 static char	*printf_doformat(char *, int *);
@@ -338,7 +348,7 @@ printf_doformat(char *fmt, int *rval)
 		mod_ldbl = 1;
 		fmt++;
 		if (!strchr("aAeEfFgG", *fmt)) {
-			warnx("bad modifier L for %%%c", *fmt);
+			warnxf("bad modifier L for %%%c", *fmt);
 			return (NULL);
 		}
 	} else {
@@ -363,7 +373,7 @@ printf_doformat(char *fmt, int *rval)
 		/* Convert "b" to "s" for output. */
 		start[strlen(start) - 1] = 's';
 		if ((p = strdup(getstr())) == NULL) {
-			warnx("%s", strerror(ENOMEM));
+			warnxf("%s", strerror(ENOMEM));
 			return (NULL);
 		}
 		getout = escape(p, 0, &len);
@@ -422,7 +432,7 @@ printf_doformat(char *fmt, int *rval)
 		break;
 	}
 	default:
-		warnx("illegal format character %c", convch);
+		warnxf("illegal format character %c", convch);
 		return (NULL);
 	}
 	*fmt = nextch;
@@ -442,7 +452,7 @@ mknum(char *str, char ch)
 	if (len > copy_size) {
 		newlen = ((len + 1023) >> 10) << 10;
 		if ((newcopy = realloc(copy, newlen)) == NULL) {
-			warnx("%s", strerror(ENOMEM));
+			warnxf("%s", strerror(ENOMEM));
 			return (NULL);
 		}
 		copy = newcopy;
@@ -559,7 +569,7 @@ getint(int *ip)
 		return (1);
 	rval = 0;
 	if (val < INT_MIN || val > INT_MAX) {
-		warnx("%s: %s", *gargv, strerror(ERANGE));
+		warnxf("%s: %s", *gargv, strerror(ERANGE));
 		rval = 1;
 	}
 	*ip = (int)val;
@@ -590,15 +600,15 @@ getnum(intmax_t *ip, uintmax_t *uip, int signedconv)
 	else
 		*uip = strtoumax(*gargv, &ep, 0);
 	if (ep == *gargv) {
-		warnx("%s: expected numeric value", *gargv);
+		warnxf("%s: expected numeric value", *gargv);
 		rval = 1;
 	}
 	else if (*ep != '\0') {
-		warnx("%s: not completely converted", *gargv);
+		warnxf("%s: not completely converted", *gargv);
 		rval = 1;
 	}
 	if (errno == ERANGE) {
-		warnx("%s: %s", *gargv, strerror(ERANGE));
+		warnxf("%s: %s", *gargv, strerror(ERANGE));
 		rval = 1;
 	}
 	++gargv;
@@ -626,14 +636,14 @@ getfloating(long double *dp, int mod_ldbl)
 	else
 		*dp = strtod(*gargv, &ep);
 	if (ep == *gargv) {
-		warnx("%s: expected numeric value", *gargv);
+		warnxf("%s: expected numeric value", *gargv);
 		rval = 1;
 	} else if (*ep != '\0') {
-		warnx("%s: not completely converted", *gargv);
+		warnxf("%s: not completely converted", *gargv);
 		rval = 1;
 	}
 	if (errno == ERANGE) {
-		warnx("%s: %s", *gargv, strerror(ERANGE));
+		warnxf("%s: %s", *gargv, strerror(ERANGE));
 		rval = 1;
 	}
 	++gargv;
@@ -645,12 +655,18 @@ asciicode(void)
 {
 	int ch;
 	wchar_t wch;
+#ifndef __DJGPP__
 	mbstate_t mbs;
+#endif
 
 	ch = (unsigned char)**gargv;
 	if (ch == '\'' || ch == '"') {
+#ifdef __DJGPP__
+		switch (mbtowc(&wch, *gargv + 1, MB_LEN_MAX)) {
+#else
 		memset(&mbs, 0, sizeof(mbs));
 		switch (mbrtowc(&wch, *gargv + 1, MB_LEN_MAX, &mbs)) {
+#endif
 		case (size_t)-2:
 		case (size_t)-1:
 			wch = (unsigned char)gargv[0][1];
