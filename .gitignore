@@ -120,6 +120,7 @@ TOOLS/robfx?
 BIN/robfxb
 TOOLS/binaries/Darwin
 TOOLS/binaries/Linux
+TOOLS/fbsdprtf.src/printf
 
 # Removed Windows executables
 dosbox-x.exe
