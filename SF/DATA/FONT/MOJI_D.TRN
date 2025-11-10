@@ -117,8 +117,8 @@
 
 ;             D0  D1  D2  D3  D4  D5  D6  D7
 ;             Ð   Ñ   Ò   Ó   Ô   Õ   Ö   ×
-;             D^  N^  O^  O^  O^  O^  O^  x
-    MOJI     $0D,$17,$18,$18,$18,$18,$18,$3F
+;             D^  N^  O^  Ó^  O^  O^  O^  x
+    MOJI     $0D,$17,$18,$7D,$18,$18,$18,$3F
 
 ;             D8  D9  DA  DB  DC  DD  DE  DF
 ;             Ø   Ù   Ú   Û   Ü   Ý   Þ   ß     ; 2 mapped German letters here

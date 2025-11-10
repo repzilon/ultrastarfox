@@ -32,7 +32,7 @@ perfecttxt	txt	14,<PARFAIT//>
 slippytxt	txt	14,<SLIPPY>
 peppytxt	txt	14,<PEPPY>
 falcotxt	txt	14,<FALCO>
-deadtxt		txt	14,<EST MORT>
+deadtxt		txt	14,<ABATTU>
 stagetxt	txt	14,<ETAPE>
 	ENDC
 
@@ -53,20 +53,20 @@ deadtxt	txt	14,<IS DOWN>
 stagetxt	txt	14,<STAGE>
 	ENDC
 	
-	IFNE	SPANISH			
+	IFNE	SPANISH
 pausetxt	txt	14,<EN PAUSA>		;spanish pause
-scoretxt	txt	14,<SCORE>		;spanish score
+scoretxt	txt	14,<PUNTOS>		;spanish score
 totalscoretxt	txt	14,<PUNTUACION>		;spanish total score
 slashtxt	txt	14,</>
 percenttxt	txt	14,<PORCENTAJE>
-bonustxt	txt	14,<BONUS 1 CREDIT>
-teamtxt	txt	14,<ESTADO DEL EQUIPO>
+bonustxt	txt	14,<BONUS 1 CRÉDITO>
+teamtxt	txt	14,<ESCUDO DEL EQUIPO>
 percenttxt2	txt	14,<%>
 perfecttxt	txt	14,<PERFECTO//>
 slippytxt	txt	14,<SLIPPY>
 peppytxt	txt	14,<PEPPY>
 falcotxt	txt	14,<FALCO>
-deadtxt	txt	14,<ESTA MUERTO>
+deadtxt	txt	14,<ABATIDO>
 stagetxt	txt	14,<ETAPA>
 	ENDC
 
@@ -134,7 +134,7 @@ msgnum	=	1
 	ENDC
 
 	IFNE	spanish			;if spanish = 1
-	include	MSG\spanish.inc		;use spanish message file
+	include	MSG\spanish.msg		;use spanish message file
 	ENDC
 
 	IFNE	JAPANESE

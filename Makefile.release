@@ -20,13 +20,17 @@ french: releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA\ to\ Canada)\ (
 	sha256sum SF-*.SFC
 	@echo "Slippy peut jouer des deux bords de l'Atlantique"
 
+spanish: releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe\ to\ Spain)\ (Rev\ 1)\ $(VER).bps
+	sha256sum SF-*.SFC
+	@echo "Ahora, no hay solamente Vortex en castellano"
+
 roms: SF-U.SFC SF-J.SFC SF-E.SFC SF-G.SFC
 	sha256sum SF-*.SFC
 	@echo "UltraStarFox ROMs built"
 
-allroms: SF-U.SFC SF-J.SFC SF-E.SFC SF-G.SFC SF-F.SFC SF-C.SFC
+allroms: SF-U.SFC SF-J.SFC SF-E.SFC SF-G.SFC SF-F.SFC SF-C.SFC SF-S.SFC
 	sha256sum SF-*.SFC
-	@echo "UltraStarFox ROMs (with French) built"
+	@echo "UltraStarFox ROMs (with French and Spanish) built"
 
 # The UltraStarFox builds cannot be done in parallel because its build 
 # system can only use the same intermediate directory. Do not replace 
@@ -57,6 +61,11 @@ SF-F.SFC: SF/CONFIG/REL_FRA.INC
 	mv SF.SFC $@
 
 SF-C.SFC: SF/CONFIG/REL_CAN.INC
+	cp -f $< SF/CONFIG/RELEASE.INC
+	make -f Makefile
+	mv SF.SFC $@
+
+SF-S.SFC: SF/CONFIG/REL_ESP.INC
 	cp -f $< SF/CONFIG/RELEASE.INC
 	make -f Makefile
 	mv SF.SFC $@
@@ -116,6 +125,10 @@ releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe\ to\ France)\ (Rev\ 
 	@echo "Making PAL rev 1 to PAL-F patches..."
 	./flips/flips --create --bps-delta "./baseroms/Starwing (Europe) (Rev 1).sfc" SF-F.SFC "$@"
 
+releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Europe\ to\ Spain)\ (Rev\ 1)\ $(VER).bps: flips/flips baseroms/Starwing\ (Europe)\ (Rev\ 1).sfc SF-S.SFC releases/Release\ $(VER)/PAL\ Patches
+	@echo "Making PAL rev 1 to PAL-S patches..."
+	./flips/flips --create --bps-delta "./baseroms/Starwing (Europe) (Rev 1).sfc" SF-S.SFC "$@"
+
 releases/Release\ $(VER)/PAL\ Patches/UltraStarFox\ (Germany)\ $(VER).bps: flips/flips baseroms/Starwing\ (Germany).sfc SF-G.SFC releases/Release\ $(VER)/PAL\ Patches
 	@echo "Making PAL-G patches..."
 	./flips/flips --create --bps-delta "./baseroms/Starwing (Germany).sfc" SF-G.SFC "$@"
@@ -136,6 +149,7 @@ clean-patches:
 	rm -f SF-G.SFC
 	rm -f SF-F.SFC
 	rm -f SF-C.SFC
+	rm -f SF-S.SFC
 	rm -f releases/Release*/*Patches/UltraStarFox*.bps
 
 clean: clean-sf clean-patches clean-flips

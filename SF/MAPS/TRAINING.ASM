@@ -21,19 +21,19 @@ trnmapmsgcnt = 1
 ; that would hang the test for minutes before resuming
 
 	REPT	87
-	mapwait	1500
+	mapwait	1875
 	mapmsg	trnmapmsgcnt
 trnmapmsgcnt = trnmapmsgcnt+1
 	ENDR	; skip [88; 92]
 trnmapmsgcnt = 93
 	REPT	105-93+1; last would be 105
-	mapwait	1500
+	mapwait	1875
 	mapmsg	trnmapmsgcnt
 trnmapmsgcnt = trnmapmsgcnt+1
 	ENDR	; skip [106; 116]
 trnmapmsgcnt = 117
 	REPT	totalmsgs-117+1
-	mapwait	1500
+	mapwait	1875
 	mapmsg	trnmapmsgcnt
 trnmapmsgcnt = trnmapmsgcnt+1
 	ENDR

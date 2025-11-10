@@ -7,6 +7,7 @@
 0xC8 = "È" // Cap. E w/grave
 0xC9 = "É" // Cap. E w/acute
 0xCF = "Ï" // Cap. I w/diaresis (not an umlaut, this is not German)
+0xD3 = "Ó" // Cap. O w/acute
 0xDC = "Ü" // Cap. U w/umlaut or diaresis
 0xDF = "ß" // Eszett
 0xE0 = "à" // Lwr. A w/grave
