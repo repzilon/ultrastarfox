@@ -6,9 +6,9 @@ typedef unsigned char byte;
 
 #if 'B' == ROBFX_EDITION_C
 	#define ROBFX_EDITION "Build"
-	const byte kAppletCount = 9;
+	const byte kAppletCount = 10;
 	// DJGPP names
-	const char* kApplets[] = { "chrmap", "cru", "extend", "fon", "inccol", "makecol", "apendcol", "mapdec", "cgx2fx" };
+	const char* kApplets[] = { "chrmap", "cru", "extend", "fon", "inccol", "makecol", "apendcol", "mapdec", "cgx2fx", "printf" };
 
 	// Prototypes
 	#include "../inccol_makecol_src/inccol.h"
@@ -21,6 +21,7 @@ typedef unsigned char byte;
 	int appendcol_main(int argc, char** argv);
 	int mapdecoder_main(int argc, char** argv);
 	int cgx2fx_main(int argc, char** argv);
+	int fbsdprintf_main(int argc, char** argv);
 #elif 'T' == ROBFX_EDITION_C
 	#define ROBFX_EDITION "Tool"
 	const byte kAppletCount = 7;
@@ -72,36 +73,38 @@ typedef unsigned char byte;
 
 void output_logo()
 {
-	puts("RobFX UltraStarFox multi-call binary, v0.2 " ROBFX_EDITION " Edition " QUAD "\n"
-		"2025 Repzilon. Credits: Everything, Phonymike, Segaretro92 and Sunlitspace542.\n"
+	puts("RobFX UltraStarFox multi-call binary, v0.3 " ROBFX_EDITION " Edition " QUAD "\n"
+		"2025 Repzilon. Credits: Everything, Phonymike, Segaretro92, Sunlitspace542\n"
+		"and FreeBSD contributors.\n"
 	);
 }
 
 void output_usage()
 {
-	puts("NAME\n\tRobFX - UltraStarFox tool multi-call executable\n\n"
+	puts("NAME\n\tRobFX - UltraStarFox integrated multipurpose tool\n\n"
 		"SYNOPSIS\n\trobfx <command> [<command arguments...>]\n\n"
 		"DESCRIPTION\n\tRobFX combines several separate tools used for building or helping\n"
 		"\tdevelopment with UltraStarFox into a single executable, smaller in size\n"
 		"\tthan the sum of the standalone tools. On *nix operating systems, links\n"
 		"\t(hard or symbolic) can be named like the standalone utilities and\n"
 		"\tpointing to the RobFX binary. RobFX would then act like the utility it\n"
-		"\treplaces. This program uses the same principle as BusyBox.\n"
+		"\treplaces. This program works in a similar fashion to BusyBox.\n"
 	);
 	//puts("OPTIONS\n\t\n");
 	puts("COMMANDS\n\tCan be one of the following in the " ROBFX_EDITION " edition:");
-	printf("\t");
+	fputs("\t", stdout);
 	for (byte i = 0; i < kAppletCount; i++) {
 		if (i > 0) {
-			printf(", ");
+			fputs((i % 9) == 0 ? ",\n\t" : ", ", stdout);
 		}
-		printf("%s", kApplets[i]);
+		fputs(kApplets[i], stdout);
 	}
 	puts(".\n\tCommand names are case-insensitive to accommodate DOS and Windows.\n");
 	//puts("ENVIRONMENT\n\t\n");
-	puts("EXIT STATUS\n\t0 on command success, 1 when this general help message is shown.\n"
-		"\tNon-zero value is generally returned on command failure, but read the\n"
-		"\tsource code of the individual tools to be sure."
+	puts("EXIT STATUS\n\t0 on command success, 1 when this general help message is shown and 2\n"
+		"\twhen invoking an unimplemented subcommand. Non-zero value is generally\n"
+		"\treturned on subcommand failure, but read the source code of the\n"
+		"\tindividual tools to be sure."
 	);
 	//puts("EXAMPLES\n\t\n");
 	//puts("COMPATIBILITY\n\t\n");
@@ -150,6 +153,8 @@ int pivot_applet(const char* applet_name, byte shift_args, int main_argc, char* 
 		return mapdecoder_main(new_argc, new_argv);
 	} else if (strcasecmp(applet_name, "cgx2fx") == 0) {
 		return cgx2fx_main(new_argc, new_argv);
+	} else if (strcasecmp(applet_name, "printf") == 0) {
+		return fbsdprintf_main(new_argc, new_argv);
 	} else {
 #elif 'T' == ROBFX_EDITION_C
 	if (strcasecmp(applet_name, "palconv") == 0) {

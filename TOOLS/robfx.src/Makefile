@@ -26,6 +26,7 @@ ifneq ($(strip ${DJGPP}),)
   SRC_PALCONV := ../palcon~1/palconv.c
   SRC_FOXCHR := ../mugconv/foxchr~1/foxchr.c
   SRC_UNMERGE := ../unmerg~1/fxedit~1.c
+  SRC_FREEBSDPRINTF := ../fbsdprtf.src/printf.c
 else
   CC := $(shell which cc)
   CFLAGS_OPTIM := -O2 -pipe -fomit-frame-pointer
@@ -69,6 +70,7 @@ else
   SRC_PALCONV := ../palconv_src/palconv.c
   SRC_FOXCHR := ../mugconv/foxchr_source/foxchr.c
   SRC_UNMERGE := ../unmerge_src/fxedit_v2.c
+  SRC_FREEBSDPRINTF := ../fbsdprtf.src/printf.c
 endif
 
 CFLAGS_HARDEN := -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -Werror=format-security \
@@ -117,8 +119,10 @@ else
   endif
 endif
 
-ROBFXB_SOURCES := robfx.c $(SRC_CHRMAP) $(SRC_SFCRUNCH) $(SRC_EXTEND) $(SRC_FOXFONT) $(SRC_INCCOL) $(SRC_MAKECOL) $(SRC_APENDCOL) $(SRC_MAPDEC) $(SRC_CGX2FX)
-ROBFXT_SOURCES := robfx.c $(SRC_PALCONV) $(SRC_SFCRUNCH) $(SRC_SFDECRUNCH) $(SRC_FOXCHR) $(SRC_CGX2FX) $(SRC_FX2CGX) $(SRC_FOXFONT)
+ROBFXB_SOURCES := robfx.c $(SRC_CHRMAP) $(SRC_SFCRUNCH) $(SRC_EXTEND) $(SRC_FOXFONT) $(SRC_INCCOL) \
+$(SRC_MAKECOL) $(SRC_APENDCOL) $(SRC_MAPDEC) $(SRC_CGX2FX) $(SRC_FREEBSDPRINTF)
+ROBFXT_SOURCES := robfx.c $(SRC_PALCONV) $(SRC_SFCRUNCH) $(SRC_SFDECRUNCH) $(SRC_FOXCHR) $(SRC_CGX2FX) \
+$(SRC_FX2CGX) $(SRC_FOXFONT)
 ROBFXS_SOURCES := robfx.c $(SRC_EXTEND) $(SRC_INCCOL) $(SRC_MAPDEC) $(SRC_UNMERGE) $(SRC_CHRMAP)
 
 all: robfxb$(EXE) robfxt$(EXE)

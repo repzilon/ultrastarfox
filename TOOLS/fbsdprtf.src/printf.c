@@ -100,7 +100,11 @@ static char **gargv;
 static char **maxargv;
 
 int
+#ifdef ROBFX
+fbsdprintf_main(int argc, char** argv)
+#else
 main(int argc, char *argv[])
+#endif
 {
 	size_t len;
 	int end, rval;
