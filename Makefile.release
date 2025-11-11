@@ -28,7 +28,7 @@ roms: SF-U.SFC SF-J.SFC SF-E.SFC SF-G.SFC
 	sha256sum SF-*.SFC
 	@echo "UltraStarFox ROMs built"
 
-allroms: SF-U.SFC SF-J.SFC SF-E.SFC SF-G.SFC SF-F.SFC SF-C.SFC SF-S.SFC
+allroms: SF-U.SFC SF-J.SFC SF-E.SFC SF-G.SFC SF-F.SFC SF-FC.SFC SF-S.SFC
 	sha256sum SF-*.SFC
 	@echo "UltraStarFox ROMs (with French and Spanish) built"
 
@@ -40,12 +40,12 @@ SF-U.SFC: SF/CONFIG/REL_USA.INC
 	make -f Makefile
 	mv SF.SFC $@
 
-SF-J.SFC: SF/CONFIG/REL_JAP.INC
+SF-J.SFC: SF/CONFIG/REL_JPN.INC
 	cp -f $< SF/CONFIG/RELEASE.INC
 	make -f Makefile
 	mv SF.SFC $@
 
-SF-E.SFC: SF/CONFIG/REL_EUR.INC
+SF-E.SFC: SF/CONFIG/REL_EEE.INC
 	cp -f $< SF/CONFIG/RELEASE.INC
 	make -f Makefile
 	mv SF.SFC $@
@@ -60,7 +60,7 @@ SF-F.SFC: SF/CONFIG/REL_FRA.INC
 	make -f Makefile
 	mv SF.SFC $@
 
-SF-C.SFC: SF/CONFIG/REL_CAN.INC
+SF-FC.SFC: SF/CONFIG/REL_CAN.INC
 	cp -f $< SF/CONFIG/RELEASE.INC
 	make -f Makefile
 	mv SF.SFC $@
@@ -101,9 +101,9 @@ releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA)\ (Rev\ 2)\ $(VER).bps:
 	@echo "Making USA rev 2 patches..."
 	./flips/flips --create --bps-delta "./baseroms/Star Fox (USA) (Rev 2).sfc" SF-U.SFC "$@"
 
-releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA\ to\ Canada)\ (Rev\ 2)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (USA)\ (Rev\ 2).sfc SF-C.SFC releases/Release\ $(VER)/USA\ Patches
+releases/Release\ $(VER)/USA\ Patches/UltraStarFox\ (USA\ to\ Canada)\ (Rev\ 2)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (USA)\ (Rev\ 2).sfc SF-FC.SFC releases/Release\ $(VER)/USA\ Patches
 	@echo "Making USA rev 2 to Canada French patches..."
-	./flips/flips --create --bps-delta "./baseroms/Star Fox (USA) (Rev 2).sfc" SF-C.SFC "$@"
+	./flips/flips --create --bps-delta "./baseroms/Star Fox (USA) (Rev 2).sfc" SF-FC.SFC "$@"
 
 releases/Release\ $(VER)/Japan\ Patches/UltraStarFox\ (Japan)\ $(VER).bps: flips/flips baseroms/Star\ Fox\ (Japan).sfc SF-J.SFC releases/Release\ $(VER)/Japan\ Patches
 	@echo "Making JP rev 0 patches..."
@@ -149,6 +149,7 @@ clean-patches:
 	rm -f SF-G.SFC
 	rm -f SF-F.SFC
 	rm -f SF-C.SFC
+	rm -f SF-FC.SFC
 	rm -f SF-S.SFC
 	rm -f releases/Release*/*Patches/UltraStarFox*.bps
 
