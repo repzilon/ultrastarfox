@@ -17,9 +17,9 @@ ifneq ($(strip ${DJGPP}),)
   SRC_SFDECRUNCH := ../cru_src/sf_dec~1.c
   SRC_EXTEND := ../extend~1/romExt~1.c
   SRC_FOXFONT := ../Fontconv/foxfon~1/Foxfont.c
-  SRC_INCCOL := ../inccol~2/inccol.c
-  SRC_MAKECOL := ../inccol~2/Makecol.c
-  SRC_APENDCOL := ../inccol~2/apendcol.c
+  SRC_INCCOL := ../inccol~1/inccol.c
+  SRC_MAKECOL := ../inccol~1/Makecol.c
+  SRC_APENDCOL := ../inccol~1/apendcol.c
   SRC_MAPDEC := ../mapdec~1/argona~1.c
   SRC_CGX2FX := ../cgx2fx~1/Cgx2fx.c
   SRC_FX2CGX := ../cgx2fx~1/Fx2cgx.c

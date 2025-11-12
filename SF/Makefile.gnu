@@ -32,10 +32,9 @@ NOANSI=
 MSU1 ?= 0
 
 # Use the RobFX integrated multi-purpose build tool from Repzilon's fork?
-USEROBFX ?= 0
+USEROBFX ?= 1
 
 # Newline character to use (adjust this if newlines aren't working in your terminal)
-# TODO : handle colors on DJGPP
 ifeq ($(PLATFORM),djgpp)
 	NEWLINE=\r\n
     DIRSEP=\\
@@ -188,12 +187,14 @@ USB2SNES=../bin/usb2snes-cli.exe
 # Terminal-specific commands
 
 # Print Command
-ifeq ($(PLATFORM),djgpp)
+ifeq ($(PLATFORM),nix)
+    PRINT ?= printf
+else ifeq ($(USEROBFX),1)
+    PRINT ?= $(ROBFXB) printf
+else ifeq ($(PLATFORM),djgpp)
     PRINT ?= ..$(DIRSEP)BIN$(DIRSEP)printf.exe
 else ifeq ($(PLATFORM),windows)
     PRINT ?= ..\win_bin\printf.exe
-else
-    PRINT ?= printf
 endif
 
 # Move Command
@@ -218,7 +219,7 @@ endif
 ifeq ($(PLATFORM),djgpp)
     TOUCH=copy NUL
 else ifeq ($(PLATFORM),windows)
-# FIXME : for Windows NT CMD, a macro doing «type nul >>file & copy file +,,» is needed
+# FIXME : for Windows NT CMD, a macro doing ï¿½type nul >>file & copy file +,,ï¿½ is needed
     TOUCH=copy NUL
 else
     TOUCH=touch
