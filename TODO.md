@@ -53,6 +53,6 @@ Spanish Translation
 -------------------
 - [x] Extract and apply Quintana's translation available on RHDN
 - [ ] Integrate to the build system ==WIP==
-- [ ] Complete dialog text using earlier translations
+- [x] Complete dialog text using earlier translations
 - [ ] Make Spanish version of the graphics
-- [ ] Help wanted: translate end sequence (boss roll)
+- [ ] Help wanted: translate end sequence (boss roll) ==WIP==
