@@ -28,9 +28,10 @@ Miscellaneous hacks
 - [x] Port buildrelease.cmd to a Makefile and generate localized patches from it
 - [ ] Skip scramble sequence by pressing Start
 - [ ] Better boss roll demo through training (background music, select level with controller mode, return to controls screen with Start)
-- [ ] Document foxfont width calculation
+- [x] Document foxfont width calculation
 - [ ] Experiment with RNC ProPack (better graphics compression)
 - [ ] Create a tool to extract tiles, screen and font from ROM images (e.g. early ROM hacks)
+- [ ] Enable the use special ABLR letters for buttons in communication messages
 - [ ] MUCH Later: automated bank bin packing
 - [ ] MUCH Later: raise the cap to 24 fps on NTSC by implementing a telecine-inspired approach
 
