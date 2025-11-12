@@ -69,11 +69,11 @@ endif
 ifeq ($(PLATFORM),djgpp)
     MSDOS=
 else ifeq ($(PLATFORM),windows)
-    MSDOS=dosbox-x.exe -fastlaunch -nolog
+    MSDOS=dosbox-x.exe -headless
 else ifneq ($(WINE),)
-    MSDOS=$(WINE) ./dosbox-x.exe -fastlaunch -nolog
+    MSDOS=$(WINE) ./dosbox-x.exe -headless
 else
-    MSDOS=$(shell which dosbox-x) -fastlaunch -nolog
+    MSDOS=$(shell which dosbox-x) -headless
     #MSDOS=$(shell which dosbox-x) -fastlaunch -nolog -set "sdl videodriver=dummy" -set "cpu cycles=max"
 endif
 
