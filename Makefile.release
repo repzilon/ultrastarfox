@@ -50,7 +50,7 @@ SF-E.SFC: SF/CONFIG/REL_EEE.INC
 	make -f Makefile
 	mv SF.SFC $@
 
-SF-G.SFC: SF/CONFIG/REL_GER.INC
+SF-G.SFC: SF/CONFIG/REL_DEU.INC
 	cp -f $< SF/CONFIG/RELEASE.INC
 	make -f Makefile
 	mv SF.SFC $@
