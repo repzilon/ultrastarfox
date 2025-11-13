@@ -1,6 +1,8 @@
 // Follows ISO-8859-15, for use with the overhauled MOJI_D.*
 0xA1 = "¡" // Inverted exclmation mark (Spanish)
+0xA3 = "£" // Pound currency sign
 0xA8 = "š" // Lwr. S w/caron (different from ISO-8859-1)
+0xAE = "®" // Registered trademark sign
 0xB8 = "ž" // Lwr. Z w/caron (different from ISO-8859-1)
 0xBD = "œ" // Lwr. O & E ligature (different from ISO-8859-1)
 0xBF = "¿" // Inverted question mark (Spanish)
