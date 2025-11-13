@@ -640,7 +640,8 @@ trainingmes
 	dw	espr-sprsbase
 	dw	nspr-sprsbase
 	dw	ospr-sprsbase
-	elseif
+	endc
+	ifeq	french+spanish
 	dw	tspr-sprsbase
 	dw	rspr-sprsbase
 	dw	aspr-sprsbase
