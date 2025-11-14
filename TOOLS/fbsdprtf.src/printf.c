@@ -39,7 +39,7 @@
 #include <sys/types.h>
 
 #include <ctype.h>
-#ifndef __DJGPP__
+#if !defined(__DJGPP__) && !defined(_WIN32)
 #include <err.h>
 #endif
 #include <errno.h>
@@ -49,8 +49,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef _WIN32
 #include <unistd.h>
+#endif
 #include <wchar.h>
+
+#ifdef _WIN32
+#include "getopt.h"
+#endif
 
 #ifdef SHELL
 #define	main printfcmd
@@ -70,7 +76,7 @@
 		(void)printf(f, func);					\
 } while (0)
 
-#ifdef __DJGPP__
+#if defined(__DJGPP__) || defined(_WIN32)
 // It is unfortunate I cannot concatenate in a single call with "printf: " (msg) "\n"
 #define warnx(msg) fputs("printf: ", stderr); fputs((msg), stderr); fputs("\n", stderr)
 #define warnxf(f_, ...) fputs("printf: ", stderr); fprintf(stderr, (f_), ##__VA_ARGS__); fputs("\n", stderr)
@@ -212,7 +218,11 @@ printf_doformat(char *fmt, int *rval)
 	static const char skip1[] = "#'-+ 0";
 	int fieldwidth, haveprec, havewidth, mod_ldbl, precision;
 	char convch, nextch;
+#ifdef _MSC_VER
+	char* start = calloc(strlen(fmt) + 1, sizeof(char));
+#else
 	char start[strlen(fmt) + 1];
+#endif
 	char **fargv;
 	char *dptr;
 	int l;
