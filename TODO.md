@@ -15,14 +15,14 @@ Tool porting
 - [x] Try to build UltraStarFox on a retro PC/VM
 - [x] Regroup the home-grown tools into a single executable
 - [ ] Improve compatibility and backport to C ARGLINK_REWRITE from LuigiBlood ==WIP==
-- [ ] Tool build system for Windows (Visual Studio solution, Makefiles or CMake)
+- [ ] Tool build system for Windows (Visual Studio solution, Makefiles or CMake) ==WIP==
 
 Host toolchain
 --------------
 - [x] GNU Makefile for building UltraStarFox on Linux and macOS
 - [ ] Windows port
 - [ ] MSYS port
-- [ ] Windows DOSBox-X executable with Wine under Linux
+- [ ] Windows DOSBox-X headless fork executable with Wine under Linux
 - [ ] Make Argonaut programs happy with DJGPP GNU Make (investigate HX DOS extender)
 - [ ] Update top-level Makefiles
 - [ ] Merge from upstream branch modernized-toolchain-poc

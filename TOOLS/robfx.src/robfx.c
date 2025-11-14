@@ -64,11 +64,19 @@ typedef unsigned char byte;
 	#else
 		#define TARGETLIBC "musl"
 	#endif
+#elif defined(_WIN32)
+	#ifdef _MSC_VER
+		#define TARGETLIBC "msvc"
+	#endif
 #endif
 #ifdef TARGETLIBC
 	#define QUAD TRIPLET "-" TARGETLIBC
 #elif !defined(QUAD)
 	#define QUAD TRIPLET
+#endif
+
+#ifdef _MSC_VER
+#define strcasecmp _stricmp
 #endif
 
 void output_logo()
