@@ -15,7 +15,7 @@ Tool porting
 - [x] Try to build UltraStarFox on a retro PC/VM
 - [x] Regroup the home-grown tools into a single executable
 - [ ] Improve compatibility and backport to C ARGLINK_REWRITE from LuigiBlood ==WIP==
-- [ ] Tool build system for Windows (Visual Studio solution, Makefiles or CMake)
+- [ ] Tool build system for Windows (Visual Studio solution, Makefiles or CMake) ==WIP==
 
 Miscellaneous hacks
 -------------------
