@@ -11,10 +11,23 @@ Tool porting
 - [x] Add a kitchensink target in the TOOLS Makefile
 - [x] Remove duplicated DOS/DJGPP binaries in TOOLS that are also in BIN
 - [x] Test the Makefiles under Linux
-- [ ] Provide a Makefile for (cross-)compiling tools on DJGPP. Important: keep the existing executables in the repository so anybody with a modern computer can still build the game without the pain of setting up a cross-compiler. ==WIP==
+- [ ] Provide a Makefile for compiling tools on DJGPP. Important: keep the DOS executables in the repository for newcomers. ==WIP==
 - [x] Try to build UltraStarFox on a retro PC/VM
-- [x] Regroup the howe-grown tools into a single executable
+- [x] Regroup the home-grown tools into a single executable
 - [ ] Improve compatibility and backport to C ARGLINK_REWRITE from LuigiBlood ==WIP==
+- [ ] Tool build system for Windows (Visual Studio solution, Makefiles or CMake)
+
+Host toolchain
+--------------
+- [x] GNU Makefile for building UltraStarFox on Linux and macOS
+- [ ] Windows port
+- [ ] MSYS port
+- [ ] Windows DOSBox-X executable with Wine under Linux
+- [ ] Make Argonaut programs happy with DJGPP GNU Make (investigate HX DOS extender)
+- [ ] Update top-level Makefiles
+- [ ] Merge from upstream branch modernized-toolchain-poc
+- [ ] Compile any missing tool on the fly while building UltraStarFox
+- [ ] Standardize tool names on all platforms (to shrink Makefile)
 
 Miscellaneous hacks
 -------------------
@@ -27,7 +40,9 @@ Miscellaneous hacks
 - [x] Port buildrelease.cmd to a Makefile and generate localized patches from it
 - [ ] Skip scramble sequence by pressing Start
 - [ ] Better boss roll demo through training (background music, select level with controller mode, return to controls screen with Start)
+- [ ] Document foxfont width calculation
 - [ ] Experiment with RNC ProPack (better graphics compression)
+- [ ] Create a tool to extract tiles, screen and font from ROM images (e.g. early ROM hacks)
 - [ ] MUCH Later: automated bank bin packing
 - [ ] MUCH Later: raise the cap to 24 fps on NTSC by implementing a telecine-inspired approach
 
