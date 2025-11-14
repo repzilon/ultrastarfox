@@ -16,7 +16,11 @@ void decode_byte_sequence(unsigned char *byte_seq, FILE *output) {
     unsigned char name_length = byte_seq[4];
 
     // Extract symbol name
+#ifdef _MSC_VER
+    char* symbol_name = calloc(name_length + 1, sizeof(char));
+#else
     char symbol_name[name_length + 1];
+#endif
     memcpy(symbol_name, byte_seq + 5, name_length);
     symbol_name[name_length] = '\0';
 
