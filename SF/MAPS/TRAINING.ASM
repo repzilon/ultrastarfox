@@ -1,8 +1,10 @@
 ; TRAINING: Training Mode
-trainingmap	initlevel	training,mstarwipe_circle
+trainingmap
+	IFEQ trainingbossroll
+	initlevel	training,mstarwipe_circle
 	setvar.n	prttraining,1
-;-------------------------------------------------------------------------------
-		mapwait	2000
+	mapwait	2000
+	ENDC
 	
 	IFNE	messagetest
 ;*************************      MSG TEST   *****************************
@@ -65,15 +67,13 @@ trnmapmsgcnt = trnmapmsgcnt+1
 	markboss	boss36
 	markboss	boss37
 	markboss	bossfinal
-	mapwait	1000
 	setvar.n	levelfinished,6
-	mapwait	1000
 	setvar.n	levelfinished,9
-.lp	mapwait	3000
+
 	start_65816
+	bgm	endseq
 	jsl	endseq_l
 	end_65816
-	mapgoto	.lp
 	ENDC
 
 	IFEQ messagetest+trainingbossroll

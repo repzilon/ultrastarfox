@@ -27,7 +27,7 @@ Miscellaneous hacks
 - [x] Code bank reorganisation to fit the base game inside 1 MiB and extras above that boundary
 - [x] Port buildrelease.cmd to a Makefile and generate localized patches from it
 - [ ] Skip scramble sequence by pressing Start
-- [ ] Better boss roll demo through training (background music, select level with controller mode, return to controls screen with Start)
+- [ ] Better boss roll demo through training (background music, select level with controller mode, return to controls screen with Start) ==WIP==
 - [x] Document foxfont width calculation
 - [ ] Experiment with RNC ProPack (better graphics compression)
 - [ ] Create a tool to extract tiles, screen and font from ROM images (e.g. early ROM hacks)
