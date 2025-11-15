@@ -145,6 +145,7 @@ TOOLS/rh_opt.g*
 # Visual Studio projects for command line tools
 TOOLS/VisualStudio_prj/*/Debug
 TOOLS/VisualStudio_prj/*/Release
+TOOLS/VisualStudio_prj/*/x64
 TOOLS/VisualStudio_prj/*/*.*proj.user
 TOOLS/robfx.src/Debug
 TOOLS/robfx.src/Release
