@@ -37,7 +37,7 @@ void convertHoriz2Vert(FILE * fpInput, char * outputFileName)
 	int mugShotCnt = fileSize / MUGSIZE;
 
 	// create input buffer, and a pointer that we can mangle
-	char *inBuff = malloc(fileSize * sizeof(*inBuff));
+	char *inBuff = (char*)malloc(fileSize * sizeof(*inBuff));
 	char *inBuffPtr = inBuff;
 
 	// copy graphics from disk to buffer
@@ -45,7 +45,7 @@ void convertHoriz2Vert(FILE * fpInput, char * outputFileName)
 	fclose(fpInput);
 
 	// create 4bpp output buffer, zero filled, and pointer to mangle
-	char *outBuff = calloc(fileSize, sizeof(*outBuff));
+	char *outBuff = (char*)calloc(fileSize, sizeof(*outBuff));
 	char *outBuffPtr = outBuff;
 
 	#define NEXTTILEDOWN (TILESIZE * MUGWDTH * mugShotCnt)

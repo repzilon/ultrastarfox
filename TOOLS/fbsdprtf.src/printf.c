@@ -43,7 +43,9 @@
 #include <err.h>
 #endif
 #include <errno.h>
+#if !defined(_MSC_VER) || _MSC_VER > 1800
 #include <inttypes.h>
+#endif
 #include <limits.h>
 #include <locale.h>
 #include <stdio.h>
@@ -82,6 +84,13 @@
 #define warnxf(f_, ...) fputs("printf: ", stderr); fprintf(stderr, (f_), ##__VA_ARGS__); fputs("\n", stderr)
 #else
 #define warnxf warnx
+#endif
+
+#if defined(_MSC_VER) && _MSC_VER < 1900
+typedef long long intmax_t;
+typedef unsigned long long uintmax_t;
+#define strtoimax strtol
+#define strtoumax strtoul
 #endif
 
 static int	 asciicode(void);
@@ -219,7 +228,7 @@ printf_doformat(char *fmt, int *rval)
 	int fieldwidth, haveprec, havewidth, mod_ldbl, precision;
 	char convch, nextch;
 #ifdef _MSC_VER
-	char* start = calloc(strlen(fmt) + 1, sizeof(char));
+	char* start = (char*)calloc(strlen(fmt) + 1, sizeof(char));
 #else
 	char start[strlen(fmt) + 1];
 #endif
@@ -465,7 +474,7 @@ mknum(char *str, char ch)
 	len = strlen(str) + 2;
 	if (len > copy_size) {
 		newlen = ((len + 1023) >> 10) << 10;
-		if ((newcopy = realloc(copy, newlen)) == NULL) {
+		if ((newcopy = (char*)realloc(copy, newlen)) == NULL) {
 			warnxf("%s", strerror(ENOMEM));
 			return (NULL);
 		}
@@ -645,9 +654,11 @@ getfloating(long double *dp, int mod_ldbl)
 	}
 	rval = 0;
 	errno = 0;
+#if !defined(_MSC_VER) || _MSC_VER > 1900
 	if (mod_ldbl)
 		*dp = strtold(*gargv, &ep);
 	else
+#endif
 		*dp = strtod(*gargv, &ep);
 	if (ep == *gargv) {
 		warnxf("%s: expected numeric value", *gargv);

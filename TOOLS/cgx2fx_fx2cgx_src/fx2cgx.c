@@ -6,6 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(_MSC_VER) && _MSC_VER < 1900
+#define snprintf(buf, len, format, ...) _snprintf_s(buf, len, len, format, __VA_ARGS__)
+#endif
+
 /* Constants */
 #define CHRMAX  (256 * 256)
 #define BINMAX  (256 * 128)

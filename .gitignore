@@ -148,12 +148,14 @@ TOOLS/SharpUltraStarFoxTools/*/*.csproj.user
 .idea
 .vs
 TOOLS/rh_opt.g*
+*.ncb
+*.suo
 
 # Visual Studio projects for command line tools
 TOOLS/VisualStudio_prj/*/Debug
 TOOLS/VisualStudio_prj/*/Release
 TOOLS/VisualStudio_prj/*/x64
-TOOLS/VisualStudio_prj/*/*.*proj.user
+TOOLS/VisualStudio_prj/*/*.*proj*.user
 TOOLS/robfx.src/Debug
 TOOLS/robfx.src/Release
-TOOLS/robfx.src/robfx*.vc*proj.user
+TOOLS/robfx.src/robfx*.vc*proj*.user

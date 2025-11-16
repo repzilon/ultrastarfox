@@ -3,7 +3,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <memory.h>
+#if !defined(_MSC_VER) || _MSC_VER >= 1800
 #include <stdbool.h>
+#else
+#ifndef __cplusplus
+typedef int bool;
+#endif
+#define false 0
+#define true 1
+#endif
 
 typedef unsigned char u8;
 typedef unsigned int u32;
