@@ -4,6 +4,7 @@
 ; the length of the text between double quotes, but 150 maximum.
 ; It means the maximum string length is 149 characters.
 ; But to fit on screen, you are limited to 17 characters.
+; Apparently, identifiers can have a single _ but not more.
 
 	IFNE	GERMAN
 	STRING	boss13txt_stage[6]="RAUM-"
@@ -61,7 +62,7 @@
 	STRING	bossgentxt_asteroid[9]="ASTEROID"
 	STRING	bossgentxt_corneria[9]="CORNERIA"
 	STRING	bossgentxt_greatcommander[16]="GREAT COMMANDER"
-	STRING	bossgentxt_h73_w97_d250[13]="H73*B97*T250"
+	STRING	bossgentxt_gcsize[13]="H73*B97*T250"
 	STRING	bossgentxt_laser[6]="LASER"
 	STRING	bossgentxt_level1[8]="ROUTE 1"
 	STRING	bossgentxt_level2[8]="ROUTE 2"
@@ -128,7 +129,7 @@
 	STRING	bossgentxt_asteroid[10]="ASTEROIDE"
 	STRING	bossgentxt_corneria[9]="CORNERIA"
 	STRING	bossgentxt_greatcommander[17]="GRAND COMMANDANT"
-	STRING	bossgentxt_h73_w97_d250[13]="H73*L97*P250"
+	STRING	bossgentxt_gcsize[13]="H73*L97*P250"
 	STRING	bossgentxt_laser[6]="LASER"
 	STRING	bossgentxt_level1[8]="ROUTE 1"
 	STRING	bossgentxt_level2[8]="ROUTE 2"
@@ -201,7 +202,7 @@
 	STRING	bossgentxt_asteroid[9]="ASTEROID"
 	STRING	bossgentxt_corneria[9]="CORNERIA"
 	STRING	bossgentxt_greatcommander[16]="GREAT COMMANDER"
-	STRING	bossgentxt_h73_w97_d250[13]="H73*W97*D250"
+	STRING	bossgentxt_gcsize[13]="H73*W97*D250"
 	STRING	bossgentxt_laser[6]="LASER"
 	STRING	bossgentxt_level1[8]="LEVEL 1"
 	STRING	bossgentxt_level2[8]="LEVEL 2"
@@ -268,7 +269,7 @@
 	STRING	bossgentxt_asteroid[11]="ASTEROIDES"
 	STRING	bossgentxt_corneria[9]="CORNERIA"
 	STRING	bossgentxt_greatcommander[16]="GRAN COMANDANTE"
-	STRING	bossgentxt_h73_w97_d250[13]="A73*L97*P250"
+	STRING	bossgentxt_gcsize[13]="A73*L97*P250"
 	STRING	bossgentxt_laser[6]="LASER"
 	STRING	bossgentxt_level1[8]="NIVEL 1"
 	STRING	bossgentxt_level2[8]="NIVEL 2"
@@ -335,7 +336,7 @@
 	STRING	bossgentxt_asteroid[9]="ASTEROID"
 	STRING	bossgentxt_corneria[9]="CORNERIA"
 	STRING	bossgentxt_greatcommander[16]="GREAT COMMANDER"
-	STRING	bossgentxt_h73_w97_d250[13]="H73*W97*D250"
+	STRING	bossgentxt_gcsize[13]="H73*W97*D250"
 	STRING	bossgentxt_laser[6]="LASER"
 	STRING	bossgentxt_level1[8]="LEVEL 1"
 	STRING	bossgentxt_level2[8]="LEVEL 2"

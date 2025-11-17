@@ -1329,7 +1329,7 @@ boss36txt2	SETDPOS	25*32+6
 	RUN	' DB "%$bossgentxt_laser"'
 	SETDPOS	27*32+6
 	RUN	' DB "%$bossgentxt_size"'
-	RUN	' DB "%$bossgentxt_h73_w97_d250"'
+	RUN	' DB "%$bossgentxt_gcsize"'
 	DB	0,0
 
 boss37txt	SETDPOS	7*32+6
@@ -1345,7 +1345,7 @@ boss37txt2	SETDPOS	25*32+6
 	RUN	' DB "%$boss37txt2_weaponv"'
 	SETDPOS	27*32+6
 	RUN	' DB "%$bossgentxt_size"'
-	RUN	' DB "%$bossgentxt_h73_w97_d250"'
+	RUN	' DB "%$bossgentxt_gcsize"'
 	DB	0,0
 
 

@@ -47,7 +47,7 @@ French Canadian Translation
 - [x] Make French version of the graphics
 - [x] Edit build system to select French graphics
 - [x] Extract strings from ENDSEQ.ASM
-- [ ] Translate end sequence (fix garbled text in great commander measurements) ==WIP==
+- [x] Translate end sequence (fix garbled text in great commander measurements)
 - [x] Add the French Canadian build configuration (NTSC, language code, French messages, StarFox [not Starwing] logo, North American [purple] controller button image)
 
 Spanish Translation
