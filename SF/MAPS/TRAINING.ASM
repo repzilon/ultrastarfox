@@ -102,8 +102,9 @@ trnmapmsgcnt = trnmapmsgcnt+1
 	setvar.n	levelfinished,9
 
 	start_65816
-	bgm	endseq
-	jsl	endseq_l
+	bgm	endseq		; start boss roll music playback
+	jsl	endseq_l	; perform boss roll sequence
+	jml	restart		; go to controls screen after that
 	end_65816
 	ENDC
 
