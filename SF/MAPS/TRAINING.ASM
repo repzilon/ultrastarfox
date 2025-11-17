@@ -47,18 +47,47 @@ trnmapmsgcnt = trnmapmsgcnt+1
 	ENDC
 
 	IFNE	trainingbossroll
+	start_65816
+	; select boss roll route with the controller mode
+	; A for route 1, B for route 2, C for route 3, D for all routes
+	; I have to make 2 small jumps instead of a bigger one to work around
+	; the relative offset argument of beq
+	lda	c_type
+	cmp	#1
+	beq	.b
+	cmp	#2
+	beq	.nearc	; 1st hop for control C/route 3 block
+	end_65816
 	markboss	boss11
 	markboss	boss12
 	markboss	boss13
 	markboss	boss14
 	markboss	boss15
 	markboss	boss16
+	start_65816
+	lda	c_type
+.nearc
+	cmp	#2	; 2nd hop to control C/route 3 block
+	beq	.c
+	cmp	#0
+	beq	.nearf	; for control A, 1st hop to mark final boss
+	end_65816
+.b
 	markboss	boss21
 	markboss	boss22
 	markboss	boss23
 	markboss	boss24
 	markboss	boss25
 	markboss	boss26
+	start_65816
+	lda	c_type
+.nearf
+	cmp	#0	; for control A, 2nd hop to mark final boss
+	beq	.f
+	cmp	#1	; for control B, hop staight to mark final boss
+	beq	.f
+	end_65816
+.c
 	markboss	boss31
 	markboss	boss32
 	markboss	boss33
@@ -66,6 +95,8 @@ trnmapmsgcnt = trnmapmsgcnt+1
 	markboss	boss35
 	markboss	boss36
 	markboss	boss37
+	; for controls C and D, just continue for final boss
+.f
 	markboss	bossfinal
 	setvar.n	levelfinished,6
 	setvar.n	levelfinished,9

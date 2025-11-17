@@ -37,6 +37,8 @@ debugfont			equ	0
 prntrouln_on		equ 0
 
 ; Run boss roll sequence in training level
+; The selected controller mode will set the boss roll route
+; Control A for route 1, B for 2, C for 3, D for all routes
 ; [0 = off, 1 = on]
 trainingbossroll	equ 0
 
