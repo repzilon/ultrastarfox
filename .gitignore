@@ -159,3 +159,4 @@ TOOLS/VisualStudio_prj/*/*.*proj*.user
 TOOLS/robfx.src/Debug
 TOOLS/robfx.src/Release
 TOOLS/robfx.src/robfx*.vc*proj*.user
+TOOLS/VisualStudio_prj/UpgradeLog.htm

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net46;netcoreapp3.1;net5.0;net6.0</TargetFrameworks>
+    <RootNamespace>UltraStarFox.Tools.SimplifyVcxproj</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NoWarn>1701;1702;NETSDK1138</NoWarn>
+  </PropertyGroup>
+</Project>

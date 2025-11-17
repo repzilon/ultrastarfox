@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "SimplifyVcxproj": {
+      "commandName": "Project",
+      "commandLineArgs": "-R E:\\Users\\Administrator\\source\\repos\\repzilon\\starfox.ult\\TOOLS"
+    }
+  }
+}
