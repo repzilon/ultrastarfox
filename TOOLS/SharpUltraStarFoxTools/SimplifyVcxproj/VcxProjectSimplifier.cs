@@ -11,7 +11,7 @@ namespace UltraStarFox.Tools.SimplifyVcxproj
 	internal sealed class VcxProjectSimplifier : ProjectSimplifier
 	{
 		internal const string XmlNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
-		
+
 		public VcxProjectSimplifier(string filePath, XmlDocument loaded) : base(filePath, loaded) { }
 
 		private void CollapseEmptyTextElements()
@@ -38,17 +38,19 @@ namespace UltraStarFox.Tools.SimplifyVcxproj
 
 		public override void Run()
 		{
-			var xnlPropGroup =
-				this.XmlDocument.GetElementsByTagName("PropertyGroup", XmlNamespace);
+			var xnlPropGroup = this.XmlDocument.GetElementsByTagName("PropertyGroup", XmlNamespace);
 			var lstToRemove = new List<XmlElement>();
 			// Classify non-empty property groups
-			var c                  = xnlPropGroup.Count;
-			var dicGroupsByHeaders = new Dictionary<string, List<XmlElement>>(c);
-			int i;
+			var                 c                  = xnlPropGroup.Count;
+			var                 dicGroupsByHeaders = new Dictionary<string, List<XmlElement>>(c);
+			int                 i;
+			XmlElement          elmPropGroup, elmProperty;
+			string              strHeader;
+			PropertyGroupHeader pgh;
 			for (i = 0; i < c; i++) {
-				var elmPropGroup = (XmlElement)xnlPropGroup[i];
+				elmPropGroup = (XmlElement)xnlPropGroup[i];
 				if (elmPropGroup.HasChildNodes) {
-					var strHeader = new PropertyGroupHeader(elmPropGroup).ToString();
+					strHeader = new PropertyGroupHeader(elmPropGroup).ToString();
 					if (dicGroupsByHeaders.ContainsKey(strHeader)) {
 						dicGroupsByHeaders[strHeader].Add(elmPropGroup);
 					} else {
@@ -60,26 +62,25 @@ namespace UltraStarFox.Tools.SimplifyVcxproj
 			}
 
 			// Find for which configurations the same property and value is set
-			var dicConfigsByProperty =
-				new Dictionary<string, KeyValuePair<List<XmlElement>, List<PropertyGroupHeader>>>();
+			var dicConfigsByProperty = new Dictionary<string, KeyValuePair<List<XmlElement>, List<PropertyGroupHeader>>>();
 			foreach (var x in dicGroupsByHeaders.Values) {
 				c = x.Count;
 				for (i = 0; i < c; i++) {
-					var pgh = new PropertyGroupHeader(x[i]);
+					pgh = new PropertyGroupHeader(x[i]);
 					foreach (XmlNode xn in x[i].ChildNodes) {
-						var xe = xn as XmlElement;
-						if (xe != null) {
-							var strOuterXml = xe.OuterXml;
+						elmProperty = xn as XmlElement;
+						if (elmProperty != null) {
+							var strOuterXml = elmProperty.OuterXml;
 							if (dicConfigsByProperty.ContainsKey(strOuterXml)) {
 								var lstPgh = dicConfigsByProperty[strOuterXml].Value;
 								if (lstPgh.FindIndex(y => y.ToString() == pgh.ToString()) < 0) {
-									dicConfigsByProperty[strOuterXml].Key.Add(xe);
+									dicConfigsByProperty[strOuterXml].Key.Add(elmProperty);
 									lstPgh.Add(pgh);
 								}
 							} else {
-								dicConfigsByProperty.Add(strOuterXml, 
+								dicConfigsByProperty.Add(strOuterXml,
 									new KeyValuePair<List<XmlElement>, List<PropertyGroupHeader>>(
-										new List<XmlElement> { xe }, new List<PropertyGroupHeader> { pgh }));
+										new List<XmlElement> { elmProperty }, new List<PropertyGroupHeader> { pgh }));
 							}
 						}
 					}
@@ -90,31 +91,27 @@ namespace UltraStarFox.Tools.SimplifyVcxproj
 			foreach (var kvp in dicConfigsByProperty) {
 				var headers = kvp.Value.Value;
 				if (headers.Count >= 2) {
-					var labels  = headers.Select(x => x.Label).Distinct().ToArray();
-					var configs = headers.Select(x => x.Configuration).Distinct().ToArray();
-					var cpus    = headers.Select(x => x.Platform).Distinct().ToArray();
 					// Make new PropertyGroup if necessary, then move first element into it
-					var pgh = new PropertyGroupHeader(labels.Length == 1 ? labels[0] : null,
-						configs.Length == 1 ? configs[0] : null, cpus.Length == 1 ? cpus[0] : null);
-					var strHeader = pgh.ToString();
-					var xeProperty = kvp.Value.Key[0];
-					XmlElement xeGroup = null;
+					pgh = new PropertyGroupHeader(CommonValue(headers, x => x.Label),
+						CommonValue(headers, x => x.Configuration), CommonValue(headers, x => x.Platform));
+					strHeader   = pgh.ToString();
+					elmProperty = kvp.Value.Key[0];
 					if (!dicGroupsByHeaders.ContainsKey(strHeader)) {
-						xeGroup = pgh.NewElement(this.XmlDocument);
-						xeProperty.ParentNode.ParentNode.InsertBefore(xeGroup, xeProperty.ParentNode);
-						dicGroupsByHeaders.Add(strHeader, new List<XmlElement> { xeGroup });
+						elmPropGroup = pgh.NewElement(this.XmlDocument);
+						elmProperty.ParentNode.ParentNode.InsertBefore(elmPropGroup, elmProperty.ParentNode);
+						dicGroupsByHeaders.Add(strHeader, new List<XmlElement> { elmPropGroup });
 					} else if (dicGroupsByHeaders[strHeader].Count == 1) {
-						xeGroup = dicGroupsByHeaders[strHeader][0];
+						elmPropGroup = dicGroupsByHeaders[strHeader][0];
 					} else {
 						throw new NotSupportedException();
 					}
-					xeGroup.AppendChild(xeProperty);
+					elmPropGroup.AppendChild(elmProperty);
 
 					// Remove other property elements
 					c = kvp.Value.Key.Count;
 					for (i = 1; i < c; i++) {
-						xeProperty = kvp.Value.Key[i];
-						xeProperty.ParentNode.RemoveChild(xeProperty);
+						elmProperty = kvp.Value.Key[i];
+						elmProperty.ParentNode.RemoveChild(elmProperty);
 					}
 				}
 			}
@@ -122,7 +119,7 @@ namespace UltraStarFox.Tools.SimplifyVcxproj
 			// Scan again and exclude emptied property groups
 			c = xnlPropGroup.Count;
 			for (i = 0; i < c; i++) {
-				var elmPropGroup = (XmlElement)xnlPropGroup[i];
+				elmPropGroup = (XmlElement)xnlPropGroup[i];
 				if (!elmPropGroup.HasChildNodes) {
 					lstToRemove.Add(elmPropGroup);
 				}
@@ -131,6 +128,12 @@ namespace UltraStarFox.Tools.SimplifyVcxproj
 			RemoveQueuedElements(lstToRemove);
 			this.SaveProject(false, true);
 			this.CollapseEmptyTextElements();
+		}
+
+		private static string CommonValue(List<PropertyGroupHeader> headers, Func<PropertyGroupHeader, string> property)
+		{
+			var values = headers.Select(property).Distinct().ToArray();
+			return values.Length == 1 ? values[0] : null;
 		}
 	}
 }
