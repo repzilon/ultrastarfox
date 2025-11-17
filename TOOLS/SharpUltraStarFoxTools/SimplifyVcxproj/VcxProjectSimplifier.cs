@@ -38,13 +38,23 @@ namespace UltraStarFox.Tools.SimplifyVcxproj
 
 		public override void Run()
 		{
-			var xnlPropGroup = this.XmlDocument.GetElementsByTagName("PropertyGroup", XmlNamespace);
 			var lstToRemove = new List<XmlElement>();
+			SimplifyGroups(this.XmlDocument, "PropertyGroup", lstToRemove);
+			SimplifyGroups(this.XmlDocument, "ImportGroup", lstToRemove);
+
+			RemoveQueuedElements(lstToRemove);
+			this.SaveProject(false, true);
+			this.CollapseEmptyTextElements();
+		}
+
+		private static void SimplifyGroups(XmlDocument project, string tagName, List<XmlElement> wasteBasket)
+		{
 			// Classify non-empty property groups
-			var                 c                  = xnlPropGroup.Count;
-			var                 dicGroupsByHeaders = new Dictionary<string, List<XmlElement>>(c);
 			int                 i;
 			XmlElement          elmPropGroup, elmProperty;
+			var                 xnlPropGroup       = project.GetElementsByTagName(tagName, XmlNamespace);
+			var                 c                  = xnlPropGroup.Count;
+			var                 dicGroupsByHeaders = new Dictionary<string, List<XmlElement>>(c);
 			string              strHeader;
 			PropertyGroupHeader pgh;
 			for (i = 0; i < c; i++) {
@@ -57,7 +67,7 @@ namespace UltraStarFox.Tools.SimplifyVcxproj
 						dicGroupsByHeaders.Add(strHeader, new List<XmlElement> { elmPropGroup });
 					}
 				} else {
-					lstToRemove.Add(elmPropGroup);
+					wasteBasket.Add(elmPropGroup);
 				}
 			}
 
@@ -97,7 +107,7 @@ namespace UltraStarFox.Tools.SimplifyVcxproj
 					strHeader   = pgh.ToString();
 					elmProperty = kvp.Value.Key[0];
 					if (!dicGroupsByHeaders.ContainsKey(strHeader)) {
-						elmPropGroup = pgh.NewElement(this.XmlDocument);
+						elmPropGroup = pgh.NewElement(tagName, project);
 						elmProperty.ParentNode.ParentNode.InsertBefore(elmPropGroup, elmProperty.ParentNode);
 						dicGroupsByHeaders.Add(strHeader, new List<XmlElement> { elmPropGroup });
 					} else if (dicGroupsByHeaders[strHeader].Count == 1) {
@@ -121,13 +131,9 @@ namespace UltraStarFox.Tools.SimplifyVcxproj
 			for (i = 0; i < c; i++) {
 				elmPropGroup = (XmlElement)xnlPropGroup[i];
 				if (!elmPropGroup.HasChildNodes) {
-					lstToRemove.Add(elmPropGroup);
+					wasteBasket.Add(elmPropGroup);
 				}
 			}
-
-			RemoveQueuedElements(lstToRemove);
-			this.SaveProject(false, true);
-			this.CollapseEmptyTextElements();
 		}
 
 		private static string CommonValue(List<PropertyGroupHeader> headers, Func<PropertyGroupHeader, string> property)

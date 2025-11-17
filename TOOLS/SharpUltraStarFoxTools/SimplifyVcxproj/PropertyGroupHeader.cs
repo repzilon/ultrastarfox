@@ -31,9 +31,9 @@ namespace UltraStarFox.Tools.SimplifyVcxproj
 			}
 		}
 
-		public XmlElement NewElement(XmlDocument owner)
+		public XmlElement NewElement(string tagName, XmlDocument owner)
 		{
-			var    elmPropGroup = owner.CreateElement("PropertyGroup", VcxProjectSimplifier.XmlNamespace);
+			var    elmPropGroup = owner.CreateElement(tagName, VcxProjectSimplifier.XmlNamespace);
 			string strCondition = null;
 			if (!String.IsNullOrEmpty(this.Configuration) && !String.IsNullOrEmpty(this.Platform)) {
 				strCondition = "'$(Configuration)|$(Platform)'=='" + this.Configuration + "|" + this.Platform + "'";
