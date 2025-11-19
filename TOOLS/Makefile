@@ -101,6 +101,8 @@ clean-sink:
 	rm -f $(BINDIR)/unmerge
 	rm -f $(BINDIR)/chrmap
 	rm -f $(BINDIR)/superfamicheck
+	rm -f $(BINDIR)/apendcol
+	rm -f $(BINDIR)/makecol
 
 clean: clean-tools clean-sink clean-robfx clean-csharp clean-superfamiconv clean-sfcheck
 	rmdir $(BINDIR) || true
