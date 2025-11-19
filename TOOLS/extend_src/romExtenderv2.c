@@ -26,7 +26,7 @@ int main(int argc, const char* argv[])
     const char* padByte = argv[3];
     FILE* currentFile = fopen(romFile, "rb");
 
-    long int actualPadByte = strtol(padByte, NULL, 16);
+    unsigned char actualPadByte = (unsigned char)(strtoul(padByte, NULL, 16) & 0xFF);
 
     if (currentFile == NULL) {
         fputs("Error opening file\n", stderr);
@@ -55,7 +55,7 @@ int main(int argc, const char* argv[])
         size_t zeroFillAmt = maxSize - romFileSize;
 
         // Allocate memory for the ROM data
-        char* romData = (char*)malloc(maxSize);
+        unsigned char* romData = (unsigned char*)malloc(maxSize);
 
         if (romData == NULL) {
             fclose(currentFile);
@@ -84,7 +84,7 @@ int main(int argc, const char* argv[])
         fclose(currentFile);
         free(romData);
 
-        printf("ROM successfully expanded to %zu Mbits.\nAdded %ld %lXs to ROM.\n", maxSize / 0x20000, zeroFillAmt, actualPadByte);
+        printf("ROM successfully expanded to %zu Mbits.\nAdded %d %Xs to ROM.\n", maxSize / 0x20000, zeroFillAmt, actualPadByte);
     } else {
         fclose(currentFile);
         printf("Nothing to do for %s\n", romFile);

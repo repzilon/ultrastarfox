@@ -105,7 +105,7 @@ void convert_tile_to_ch7(const unchar *cgx_tile, unchar *ch7_tile) {
             int bitplane3 = (cgx_tile[16 + row * 2 + 0] >> (7 - col)) & 1;
             int bitplane4 = (cgx_tile[16 + row * 2 + 1] >> (7 - col)) & 1;
 
-            ch7_tile[row * 8 + col] = ((bitplane4 << 3) | (bitplane3 << 2) | (bitplane2 << 1) | bitplane1) & 0xFF;
+            ch7_tile[row * 8 + col] = (unchar)(((bitplane4 << 3) | (bitplane3 << 2) | (bitplane2 << 1) | bitplane1) & 0xFF);
         }
     }
 }

@@ -78,7 +78,7 @@ int get_bits(int n) {
 
 void decrunch_put_raw(int run) {
     // write uncompressed bytes
-    while (run--) put_byte(get_bits(8) & 0xFF);
+    while (run--) put_byte((unsigned char)(get_bits(8) & 0xFF));
 }
 
 void decrunch_put_lzw(int run, int offset) {

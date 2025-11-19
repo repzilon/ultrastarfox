@@ -26,8 +26,6 @@
 #define EXT_CGX		".cgx"					// should just be ".cgx"
 #define EXT_SCR		"-SCRAMBLED"			// adds this before the extension
 
-#define MAX_PATH	260						// max characters for a filename
-
 #define TILEWDTH	8
 #define TILEHGHT	8
 #define TILESIZE	(TILEWDTH * TILEHGHT / 2)

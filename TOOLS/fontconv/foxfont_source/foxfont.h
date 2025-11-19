@@ -26,7 +26,6 @@
 #define EXT_FON		".fon"					// should just be ".fon"
 #define EXT_BMP		".bmp"					// should just be ".bmp"
 #define EXT_LEN		4						// 3 character extension plus the period
-#define MAX_PATH	260						// max characters for a filename
 
 #define TILEWDTH	8
 #define TILEHGHT	12
