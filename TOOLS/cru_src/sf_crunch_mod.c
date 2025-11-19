@@ -130,10 +130,10 @@ void crunch() {
 
     while (cru_d < 0x10000 && cru_s < s_length) {
         // find the longest sequence that matches the decompression buffer
-        int run_max = 0;
+        size_t run_max = 0;
         size_t offset_max = 0;
         for (size_t s1 = cru_s + 1; s1 < s_length; s1++) {
-            int run = 0;
+            size_t run = 0;
 
             while ((s1 + run < s_length) && (cru_src[s1 + run] == cru_src[cru_s + run]) && run < 255) run++;
 
@@ -164,7 +164,11 @@ void crunch() {
             }
 
             // put lzw data
-            crunch_put_lzw(run_max, (int)offset_max);
+            if ((run_max > 0x7fffffff) || (offset_max > 0x7fffffff)) {
+                puts("sf_crunch error: run_max or offset_max is too big for a 32 bit signed integer.");
+                exit(70);
+            }
+            crunch_put_lzw((int)run_max, (int)offset_max);
             cru_s += run_max;
 
         } else {
