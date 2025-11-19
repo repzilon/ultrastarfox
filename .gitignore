@@ -94,7 +94,7 @@ flips-latest.tar.gz
 # Downloaded SuperFamicheck
 TOOLS/sfcheck.tgz
 TOOLS/sfcheck.src/
-TOOLS/SuperFamicheck-*
+TOOLS/SuperFamicheck-*/
 
 # Compiled tools
 TOOLS/bgconv/bin/palconv
