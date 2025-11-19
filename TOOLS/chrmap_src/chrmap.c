@@ -242,7 +242,7 @@ void tokenize_file(FILE *in, FILE *out) {
         if (c == MULTICHAR_OPENING) {
             // Try to read symbolic token like [St], [0x83], [D^]
             char token[64];
-            int pos = 0;
+            unsigned int pos = 0;
             token[pos++] = MULTICHAR_OPENING;
 
             while ((c = fgetc(in)) != EOF && c != MULTICHAR_CLOSING && pos < (int)sizeof(token) - 2) {
@@ -268,7 +268,7 @@ void tokenize_file(FILE *in, FILE *out) {
         // UTF-8 handling
         unsigned char first = (unsigned char)c;
         char utf8[8];
-        int len = 1;
+        unsigned int len = 1;
 
         utf8[0] = (char)first;
 
@@ -276,7 +276,7 @@ void tokenize_file(FILE *in, FILE *out) {
         else if ((first & 0xF0) == 0xE0) len = 3;
         else if ((first & 0xF8) == 0xF0) len = 4;
 
-        for (int i = 1; i < len; i++) {
+        for (unsigned int i = 1; i < len; i++) {
             int next = fgetc(in);
             if (next == EOF) {
                 len = i; // Partial character

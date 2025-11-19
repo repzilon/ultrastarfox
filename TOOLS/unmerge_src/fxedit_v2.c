@@ -42,7 +42,7 @@ void Read_8x8(int row, int col, FILE *fp, bool mode)
 		fputc(data>>24,fp);
 		fputc(data>>16,fp);
 		fputc(data>>8,fp);
-		fputc(data>>0,fp);
+		fputc(data & 0xFF,fp);
 	}
 }
 
@@ -53,10 +53,10 @@ void Write_8x8(int row, int col, FILE *fp, bool mode)
 	{
 		u32 data=0;
 
-		data |= (fgetc(fp)<<24);
-		data |= (fgetc(fp)<<16);
-		data |= (fgetc(fp)<<8);
-		data |= (fgetc(fp)<<0);
+		data |= (u32)(fgetc(fp)<<24);
+		data |= (u32)(fgetc(fp)<<16);
+		data |= (u32)(fgetc(fp)<<8);
+		data |= (u32)(fgetc(fp));
 
 		for(int lcv=0; lcv<8; lcv++)
 		{

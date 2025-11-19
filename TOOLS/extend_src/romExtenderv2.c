@@ -37,10 +37,10 @@ int main(int argc, const char* argv[])
     }
 
     fseek(currentFile, 0, SEEK_END);
-    long romFileSize = ftell(currentFile);
+    size_t romFileSize = (size_t)ftell(currentFile);
     fseek(currentFile, 0, SEEK_SET);
 
-    int maxSize;
+    size_t maxSize;
     if (strcmp(megaBits, "--auto") == 0) {
         maxSize = 2 * 0x20000;
         int i;
@@ -48,11 +48,11 @@ int main(int argc, const char* argv[])
             maxSize = kAutoRomMBits[i] * 0x20000;
         }
     } else {
-        maxSize = atoi(megaBits) * 0x20000;
+        maxSize = strtoul(megaBits, NULL, 10) * 0x20000;
     }
 
     if (romFileSize < maxSize) {
-        long zeroFillAmt = maxSize - romFileSize;
+        size_t zeroFillAmt = maxSize - romFileSize;
 
         // Allocate memory for the ROM data
         char* romData = (char*)malloc(maxSize);
@@ -68,7 +68,7 @@ int main(int argc, const char* argv[])
         fclose(currentFile);
 
         // Fill the remaining space with zeros
-        for (long i = romFileSize; i < maxSize; i++) {
+        for (size_t i = romFileSize; i < maxSize; i++) {
             romData[i] = actualPadByte;
         }
 
@@ -84,7 +84,7 @@ int main(int argc, const char* argv[])
         fclose(currentFile);
         free(romData);
 
-        printf("ROM successfully expanded to %d Mbits.\nAdded %ld %lXs to ROM.\n", maxSize / 0x20000, zeroFillAmt, actualPadByte);
+        printf("ROM successfully expanded to %zu Mbits.\nAdded %ld %lXs to ROM.\n", maxSize / 0x20000, zeroFillAmt, actualPadByte);
     } else {
         fclose(currentFile);
         printf("Nothing to do for %s\n", romFile);
