@@ -220,8 +220,10 @@ mugconv/superfamiconv/superfamiconv: SuperFamiconv-$(SFCONV_VER)/$(OPTIROC_OUT)/
 sfcheck.tgz:
 	curl https://codeload.github.com/Optiroc/SuperFamicheck/tar.gz/refs/tags/v$(SFCHECK_VER) -o $@
 
-sfcheck.src/Makefile: sfcheck.tgz
+SuperFamicheck-$(SFCHECK_VER): sfcheck.tgz
 	tar -zxf $<
+
+sfcheck.src/Makefile: SuperFamicheck-$(SFCHECK_VER)
 	mv SuperFamicheck-$(SFCHECK_VER) sfcheck.src
 
 sfcheck.src/$(OPTIROC_OUT)/superfamicheck: sfcheck.src/Makefile
