@@ -13,7 +13,7 @@
 // 64k should be enough for anything
 unsigned char cru_src[0x10000]; // source buffer
 unsigned char cru_dest[0x10000]; // destination buffer
-int cru_s = 0; // source pointer
+size_t cru_s = 0; // source pointer
 size_t s_length = 0; // length of decrunched data
 size_t cru_d = 0; // destination pointer
 
@@ -29,7 +29,7 @@ void put_buffer() {
     cru_dest[cru_d++] = (unsigned char)(cru_buffer >> 16);
     cru_dest[cru_d++] = (unsigned char)(cru_buffer >> 8);
     cru_dest[cru_d++] = (unsigned char)(cru_buffer);
-    
+
     cru_buffer = 1;
     cru_b = 32;
 }
@@ -51,7 +51,7 @@ void put_bits(int n, int bits) {
 }
 
 void crunch_put_raw() {
-    
+
     if (r == 0) return;
     for (int i = 0; i < r; i++) put_bits(8, raw_buffer[i]);
 
@@ -80,7 +80,7 @@ void crunch_put_lzw(int run, int offset) {
     // put the offset
     if (run == 2) {
         put_bits(8, offset);
-        
+
     } else if (run == 3 && offset <= 0xFF) {
         put_bits(8, offset);
         put_bits(1, 1);
@@ -127,46 +127,46 @@ void crunch_put_lzw(int run, int offset) {
 }
 
 void crunch() {
-    
+
     while (cru_d < 0x10000 && cru_s < s_length) {
         // find the longest sequence that matches the decompression buffer
         int run_max = 0;
-        int offset_max = 0;
-        for (int s1 = cru_s + 1; s1 < s_length; s1++) {
+        size_t offset_max = 0;
+        for (size_t s1 = cru_s + 1; s1 < s_length; s1++) {
             int run = 0;
 
             while ((s1 + run < s_length) && (cru_src[s1 + run] == cru_src[cru_s + run]) && run < 255) run++;
 
             if (run <= run_max) continue;
-            
-            int offset = s1 - cru_s;
+
+            size_t offset = s1 - cru_s;
 
             if (run < 2) continue;
-            
+
             // offset must be 8 bits or smaller for 2-byte runs
             if ((run == 2) && (offset > 0xFF)) continue;
-            
+
             // offset must be 14 bits or smaller for 3-byte runs
             if ((run == 3) && (offset > 0x3FFF)) continue;
-            
+
             // this sequence is longer than any others that have been found so far
             run_max = run;
             offset_max = offset;
         }
-        
+
         if (run_max) {
             if (r) {
                 // write string of raw data
                 crunch_put_raw();
-                
+
             } else {
                 put_bits(3, 0);
             }
-            
+
             // put lzw data
-            crunch_put_lzw(run_max, offset_max);
+            crunch_put_lzw(run_max, (int)offset_max);
             cru_s += run_max;
-            
+
         } else {
             // add to string of raw data
             raw_buffer[r++] = cru_src[cru_s++];
@@ -175,11 +175,11 @@ void crunch() {
 
     // write leftover string of raw data
     if (r) crunch_put_raw();
-    
+
     // put the "suffix"
     if (cru_b == 0) put_buffer();
     put_buffer();
-    
+
     // write the decrunched length
     cru_buffer = s_length;
     put_buffer();
@@ -201,12 +201,12 @@ int main(int argc, const char* argv[])
         );
         return 64;
     }
-	
+
 	/* added by Sunlit, printf's status so it doesn't look weird executed en masse
     if (argc == 3) {
         printf("Crunching %s...\n", argv[2]);
     }// */
-    
+
     const char* i_filename = argv[1];
     const char* o_filename = argv[2];
 
@@ -219,12 +219,12 @@ int main(int argc, const char* argv[])
     // get data offset (end of data)
     fseek(i_file, 0, SEEK_END);
     s_length = (size_t)ftell(i_file);
-    
+
     if (s_length >= 0x10000) {
         puts("unable to compress files longer than 64k");
         return 65;
     }
-    
+
     // copy file to source buffer
     fseek(i_file, 0, SEEK_SET);
     fread(cru_src, 1, s_length, i_file);

@@ -51,7 +51,7 @@ void convertHoriz2Vert(FILE * fpInput, char * outputFileName)
 
 	#define NEXTTILEDOWN (TILESIZE * MUGWDTH * mugShotCnt)
 
-	for (int mugShot = 0; mugShot < mugShotCnt; mugShot++) {
+	for (size_t mugShot = 0; mugShot < mugShotCnt; mugShot++) {
 		// copy a single 4x5 tile mugshot
 		for (int outCol = 0; outCol < MUGWDTH; outCol++) {
 			// copy a single 5 tile column to the output
@@ -135,12 +135,12 @@ FILE * openSnes(char *fileName)
 
 char * chr_createOutputFileName(char * inputFileName)
 {
-	long   posdot = strrchr(inputFileName, '.') - inputFileName; // position of last .
+	ptrdiff_t posdot   = strrchr(inputFileName, '.') - inputFileName; // position of last .
 	// special case for *nix hidden files or those without an extension
-	size_t noextlen = (posdot <= 0) ? strlen(inputFileName) : (size_t)posdot;
-	size_t scrlen = strlen(EXT_SCR);
-	size_t cgxlen = strlen(EXT_CGX);
-	char*  outputFileName = (char*)calloc(noextlen + scrlen + cgxlen + 1, sizeof(char));
+	size_t    noextlen = (posdot <= 0) ? strlen(inputFileName) : (size_t)posdot;
+	size_t    scrlen   = strlen(EXT_SCR);
+	size_t    cgxlen   = strlen(EXT_CGX);
+	char*     outputFileName = (char*)calloc(noextlen + scrlen + cgxlen + 1, sizeof(char));
 	if (outputFileName == NULL) {
 		puts("foxchr error: cannot allocate output file name.");
 		exit(EX_SOFTWARE);
@@ -152,6 +152,6 @@ char * chr_createOutputFileName(char * inputFileName)
 	strncpy(outputFileName + noextlen, EXT_SCR, strlen(EXT_SCR));
 	// append .cgx extension to outputFileName
 	strncpy(outputFileName + noextlen + strlen(EXT_SCR), EXT_CGX, strlen(EXT_CGX));
-	
+
 	return outputFileName;
 }

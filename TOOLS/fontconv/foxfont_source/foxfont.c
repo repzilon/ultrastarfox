@@ -2,8 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>	// fix by sunlit
 #include <string.h>
+#ifndef _MSC_VER
 #include <strings.h>	// for strncasecmp
+#endif
 #include "foxfont.h"
+
+#ifdef _MSC_VER
+#define strncasecmp _strnicmp
+#endif
 
 #ifdef ROBFX
 int foxfont_main(int argc, char** argv)
@@ -132,7 +138,7 @@ void convertBMP2Fon(FILE * fpBitmap, char * inputFileName, char * outputFileName
 	// process 140 tiles
 	for(int tile = 0; tile < TILESMAX; tile++) {
 		twoBppRowH = 0, twoBppRowL = 0;
-		
+
 		// each tile has 12 rows of pixels, logical OR all rows into a byte to get width
 		for(int row = 0; row < TILEHGHT; row++) {
 			twoBppRowL |= *outBuffPtr;			// colors 0 and 1 (transparent and extra pixels)
@@ -288,13 +294,13 @@ FILE * openBitmap(char *fileName, unsigned char *bppOut, unsigned int *sizeOut)
 
 char * font_createOutputFileName(char * inputFileName)
 {
-	long   posdot = strrchr(inputFileName, '.') - inputFileName; // position of last .
+	ptrdiff_t posdot   = strrchr(inputFileName, '.') - inputFileName; // position of last .
 	// special case for *nix hidden files or those without an extension
-	size_t noextlen = (posdot <= 0) ? strlen(inputFileName) : (size_t)posdot;
-	char*  inputExt = inputFileName + (strlen(inputFileName) - EXT_LEN);
+	size_t    noextlen = (posdot <= 0) ? strlen(inputFileName) : (size_t)posdot;
+	char*     inputExt = inputFileName + (strlen(inputFileName) - EXT_LEN);
 
 	// verify that input file's extension is ".bmp"
-	if (strncasecmp(inputExt, EXT_BMP, EXT_LEN)) {
+	if (strncasecmp(inputExt, EXT_BMP, EXT_LEN) != 0) {
 		puts("foxfont error: input file must have " EXT_BMP " extension.");
 		exit(EX_DATAERR);
 	}
@@ -314,6 +320,6 @@ char * font_createOutputFileName(char * inputFileName)
 		puts("foxfont error: outputFileName is different length than inputFileName");
 		exit(EX_SOFTWARE);
 	}
-	
+
 	return outputFileName;
 }

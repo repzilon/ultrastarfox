@@ -234,7 +234,7 @@ printf_doformat(char *fmt, int *rval)
 #endif
 	char **fargv;
 	char *dptr;
-	int l;
+	size_t l;
 
 	dptr = start;
 	*dptr++ = '%';
