@@ -30,11 +30,11 @@ int main(int argc, char *argv[])
 
 void convertHoriz2Vert(FILE * fpInput, char * outputFileName)
 {
-	int fileSize = ftell(fpInput);
+	size_t fileSize = (size_t)ftell(fpInput);
 	fseek(fpInput, 0, SEEK_SET);
 
 	// determine how many mugshots there are
-	int mugShotCnt = fileSize / MUGSIZE;
+	size_t mugShotCnt = fileSize / MUGSIZE;
 
 	// create input buffer, and a pointer that we can mangle
 	char *inBuff = malloc(fileSize * sizeof(*inBuff));
@@ -108,7 +108,7 @@ FILE * openSnes(char *fileName)
 
 	// get file size for error detection
 	fseek(fpInput, 0, SEEK_END);
-	int fileSize = ftell(fpInput);
+	long fileSize = ftell(fpInput);
 
 	if (fileSize > 0x10000) {
 		printf("ERROR: \"%s\" file size is larger than 64KB.\n", fileName);

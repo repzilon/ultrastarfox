@@ -12,11 +12,11 @@
 // 64k should be enough for anything
 unsigned char decru_src[0x10000]; // source buffer
 unsigned char decru_dest[0x10000]; // destination buffer
-int decru_s = 0; // source pointer
-int decru_d; // destination pointer
-int d_length = 0; // length of decrunched data
+size_t decru_s = 0; // source pointer
+size_t decru_d; // destination pointer
+size_t d_length = 0; // length of decrunched data
 
-unsigned int decru_buffer; // 32-bit buffer
+size_t decru_buffer; // 32-bit buffer
 int decru_b = 0; // buffer bit offset
 
 void put_byte(unsigned char byte) {
@@ -33,15 +33,15 @@ void refill_buffer() {
     decru_b += 8;
     
     if (decru_s == 0) return;
-    decru_buffer |= decru_src[--decru_s] << 8;
+    decru_buffer |= decru_src[--decru_s] * 256;
     decru_b += 8;
     
     if (decru_s == 0) return;
-    decru_buffer |= decru_src[--decru_s] << 16;
+    decru_buffer |= decru_src[--decru_s] * (256*256);
     decru_b += 8;
     
     if (decru_s == 0) return;
-    decru_buffer |= decru_src[--decru_s] << 24;
+    decru_buffer |= decru_src[--decru_s] * (256*256*256);
     decru_b += 8;
 }
 
@@ -78,12 +78,12 @@ int get_bits(int n) {
 
 void decrunch_put_raw(int run) {
     // write uncompressed bytes
-    while (run--) put_byte(get_bits(8));
+    while (run--) put_byte(get_bits(8) & 0xFF);
 }
 
 void decrunch_put_lzw(int run, int offset) {
     // write bytes from destination buffer (lzw)
-    while (run--) put_byte(decru_dest[decru_d + offset - 1]);
+    while (run--) put_byte(decru_dest[(long)decru_d + offset - 1]);
 }
 
 void decrunch_lzw() {
@@ -141,7 +141,7 @@ void decrunch() {
 
     // get the decrunched length
     d_length |= decru_src[--decru_s];
-    d_length |= decru_src[--decru_s] << 8;
+    d_length |= decru_src[--decru_s] * 256;
     decru_s -= 2; // skip two bytes
     decru_d = d_length;
 
@@ -197,7 +197,7 @@ int main(int argc, const char* argv[])
     
     //parse arguments
     if (argc == 4) {
-        decru_s = (int)strtol(argv[2], NULL, 0);
+        decru_s = strtoul(argv[2], NULL, 0);
         o_filename = argv[3];
     } else {
         o_filename = argv[2];
@@ -212,12 +212,12 @@ int main(int argc, const char* argv[])
     // get data offset (end of data)
     if (!decru_s) {
         fseek(i_file, 0, SEEK_END);
-        decru_s = (int)ftell(i_file);
+        decru_s = (size_t)ftell(i_file);
     }
     
     // copy file to source buffer
     if (decru_s > 0x10000) {
-        fseek(i_file, decru_s - 0x10000, SEEK_SET);
+        fseek(i_file, (long)(decru_s - 0x10000), SEEK_SET);
         fread(decru_src, 1, 0x10000, i_file);
         decru_s = 0x10000;
     } else {

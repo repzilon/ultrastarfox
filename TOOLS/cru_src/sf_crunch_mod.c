@@ -14,10 +14,10 @@
 unsigned char cru_src[0x10000]; // source buffer
 unsigned char cru_dest[0x10000]; // destination buffer
 int cru_s = 0; // source pointer
-int s_length = 0; // length of decrunched data
-int cru_d = 0; // destination pointer
+size_t s_length = 0; // length of decrunched data
+size_t cru_d = 0; // destination pointer
 
-unsigned int cru_buffer = 0; // 32-bit buffer
+size_t cru_buffer = 0; // 32-bit buffer
 int cru_b = 32; // number of bits left in bit buffer
 
 unsigned char raw_buffer[0x10000]; // buffer for uncompressed bytes
@@ -218,7 +218,7 @@ int main(int argc, const char* argv[])
 
     // get data offset (end of data)
     fseek(i_file, 0, SEEK_END);
-    s_length = (int)ftell(i_file);
+    s_length = (size_t)ftell(i_file);
     
     if (s_length >= 0x10000) {
         puts("unable to compress files longer than 64k");
@@ -239,7 +239,7 @@ int main(int argc, const char* argv[])
     fclose(o_file);
 
     // Added by Repzilon, output stats after compression, like advcancecomp
-    printf("%11d%10d %3.0f%% %s => %s\n", s_length, cru_d, ceil(cru_d * 100.0 / s_length), argv[1], argv[2]);
+    printf("%11zu%10zu %3.0f%% %s => %s\n", s_length, cru_d, ceil(cru_d * 100.0 / s_length), argv[1], argv[2]);
 
     return 0;
 }

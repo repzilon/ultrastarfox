@@ -36,7 +36,7 @@ void convertBMP2Fon(FILE * fpBitmap, char * inputFileName, char * outputFileName
 	// ============================================
 	// flip bitmap pixel data so it's easier to use
 	// ============================================
-	int divider = 8 / bpp;
+	unsigned int divider = 8 / bpp;
 
 	// create buffer that will have pixels in the right orientation
 	char *pixBuff = (char *) malloc(BMPWDTH * BMPHGHT * sizeof(*pixBuff) / divider);
