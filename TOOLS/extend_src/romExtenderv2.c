@@ -2,6 +2,7 @@
 /*Usage example:
 romExtender SF.ROM 16 FF or romExtender SF.ROM --auto FF */
 
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -84,7 +85,7 @@ int main(int argc, const char* argv[])
         fclose(currentFile);
         free(romData);
 
-        printf("ROM successfully expanded to %zu Mbits.\nAdded %d %Xs to ROM.\n", maxSize / 0x20000, zeroFillAmt, actualPadByte);
+        printf("ROM successfully expanded to %zu Mbits.\nAdded %" PRIuPTR " %Xs to ROM.\n", maxSize / 0x20000, zeroFillAmt, actualPadByte);
     } else {
         fclose(currentFile);
         printf("Nothing to do for %s\n", romFile);

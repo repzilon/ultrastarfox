@@ -282,13 +282,13 @@ FILE * openBitmap(char *fileName, unsigned char *bppOut, unsigned int *sizeOut)
 		fseek(fpBitmap, bmp_header.offset, SEEK_SET);
 	}
 
-	*bppOut = bmp_header.bits;
+	*bppOut = (unsigned char)(bmp_header.bits & 0xFF);
 	return fpBitmap;
 }
 
 char * font_createOutputFileName(char * inputFileName)
 {
-	int    posdot = strrchr(inputFileName, '.') - inputFileName; // position of last .
+	long   posdot = strrchr(inputFileName, '.') - inputFileName; // position of last .
 	// special case for *nix hidden files or those without an extension
 	size_t noextlen = (posdot <= 0) ? strlen(inputFileName) : (size_t)posdot;
 	char*  inputExt = inputFileName + (strlen(inputFileName) - EXT_LEN);
@@ -299,7 +299,7 @@ char * font_createOutputFileName(char * inputFileName)
 		exit(EX_DATAERR);
 	}
 
-	char*  outputFileName = (char*)calloc(noextlen + EXT_LEN + 1, sizeof(char));
+	char* outputFileName = (char*)calloc(noextlen + EXT_LEN + 1, sizeof(char));
 	if (outputFileName == NULL) {
 		puts("foxfont error: cannot allocate output file name.");
 		exit(EX_SOFTWARE);

@@ -1,3 +1,4 @@
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -66,7 +67,7 @@ void convertHoriz2Vert(FILE * fpInput, char * outputFileName)
 
 	#ifdef DEBUG
 	if (inBuffPtr != inBuff + NEXTTILEDOWN) {
-		printf("DEBUG ERROR: inBuffPtr off by %d\n", inBuffPtr - (inBuff + NEXTTILEDOWN));
+		printf("DEBUG ERROR: inBuffPtr off by %" PRIuPTR "\n", inBuffPtr - (inBuff + NEXTTILEDOWN));
 		free(inBuff);
 		free(outBuff);
 		exit(EX_SOFTWARE);
@@ -134,7 +135,7 @@ FILE * openSnes(char *fileName)
 
 char * chr_createOutputFileName(char * inputFileName)
 {
-	int    posdot = strrchr(inputFileName, '.') - inputFileName; // position of last .
+	long   posdot = strrchr(inputFileName, '.') - inputFileName; // position of last .
 	// special case for *nix hidden files or those without an extension
 	size_t noextlen = (posdot <= 0) ? strlen(inputFileName) : (size_t)posdot;
 	size_t scrlen = strlen(EXT_SCR);
