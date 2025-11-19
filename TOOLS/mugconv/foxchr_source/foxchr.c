@@ -66,7 +66,7 @@ void convertHoriz2Vert(FILE * fpInput, char * outputFileName)
 
 	#ifdef DEBUG
 	if (inBuffPtr != inBuff + NEXTTILEDOWN) {
-		printf("DEBUG ERROR: inBuffPtr off by %ld\n", inBuffPtr - (inBuff + NEXTTILEDOWN));
+		printf("DEBUG ERROR: inBuffPtr off by %d\n", inBuffPtr - (inBuff + NEXTTILEDOWN));
 		free(inBuff);
 		free(outBuff);
 		exit(EX_SOFTWARE);
@@ -89,6 +89,7 @@ void convertHoriz2Vert(FILE * fpInput, char * outputFileName)
 	free(outBuff);
 
 	printf("Foxchr done, output: %s\n", outputFileName);
+	free(outputFileName);
 
 	exit(EX_OK);
 }
@@ -133,33 +134,23 @@ FILE * openSnes(char *fileName)
 
 char * chr_createOutputFileName(char * inputFileName)
 {
-	// =============================================
-	// check file size to make sure it's not too big
-	// and that it's 8x8 snes 4bpp tiles
-	// =============================================
-	static char outputFileName[MAX_PATH + 1] = {0};			// MAX_PATH + null termination
-
-	if ((strlen(inputFileName) + strlen(EXT_SCR)) > MAX_PATH) {
-		printf("ERROR: Output file name is longer than %d characters.\n", MAX_PATH);
-		exit(EX_CANTCREAT);
-	}
-
-	// length of fileName without the .cgx extension
-	#define NOEXTLEN	(strlen(inputFileName) - strlen(EXT_CGX))
-
-	// copy input filename without null termination
-	strncpy(outputFileName, inputFileName, NOEXTLEN);
-
-	// add -SCRAMBLED to filename
-	strncpy(outputFileName + NOEXTLEN, EXT_SCR, strlen(EXT_SCR));
-
-	// add .cgx extension to outputFileName
-	strncpy(outputFileName + NOEXTLEN + strlen(EXT_SCR), EXT_CGX, strlen(EXT_CGX));
-
-	if (strlen(inputFileName) != strlen(outputFileName) - strlen(EXT_SCR)) {
-		puts("PROGRAM ERROR: outputFileName is different length than inputFileName");
+	int    posdot = strrchr(inputFileName, '.') - inputFileName; // position of last .
+	// special case for *nix hidden files or those without an extension
+	size_t noextlen = (posdot <= 0) ? strlen(inputFileName) : (size_t)posdot;
+	size_t scrlen = strlen(EXT_SCR);
+	size_t cgxlen = strlen(EXT_CGX);
+	char*  outputFileName = (char*)calloc(noextlen + scrlen + cgxlen + 1, sizeof(char));
+	if (outputFileName == NULL) {
+		puts("foxchr error: cannot allocate output file name.");
 		exit(EX_SOFTWARE);
 	}
 
+	// copy file title
+	strncpy(outputFileName, inputFileName, noextlen);
+	// append -SCRAMBLED to filename
+	strncpy(outputFileName + noextlen, EXT_SCR, strlen(EXT_SCR));
+	// append .cgx extension to outputFileName
+	strncpy(outputFileName + noextlen + strlen(EXT_SCR), EXT_CGX, strlen(EXT_CGX));
+	
 	return outputFileName;
 }

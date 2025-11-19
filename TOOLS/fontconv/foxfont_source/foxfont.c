@@ -1,7 +1,8 @@
 #include <math.h>
 #include <stdio.h>
-#include <stdlib.h> // fix by sunlit
+#include <stdlib.h>	// fix by sunlit
 #include <string.h>
+#include <strings.h>	// for strncasecmp
 #include "foxfont.h"
 
 #ifdef ROBFX
@@ -182,6 +183,7 @@ void convertBMP2Fon(FILE * fpBitmap, char * inputFileName, char * outputFileName
 	free(outBuff);
 
 	printf("%11u%10ld %3.0f%% %s => %s\n", inputSize, outputSize, ceil(outputSize * 100.0 / inputSize), inputFileName, outputFileName);
+	free(outputFileName);
 
 	exit(EX_OK);
 }
@@ -286,35 +288,32 @@ FILE * openBitmap(char *fileName, unsigned char *bppOut, unsigned int *sizeOut)
 
 char * font_createOutputFileName(char * inputFileName)
 {
-	// length of fileName without the .bmp extension
-	#define NOEXTLEN	(strlen(inputFileName) - EXT_LEN)
-
-	static char outputFileName[MAX_PATH + 1] = {0};			// MAX_PATH + null termination
-
-	if (strlen(inputFileName) > MAX_PATH) {
-		printf("ERROR: Input file name is longer than %d characters.\n", MAX_PATH);
-		exit(EX_NOINPUT);
-	}
-
-	// create pointer to last 4 characters of input file
-	char *inputExt = inputFileName + NOEXTLEN;
+	int    posdot = strrchr(inputFileName, '.') - inputFileName; // position of last .
+	// special case for *nix hidden files or those without an extension
+	size_t noextlen = (posdot <= 0) ? strlen(inputFileName) : (size_t)posdot;
+	char*  inputExt = inputFileName + (strlen(inputFileName) - EXT_LEN);
 
 	// verify that input file's extension is ".bmp"
-	if (strncmp(inputExt, EXT_BMP, EXT_LEN)) {
-		printf("ERROR: Input file must have %s extension.\n", EXT_BMP);
+	if (strncasecmp(inputExt, EXT_BMP, EXT_LEN)) {
+		puts("foxfont error: input file must have " EXT_BMP " extension.");
 		exit(EX_DATAERR);
 	}
 
-	// copy input filename without null termination
-	strncpy(outputFileName, inputFileName, NOEXTLEN);
-
-	// add .fon extension to outputFileName
-	strncpy(outputFileName + NOEXTLEN, EXT_FON, EXT_LEN);
-
-	if (strlen(inputFileName) != strlen(outputFileName)) {
-		puts("PROGRAM ERROR: outputFileName is different length than inputFileName");
+	char*  outputFileName = (char*)calloc(noextlen + EXT_LEN + 1, sizeof(char));
+	if (outputFileName == NULL) {
+		puts("foxfont error: cannot allocate output file name.");
 		exit(EX_SOFTWARE);
 	}
 
+	// copy input filename without null termination
+	strncpy(outputFileName, inputFileName, noextlen);
+	// add .fon extension to outputFileName
+	strncpy(outputFileName + noextlen, EXT_FON, EXT_LEN);
+
+	if (strlen(inputFileName) != strlen(outputFileName)) {
+		puts("foxfont error: outputFileName is different length than inputFileName");
+		exit(EX_SOFTWARE);
+	}
+	
 	return outputFileName;
 }

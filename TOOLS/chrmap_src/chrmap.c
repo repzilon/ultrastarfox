@@ -114,8 +114,8 @@ int find_byte(const char *utf8) {
 }
 
 // UTF-8 parsing
-int read_utf8_char(const char *s, char *out) {
-    int len = 1;
+size_t read_utf8_char(const char *s, char *out) {
+    size_t len = 1;
     unsigned char c = (unsigned char)s[0];
     if (c >= 0xC0 && c < 0xE0) len = 2;
     else if (c >= 0xE0 && c < 0xF0) len = 3;

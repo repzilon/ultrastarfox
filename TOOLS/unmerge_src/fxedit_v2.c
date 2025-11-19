@@ -31,9 +31,9 @@ void Read_8x8(int row, int col, FILE *fp, bool mode)
 			data |= byte;
 		}
 
-		fputc(data>>24,fp);
-		fputc(data>>16,fp);
-		fputc(data>>8,fp);
+		fputc((int)(data>>24),fp);
+		fputc((int)(data>>16),fp);
+		fputc((int)(data>>8),fp);
 		fputc(data & 0xFF,fp);
 	}
 }
@@ -52,12 +52,11 @@ void Write_8x8(int row, int col, FILE *fp, bool mode)
 
 		for(int lcv=0; lcv<8; lcv++)
 		{
-			u8 byte = (data&0xf0000000)>>28;
+			u8 byte = (u8)(((data&0xf0000000)>>28) &0xFF);
 			data <<= 4;
 
 			// interleave
 			if(!mode) { byte <<= 4; }
-			else {}
 
 			buffer[row+lcv2][col+lcv] |= byte;
 		}
