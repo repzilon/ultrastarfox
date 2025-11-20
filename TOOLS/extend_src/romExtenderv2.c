@@ -2,10 +2,20 @@
 /*Usage example:
 romExtender SF.ROM 16 FF or romExtender SF.ROM --auto FF */
 
+#if !defined(_MSC_VER) || _MSC_VER > 1800
 #include <inttypes.h>
+#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if defined(_MSC_VER) && _MSC_VER < 1900
+#ifdef _WIN64
+#define PRIuPTR "zu"
+#else
+#define PRIuPTR "u"
+#endif
+#endif
 
 #if ROBFX
 int extend_main(int argc, char** argv)

@@ -1,9 +1,19 @@
+#if !defined(_MSC_VER) || _MSC_VER > 1800
 #include <inttypes.h>
+#endif
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "foxchr.h"
+
+#if defined(_MSC_VER) && _MSC_VER < 1900
+#ifdef _WIN64
+#define PRIuPTR "zu"
+#else
+#define PRIuPTR "u"
+#endif
+#endif
 
 #ifdef ROBFX
 int foxchr_main(int argc, char** argv)
