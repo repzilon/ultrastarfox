@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "robfxb", "robfxb.vcproj", "{4EAC325E-5954-41C6-936E-DEF25DB692C6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "robfxt", "robfxt.vcproj", "{47C8A990-253D-4A56-9FC8-CAAE245C59B7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "robfxs", "robfxs.vcproj", "{2822058B-FC5A-4D58-94BC-0D1EA21BF964}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4EAC325E-5954-41C6-936E-DEF25DB692C6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4EAC325E-5954-41C6-936E-DEF25DB692C6}.Debug|Win32.Build.0 = Debug|Win32
+		{4EAC325E-5954-41C6-936E-DEF25DB692C6}.Release|Win32.ActiveCfg = Release|Win32
+		{4EAC325E-5954-41C6-936E-DEF25DB692C6}.Release|Win32.Build.0 = Release|Win32
+		{47C8A990-253D-4A56-9FC8-CAAE245C59B7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{47C8A990-253D-4A56-9FC8-CAAE245C59B7}.Debug|Win32.Build.0 = Debug|Win32
+		{47C8A990-253D-4A56-9FC8-CAAE245C59B7}.Release|Win32.ActiveCfg = Release|Win32
+		{47C8A990-253D-4A56-9FC8-CAAE245C59B7}.Release|Win32.Build.0 = Release|Win32
+		{2822058B-FC5A-4D58-94BC-0D1EA21BF964}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2822058B-FC5A-4D58-94BC-0D1EA21BF964}.Debug|Win32.Build.0 = Debug|Win32
+		{2822058B-FC5A-4D58-94BC-0D1EA21BF964}.Release|Win32.ActiveCfg = Release|Win32
+		{2822058B-FC5A-4D58-94BC-0D1EA21BF964}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -45,18 +45,9 @@
     <ClCompile Include="..\cgx2fx_fx2cgx_src\cgx2fx.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\fbsdprtf.src\getopt.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\fbsdprtf.src\printf.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\inccol_makecol_src\inccol.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\fbsdprtf.src\getopt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\fontconv\foxfont_source\foxfont.h">
