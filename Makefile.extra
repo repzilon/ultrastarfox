@@ -62,15 +62,8 @@ nodosdupes: nodosdup.sh
 	sh ./nodosdup.sh
 
 permissions:
-	chmod -x CHANGES *.* */*.*
-	chmod +x 'optionalstuff/textures/sg.rom 09-23-92/'
-	chmod -x */*/*/*.*
-	chmod +x "TOOLS/SuperFamiconv-$(SFCONV_VER)" || true
-	chmod +x TOOLS/*.src
-	chmod -x */*/*.*
-	chmod +x 'optionalstuff/textures/sg.rom 09-23-92/'
-	chmod +x "TOOLS/SuperFamiconv-$(SFCONV_VER)" || true
-	chmod +x TOOLS/*.src
+	find . -type d -print0 | xargs -0 chmod +x
+	find . -type f -print0 | xargs -0 chmod -x
 	chmod +x *.sh */*/*.sh
 
 lineendings:
@@ -87,10 +80,11 @@ lineendings:
 	unix2dos -q -f SF/MARIO/*.MC
 	unix2dos -q TOOLS/Makefile.djg
 	unix2dos -q TOOLS/*.bat
-	dos2unix -q -e Makefile TOOLS/Makefile
-	dos2unix -q -e TOOLS/*/Makefile
+	unix2dos -q TOOLS/*/*/*.cs
+	unix2dos -q TOOLS/*/*.sln
+	unix2dos -q TOOLS/*/*/*.*proj*
+	dos2unix -q -e Makefile* TOOLS/Makefile TOOLS/*/Makefile
 	dos2unix -q -e *.sh TOOLS/*/*.sh
-	dos2unix -q -e Makefile.*
 
 prebuild: SF/DATA/CONT-2-F.CGX SF/DATA/MAP-F.CGX SF/DATA/OBJ-1-F.CGX SF/DATA/OBJ-2-F.CGX SF/DATA/FOX-F.CGX SF/DATA/CP-FF.CGX
 	@echo "French graphics conversion done"
