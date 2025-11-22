@@ -2,19 +2,14 @@
 /*Usage example:
 romExtender SF.ROM 16 FF or romExtender SF.ROM --auto FF */
 
-#if !defined(_MSC_VER) || _MSC_VER > 1800
-#include <inttypes.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(_MSC_VER) && _MSC_VER < 1900
-#ifdef _WIN64
-#define PRIuPTR "zu"
+#ifdef __LP64__
+#define PRIuSizet "zu"
 #else
-#define PRIuPTR "u"
-#endif
+#define PRIuSizet "u"
 #endif
 
 #if ROBFX
@@ -95,7 +90,7 @@ int main(int argc, const char* argv[])
         fclose(currentFile);
         free(romData);
 
-        printf("ROM successfully expanded to %zu Mbits.\nAdded %" PRIuPTR " %Xs to ROM.\n", maxSize / 0x20000, zeroFillAmt, actualPadByte);
+        printf("ROM successfully expanded to %" PRIuSizet " Mbits.\nAdded %" PRIuSizet " %Xs to ROM.\n", maxSize / 0x20000, zeroFillAmt, actualPadByte);
     } else {
         fclose(currentFile);
         printf("Nothing to do for %s\n", romFile);
