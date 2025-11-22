@@ -157,11 +157,11 @@ char * chr_createOutputFileName(char * inputFileName)
 	}
 
 	// copy file title
-	strncpy(outputFileName, inputFileName, noextlen);
+	memcpy(outputFileName, inputFileName, noextlen);
 	// append -SCRAMBLED to filename
-	strncpy(outputFileName + noextlen, EXT_SCR, strlen(EXT_SCR));
+	memcpy(outputFileName + noextlen, EXT_SCR, strlen(EXT_SCR));
 	// append .cgx extension to outputFileName
-	strncpy(outputFileName + noextlen + strlen(EXT_SCR), EXT_CGX, strlen(EXT_CGX));
+	memcpy(outputFileName + noextlen + strlen(EXT_SCR), EXT_CGX, strlen(EXT_CGX));
 
 	return outputFileName;
 }

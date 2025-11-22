@@ -281,12 +281,12 @@ FILE * openBitmap(char *fileName, unsigned char *bppOut, unsigned int *sizeOut)
 	//	printf("NOTICE: bitmap has %d colors, using first 4 only.\n", bmp_header.ncolors);
 
 	// skip reading the palette
-	fseek(fpBitmap, bmp_header.ncolors * 4, SEEK_CUR);
+	fseek(fpBitmap, (long)(bmp_header.ncolors * 4), SEEK_CUR);
 
 	// after the palette is the pixel data, this should match .offset
 	if (ftell(fpBitmap) != bmp_header.offset) {
 		puts("NOTICE: bitmap header offset value does not match pixel start address.");
-		fseek(fpBitmap, bmp_header.offset, SEEK_SET);
+		fseek(fpBitmap, (long)bmp_header.offset, SEEK_SET);
 	}
 
 	*bppOut = (unsigned char)(bmp_header.bits & 0xFF);
@@ -313,9 +313,9 @@ char * font_createOutputFileName(char * inputFileName)
 	}
 
 	// copy input filename without null termination
-	strncpy(outputFileName, inputFileName, noextlen);
+	memcpy(outputFileName, inputFileName, noextlen);
 	// add .fon extension to outputFileName
-	strncpy(outputFileName + noextlen, EXT_FON, EXT_LEN);
+	memcpy(outputFileName + noextlen, EXT_FON, EXT_LEN);
 
 	if (strlen(inputFileName) != strlen(outputFileName)) {
 		puts("foxfont error: outputFileName is different length than inputFileName");
