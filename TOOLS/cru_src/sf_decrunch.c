@@ -33,15 +33,15 @@ void refill_buffer() {
     decru_b += 8;
     
     if (decru_s == 0) return;
-    decru_buffer |= decru_src[--decru_s] * 256;
+    decru_buffer |= decru_src[--decru_s] * 256UL;
     decru_b += 8;
     
     if (decru_s == 0) return;
-    decru_buffer |= decru_src[--decru_s] * (256*256);
+    decru_buffer |= decru_src[--decru_s] * 65536UL;
     decru_b += 8;
     
     if (decru_s == 0) return;
-    decru_buffer |= decru_src[--decru_s] * (256*256*256);
+    decru_buffer |= decru_src[--decru_s] * 65536UL * 256UL;
     decru_b += 8;
 }
 
@@ -69,7 +69,7 @@ int get_bits(int n) {
     }
     for (int i = 0; i < n; i++) {
         bits <<= 1;
-        bits |= decru_buffer & 1;
+        bits |= (int)(decru_buffer & 1);
         decru_buffer >>= 1;
     }
     decru_b -= n;
@@ -141,7 +141,7 @@ void decrunch() {
 
     // get the decrunched length
     d_length |= decru_src[--decru_s];
-    d_length |= decru_src[--decru_s] * 256;
+    d_length |= decru_src[--decru_s] * 256UL;
     decru_s -= 2; // skip two bytes
     decru_d = d_length;
 

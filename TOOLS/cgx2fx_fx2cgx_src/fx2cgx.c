@@ -85,7 +85,7 @@ void convert_to_ch7() {
                 for (k = j; k < (j + 64 * 16 * 8 * 2); k += (64 * 16 * 8)) {
                     for (l = k; l < (k + 64 * 16); l += 64) {
                         for (m = l; m < (l + 8); m++) {
-                            fc_ch7buf[m] |= fc_binbuf[wcnt++] & 0x0F;
+                            fc_ch7buf[m] |= (unchar)(fc_binbuf[wcnt++] & 0x0F);
                         }
                     }
                 }
@@ -174,10 +174,10 @@ void convert_tile_to_cgx(const unchar *ch7_tile, unchar *cgx_tile) {
             unsigned char bitplane3 = (color >> 2) & 1;
             unsigned char bitplane4 = (color >> 3) & 1;
 
-            cgx_tile[row * 2 + 0] |= (bitplane1 << (7 - col));
-            cgx_tile[row * 2 + 1] |= (bitplane2 << (7 - col));
-            cgx_tile[16 + row * 2 + 0] |= (bitplane3 << (7 - col));
-            cgx_tile[16 + row * 2 + 1] |= (bitplane4 << (7 - col));
+            cgx_tile[row * 2 + 0] |= (unchar)((bitplane1 << (7 - col)));
+            cgx_tile[row * 2 + 1] |= (unchar)((bitplane2 << (7 - col)));
+            cgx_tile[16 + row * 2 + 0] |= (unchar)((bitplane3 << (7 - col)));
+            cgx_tile[16 + row * 2 + 1] |= (unchar)((bitplane4 << (7 - col)));
         }
     }
 }
