@@ -11,6 +11,7 @@ CFLAGS_HARDEN := -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -
 -fstack-protector-strong \
 -fno-delete-null-pointer-checks -fno-strict-overflow -fno-strict-aliasing -ftrivial-auto-var-init=zero \
 -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion
+# NOTE: if C++ is needed later, adapt from ../Makefile.djg because there are flags exclusive to C language too
 #CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
 #CXXFLAGS_HARDEN := $(CFLAGS_HARDEN) -D_GLIBCXX_ASSERTIONS
 

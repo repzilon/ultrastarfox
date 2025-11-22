@@ -12,7 +12,7 @@ romExtender SF.ROM 16 FF or romExtender SF.ROM --auto FF */
 #ifdef __LP64__
 #define PRIuSizet "zu"
 #else
-#define PRIuSizet "u"
+#define PRIuSizet "lu"
 #endif
 #endif
 
