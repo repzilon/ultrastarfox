@@ -176,7 +176,7 @@ main(int argc, char *argv[])
 		start = fmt;
 		while (fmt < format + len) {
 			if (fmt[0] == '%') {
-				fwrite(start, 1, fmt - start, stdout);
+				fwrite(start, 1, (size_t)(fmt - start), stdout);
 				if (fmt[1] == '%') {
 					/* %% prints a % */
 					putchar('%');
@@ -206,7 +206,7 @@ main(int argc, char *argv[])
 #endif
 			return (1);
 		}
-		fwrite(start, 1, fmt - start, stdout);
+		fwrite(start, 1, (size_t)(fmt - start), stdout);
 		if (!*gargv) {
 #ifdef SHELL
 			INTON;
@@ -409,17 +409,13 @@ printf_doformat(char *fmt, int *rval)
 		break;
 	}
 	case 'c': {
-		char p;
-
-		p = getchr();
+		char p = (char)getchr();
 		if (p != '\0')
 			PF(start, p);
 		break;
 	}
 	case 's': {
-		const char *p;
-
-		p = getstr();
+		const char *p = getstr();
 		PF(start, p);
 		break;
 	}
@@ -504,7 +500,7 @@ escape(char *fmt, int percent, size_t *len)
 		case '\0':		/* EOS, user error */
 			*store = '\\';
 			*++store = '\0';
-			*len = store - save;
+			*len = (size_t)(store - save);
 			return (0);
 		case '\\':		/* backslash */
 		case '\'':		/* single quote */
@@ -519,7 +515,7 @@ escape(char *fmt, int percent, size_t *len)
 		case 'c':
 			if (!percent) {
 				*store = '\0';
-				*len = store - save;
+				*len = (size_t)(store - save);
 				return (1);
 			}
 			*store = 'c';
@@ -561,7 +557,7 @@ escape(char *fmt, int percent, size_t *len)
 		}
 	}
 	*store = '\0';
-	*len = store - save;
+	*len = (size_t)(store - save);
 	return (0);
 }
 
@@ -606,14 +602,15 @@ getnum(intmax_t *ip, uintmax_t *uip, int signedconv)
 	int rval;
 
 	if (!*gargv) {
-		*ip = *uip = 0;
+		*ip = 0;
+		*uip = 0;
 		return (0);
 	}
 	if (**gargv == '"' || **gargv == '\'') {
 		if (signedconv)
 			*ip = asciicode();
 		else
-			*uip = asciicode();
+			*uip = (uintmax_t)asciicode();
 		return (0);
 	}
 	rval = 0;
