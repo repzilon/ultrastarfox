@@ -6,7 +6,7 @@
 
 #ifdef _WIN64
 #define PRIdLong2 "lld"
-#else 
+#else
 #ifdef __LP64__
 #define PRIdLong2 "ld"
 #else
