@@ -77,7 +77,8 @@ CFLAGS_HARDEN := -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -
 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 \
 -fstack-protector-strong \
 -fno-delete-null-pointer-checks -fno-strict-overflow -fno-strict-aliasing \
--Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion
+-Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion \
+-Wno-format-nonliteral -Werror=format-security
 ifneq ($(strip ${DJGPP}),)
   CFLAGS_GCC := -fstack-clash-protection -Wtrampolines
 else
