@@ -6,10 +6,14 @@ romExtender SF.ROM 16 FF or romExtender SF.ROM --auto FF */
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _WIN64
+#define PRIuSizet "llu"
+#else
 #ifdef __LP64__
 #define PRIuSizet "zu"
 #else
 #define PRIuSizet "u"
+#endif
 #endif
 
 #if ROBFX
