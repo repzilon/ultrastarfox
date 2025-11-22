@@ -9,8 +9,10 @@ CFLAGS_HARDEN := -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -
 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 \
 -fstack-protector-strong \
 -fno-delete-null-pointer-checks -fno-strict-overflow -fno-strict-aliasing \
--Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion \
--fstack-clash-protection -Wtrampolines
+-fstack-clash-protection -Wtrampolines \
+-Wno-format-nonliteral -Werror=format-security
+# Flags exclusive to C language, not to be used for C++
+CCFLAGS_HARDEN := -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion
 # -fvisibility=hidden is unavailable on static linking systems (DOS)
 CXXFLAGS_OPTIM := $(CFLAGS_OPTIM)
 CXXFLAGS_HARDEN := $(CFLAGS_HARDEN) -D_GLIBCXX_ASSERTIONS
@@ -174,6 +176,14 @@ clean:
 	$(RM) $(BINDIR)cru.exe
 	$(RM) $(BINDIR)decru.exe
 	$(RM) $(BINDIR)sfcheck.exe
+	$(RM) $(BINDIR)printf.exe
+	$(RM) $(BINDIR)chrmap.exe
+	$(RM) $(BINDIR)extend.exe
+	$(RM) $(BINDIR)fon.exe
+	$(RM) $(BINDIR)inccol.exe
+	$(RM) $(BINDIR)makecol.exe
+	$(RM) $(BINDIR)apendcol.exe
+	$(RM) $(BINDIR)mapdec.exe
 
 distclean: clean
 	$(RM) $(DESTBIN)chrmap.exe
@@ -185,6 +195,7 @@ distclean: clean
 	$(RM) $(DESTBIN)mapdec.exe
 	$(RM) $(DESTBIN)cgx2fx.exe
 	$(RM) $(DESTBIN)sfcheck.exe
+	$(RM) $(DESTBIN)printf.exe
 
 help:
 	@echo "Available targets: all install clean distclean"
