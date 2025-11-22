@@ -91,10 +91,11 @@ usb2snes-cli/
 flips/
 flips-latest.tar.gz
 
-# Downloaded SuperFamicheck
+# SuperFamicheck
 TOOLS/sfcheck.tgz
 TOOLS/sfcheck.src/
 TOOLS/SuperFamicheck-*/
+TOOLS/sfcheck.old/*
 
 # Compiled tools
 TOOLS/bgconv/bin/palconv

@@ -64,7 +64,7 @@ void Write_8x8(int row, int col, FILE *fp, bool mode)
 			data <<= 4;
 
 			// interleave
-			if(!mode) { byte <<= 4; }
+			if(!mode) { byte = (u8)(byte << 4); }
 
 			buffer[row+lcv2][col+lcv] |= byte;
 		}

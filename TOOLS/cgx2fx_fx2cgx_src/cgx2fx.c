@@ -156,7 +156,7 @@ void convert_to_bin() {
                 for (k = j; k < (j + 64 * 16 * 8 * 2); k += (64 * 16 * 8)) {
                     for (l = k; l < (k + 64 * 16); l += 64) {
                         for (m = l; m < (l + 8); m++, wcnt++) {
-                            cf_binbuf[wcnt] |= (cf_ch7buf[m + 0x8000] & 0x0F) << 4;
+                            cf_binbuf[wcnt] |= (unchar)((cf_ch7buf[m + 0x8000] & 0x0F) << 4);
                         }
                     }
                 }

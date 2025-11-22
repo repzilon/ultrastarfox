@@ -44,7 +44,7 @@ void convertBMP2Fon(FILE * fpBitmap, char * inputFileName, char * outputFileName
 	// ============================================
 	// flip bitmap pixel data so it's easier to use
 	// ============================================
-	unsigned int divider = 8 / bpp;
+	unsigned int divider = 8UL / bpp;
 
 	// create buffer that will have pixels in the right orientation
 	char *pixBuff = (char *) malloc(BMPWDTH * BMPHGHT * sizeof(*pixBuff) / divider);
@@ -79,8 +79,8 @@ void convertBMP2Fon(FILE * fpBitmap, char * inputFileName, char * outputFileName
 				for (row = 0; row < TILEHGHT; row++) {
 					// draw one row of pixels of the tile
 					for (shift = (TILEWDTH - 1); shift >= 0; shift--) {
-						*outBuffPtr       |= (*pixBuffPtr & 0x01) << shift;
-						*(outBuffPtr + 1) |= ((*pixBuffPtr & 0x02) >> 1) << shift;
+						*outBuffPtr       |= (char)((*pixBuffPtr & 0x01) << shift);
+						*(outBuffPtr + 1) |= (char)(((*pixBuffPtr & 0x02) >> 1) << shift);
 						pixBuffPtr++;
 					}
 					outBuffPtr += 2;
@@ -97,10 +97,10 @@ void convertBMP2Fon(FILE * fpBitmap, char * inputFileName, char * outputFileName
 			for (tile = 0; tile < (BMPWDTH / TILEWDTH); tile++) {
 				for (row = 0; row < TILEHGHT; row++) {
 					for (shift = (TILEWDTH - 2); shift >= 0; shift-=2) {
-						*outBuffPtr       |= ((*pixBuffPtr & 0x10) >> 4) << (shift + 1);
-						*outBuffPtr       |= (*pixBuffPtr & 0x01) << shift;
-						*(outBuffPtr + 1) |= ((*pixBuffPtr & 0x20) >> 5) << (shift + 1);
-						*(outBuffPtr + 1) |= ((*pixBuffPtr & 0x02) >> 1) << shift;
+						*outBuffPtr       |= (char)(((*pixBuffPtr & 0x10) >> 4) << (shift + 1));
+						*outBuffPtr       |= (char)((*pixBuffPtr & 0x01) << shift);
+						*(outBuffPtr + 1) |= (char)(((*pixBuffPtr & 0x20) >> 5) << (shift + 1));
+						*(outBuffPtr + 1) |= (char)(((*pixBuffPtr & 0x02) >> 1) << shift);
 						pixBuffPtr++;
 					}
 					outBuffPtr += 2;

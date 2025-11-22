@@ -10,7 +10,7 @@
 
 void decode_byte_sequence(unsigned char *byte_seq, FILE *output) {
     // Extract address in little endian format
-    unsigned int address = byte_seq[0] | (byte_seq[1] * 256) | (byte_seq[2] * (256*256)) | (byte_seq[3] * (256*256*256));
+    unsigned int address = byte_seq[0] | (byte_seq[1] * 256UL) | (byte_seq[2] * 65536UL) | (byte_seq[3] * (65536UL * 256UL));
 
     // Extract length of symbol name
     unsigned char name_length = byte_seq[4];

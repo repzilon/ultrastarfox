@@ -56,7 +56,7 @@ int main(int argc, const char* argv[])
         maxSize = 2 * 0x20000;
         int i;
         for (i = 1; (i < 9) && (maxSize < romFileSize); i++) {
-            maxSize = kAutoRomMBits[i] * 0x20000;
+            maxSize = kAutoRomMBits[i] * 0x20000UL;
         }
     } else {
         maxSize = strtoul(megaBits, NULL, 10) * 0x20000;
