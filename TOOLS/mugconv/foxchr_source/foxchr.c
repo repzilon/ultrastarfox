@@ -1,21 +1,18 @@
-#if !defined(_MSC_VER) || _MSC_VER > 1800
-#include <inttypes.h>
-#endif
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "foxchr.h"
 
-/*
-#if defined(_MSC_VER) && _MSC_VER < 1900
 #ifdef _WIN64
-#define PRIuPTR "zu"
+#define PRIdLong2 "lld"
+#else 
+#ifdef __LP64__
+#define PRIdLong2 "ld"
 #else
-#define PRIuPTR "u"
+#define PRIdLong2 "d"
 #endif
 #endif
-// */
 
 #ifdef ROBFX
 int foxchr_main(int argc, char** argv)
@@ -80,8 +77,7 @@ void convertHoriz2Vert(FILE * fpInput, char * outputFileName)
 
 	#ifdef DEBUG
 	if (inBuffPtr != inBuff + NEXTTILEDOWN) {
-		// %lld in Win64, %d in DJGPP and Win32
-		printf("DEBUG ERROR: inBuffPtr off by %d\n", inBuffPtr - (inBuff + NEXTTILEDOWN));
+		printf("DEBUG ERROR: inBuffPtr off by %" PRIdLong2 "\n", inBuffPtr - (inBuff + NEXTTILEDOWN));
 		free(inBuff);
 		free(outBuff);
 		exit(EX_SOFTWARE);
