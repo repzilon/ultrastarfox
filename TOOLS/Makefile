@@ -9,11 +9,11 @@ CFLAGS_HARDEN := -Wall -Wformat -Wformat=2 -Wconversion -Wimplicit-fallthrough -
 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3 \
 -fstrict-flex-arrays=3 \
 -fstack-protector-strong \
--fno-delete-null-pointer-checks -fno-strict-overflow -fno-strict-aliasing -ftrivial-auto-var-init=zero \
--Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion
-# NOTE: if C++ is needed later, adapt from ../Makefile.djg because there are flags exclusive to C language too
-#CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
-#CXXFLAGS_HARDEN := $(CFLAGS_HARDEN) -D_GLIBCXX_ASSERTIONS
+-fno-delete-null-pointer-checks -fno-strict-overflow -fno-strict-aliasing -ftrivial-auto-var-init=zero
+# Flags exclusive to C language, not to be used for C++
+CCFLAGS_HARDEN := -Werror=implicit -Werror=incompatible-pointer-types -Werror=int-conversion
+CXXFLAGS_OPTIM := $(CFLAGS_OPTIM) -fvisibility=hidden
+CXXFLAGS_HARDEN := $(CFLAGS_HARDEN) -D_GLIBCXX_ASSERTIONS
 
 OS := $(shell uname)
 ifneq (,$(wildcard /etc/alpine-release))
@@ -48,14 +48,15 @@ endif
 # FIXME : On aarch64, add the following to CFLAGS
 #-mbranch-protection=standard
 
-COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_HARDEN) $(CFLAGS_LINUX) $(CFLAGS_GCC) $(CFLAGS_ISA)
+COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_HARDEN) $(CFLAGS_LINUX) $(CFLAGS_GCC) $(CFLAGS_ISA) $(CCFLAGS_HARDEN)
+CPLUSPLUS := $(CXX) --std=c++11 $(CXXFLAGS_OPTIM) $(CXXFLAGS_HARDEN) $(CFLAGS_LINUX) $(CFLAGS_GCC) $(CFLAGS_ISA)
 $(info Compiler and flags: $(COMPILE))
 
 BINDIR := binaries/$(OS)
 
-all: $(BINDIR)/sf_crunch $(BINDIR)/sf_decrunch $(BINDIR)/cgx2fx $(BINDIR)/fx2cgx $(BINDIR)/foxchr $(BINDIR)/foxfont SuperFamiconv-$(SFCONV_VER)/$(OPTIROC_OUT)/superfamiconv
+all: $(BINDIR)/sf_crunch $(BINDIR)/sf_decrunch $(BINDIR)/cgx2fx $(BINDIR)/fx2cgx $(BINDIR)/foxchr $(BINDIR)/foxfont $(BINDIR)/superfamicheck
 
-sink: $(BINDIR)/romExtender2 $(BINDIR)/inccol $(BINDIR)/argonautmapdec $(BINDIR)/unmerge $(BINDIR)/chrmap $(BINDIR)/superfamicheck
+sink: $(BINDIR)/romExtender2 $(BINDIR)/inccol $(BINDIR)/argonautmapdec $(BINDIR)/unmerge $(BINDIR)/chrmap
 
 kitchensink: all sink
 
@@ -68,9 +69,6 @@ clean-csharp:
 
 clean-superfamiconv:
 	$(MAKE) -C SuperFamiconv-$(SFCONV_VER) clean
-
-clean-sfcheck:
-	$(MAKE) -C sfcheck.src clean
 
 clean-tools:
 	rm -f bgconv/bin/palconv
@@ -89,6 +87,7 @@ clean-tools:
 	rm -f $(BINDIR)/fx2cgx
 	rm -f $(BINDIR)/foxchr
 	rm -f $(BINDIR)/foxfont
+	rm -f $(BINDIR)/superfamicheck
 
 clean-sink:
 	rm -f romExtender2
@@ -105,7 +104,7 @@ clean-sink:
 	rm -f $(BINDIR)/apendcol
 	rm -f $(BINDIR)/makecol
 
-clean: clean-tools clean-sink clean-robfx clean-csharp clean-superfamiconv clean-sfcheck
+clean: clean-tools clean-sink clean-robfx clean-csharp clean-superfamiconv
 	rmdir $(BINDIR) || true
 
 distclean: clean-tools clean-sink clean-robfx clean-csharp
@@ -218,14 +217,11 @@ sfcheck.tgz:
 SuperFamicheck-$(SFCHECK_VER): sfcheck.tgz
 	tar -zxf $<
 
-sfcheck.src/Makefile: SuperFamicheck-$(SFCHECK_VER)
+sfcheck.src/src/superfamicheck.cpp: SuperFamicheck-$(SFCHECK_VER)
 	mv SuperFamicheck-$(SFCHECK_VER) sfcheck.src
 
-sfcheck.src/$(OPTIROC_OUT)/superfamicheck: sfcheck.src/Makefile
-	$(MAKE) -C sfcheck.src
-
-$(BINDIR)/superfamicheck: sfcheck.src/$(OPTIROC_OUT)/superfamicheck
-	install $(INSTALL_FLAGS) $< $(BINDIR)
+$(BINDIR)/superfamicheck: sfcheck.src/src/sfcRom.cpp sfcheck.src/src/superfamicheck.cpp
+	$(CPLUSPLUS) sfcheck.src/src/sfcRom.cpp sfcheck.src/src/superfamicheck.cpp -o $@
 
 help:
 	@echo "Available targets: all sink kitchensink install clean distclean nowindows permissions mrproper"
