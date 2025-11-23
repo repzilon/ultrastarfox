@@ -82,6 +82,7 @@ endif
 COMPILE := $(CC) $(CFLAGS_OPTIM) $(CFLAGS_HARDEN) $(CCFLAGS_HARDEN)
 CPLUSPLUS := $(CXX) $(CXXFLAGS_OPTIM) $(CXXFLAGS_HARDEN)
 $(info Compiler and flags: $(COMPILE))
+
 DESTBIN := ..$(DIRSEP)bin$(DIRSEP)
 BINDIR := binaries$(DIRSEP)msdos$(DIRSEP)
 
