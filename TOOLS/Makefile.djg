@@ -166,8 +166,6 @@ $(BINDIR)sfcheck.exe: $(SRC_SFCHECK)
 $(DESTBIN)sfcheck.exe: $(BINDIR)sfcheck.exe
 	$(CP) $< $(DESTBIN)
 
-# Do not delete existing DJGPP executables inside BIN with clean,
-# as they are needed for almost every UltraStarfox user.
 # apendcol.exe is an added executable in Repzilon's fork.
 clean:
 	$(RM) $(BINDIR)cgx2fx.exe

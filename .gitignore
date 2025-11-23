@@ -143,6 +143,8 @@ TOOLS/SharpUltraStarFoxTools/*/*.csproj.user
 .idea
 .vs
 TOOLS/rh_opt.g*
+*.ncb
+*.suo
 
 # Visual Studio projects for command line tools
 TOOLS/VisualStudio_prj/*/Debug
